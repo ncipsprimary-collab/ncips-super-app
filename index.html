@@ -83,7 +83,8 @@
         const SUPABASE_URL = 'https://kvailwyhpvggpwlvtlxc.supabase.co/rest/v1/';
         const SUPABASE_ANON_KEY = 'sb_publishable_PUBqX34BtP9OmCcuQcSivQ_fo5nsQkS';
 
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // PERBAIKAN: Mengganti variabel 'supabase' menjadi 'supabaseClient'
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const loginScreen = document.getElementById('login-screen');
         const appContent = document.getElementById('app-content');
@@ -93,7 +94,7 @@
 
         // Cek apakah user sudah login sebelumnya
         async function checkSession() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 showApp(session.user.email);
             }
@@ -108,7 +109,7 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
             if (error) {
                 errorMsg.classList.remove('hidden');
@@ -120,7 +121,7 @@
 
         // Proses Logout
         async function logout() {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             loginScreen.classList.remove('hidden');
             appContent.classList.add('hidden');
             document.getElementById('email').value = '';
