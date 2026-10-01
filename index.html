@@ -8,15 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            theme: {
-                extend: { colors: { ncipsYellow: '#FFD700', ncipsNavy: '#0F172A', ncipsGold: '#D4AF37' } }
-            }
+            theme: { extend: { colors: { ncipsYellow: '#FFD700', ncipsNavy: '#0F172A', ncipsGold: '#D4AF37' } } }
         }
     </script>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 h-screen flex flex-col relative overflow-hidden selection:bg-ncipsYellow selection:text-ncipsNavy">
     
-    <!-- LAYAR LOGIN -->
+    <!-- LAYAR LOGIN (TETAP SAMA) -->
     <div id="login-screen" class="absolute inset-0 bg-gradient-to-br from-ncipsNavy to-slate-800 z-50 flex flex-col justify-center items-center p-6 transition-opacity duration-700">
         <div class="w-full max-w-sm bg-white/95 backdrop-blur-sm p-10 rounded-[3rem] shadow-2xl">
             <div class="text-center mb-10">
@@ -24,31 +22,22 @@
                 <p class="text-[10px] text-gray-500 font-bold tracking-[0.3em] mt-2">SUPER APP</p>
             </div>
             <form id="login-form" class="space-y-5">
-                <div>
-                    <input type="email" id="email" class="w-full p-4 bg-gray-50/50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-ncipsGold focus:ring-2 focus:ring-ncipsYellow/20 transition-all text-center placeholder-gray-400" placeholder="Email Pengguna" required>
-                </div>
-                <div>
-                    <input type="password" id="password" class="w-full p-4 bg-gray-50/50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-ncipsGold focus:ring-2 focus:ring-ncipsYellow/20 transition-all text-center placeholder-gray-400" placeholder="Kata Sandi" required>
-                </div>
+                <div><input type="email" id="email" class="w-full p-4 bg-gray-50/50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-ncipsGold text-center" placeholder="Email Pengguna" required></div>
+                <div><input type="password" id="password" class="w-full p-4 bg-gray-50/50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-ncipsGold text-center" placeholder="Kata Sandi" required></div>
                 <p id="login-error" class="text-xs text-red-500 text-center hidden font-medium bg-red-50 p-2 rounded-full">Error</p>
-                <button type="submit" id="btn-login" class="w-full bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy font-bold py-4 rounded-full shadow-lg shadow-ncipsYellow/30 hover:scale-[1.02] transition-transform mt-4">
-                    Masuk
-                </button>
+                <button type="submit" id="btn-login" class="w-full bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy font-bold py-4 rounded-full shadow-lg mt-4">Masuk</button>
             </form>
         </div>
-        <p class="text-white/40 text-[10px] tracking-wider mt-8">&copy; 2026 YPKR</p>
     </div>
 
     <!-- KONTEN APLIKASI -->
-    <div id="app-content" class="hidden flex-col h-full">
+    <div id="app-content" class="hidden flex-col h-full relative">
         <!-- Header -->
         <header class="bg-gradient-to-r from-ncipsNavy to-slate-800 px-6 py-5 rounded-b-[2rem] shadow-lg flex justify-between items-center z-10 mx-2 mt-2">
-            <div>
-                <h1 class="text-xl font-black text-ncipsYellow leading-none tracking-wide">NCIPS</h1>
-            </div>
+            <div><h1 class="text-xl font-black text-ncipsYellow leading-none tracking-wide">NCIPS</h1></div>
             <div class="flex items-center gap-3">
-                <span id="user-role-badge" class="bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy px-4 py-1.5 rounded-full text-[10px] font-black shadow-sm tracking-widest uppercase">...</span>
-                <button id="btn-logout" class="text-white/60 hover:text-white transition-colors bg-white/10 p-2 rounded-full">
+                <span id="user-role-badge" class="bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy px-4 py-1.5 rounded-full text-[10px] font-black uppercase">...</span>
+                <button id="btn-logout" class="text-white/60 hover:text-white p-2 bg-white/10 rounded-full">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                 </button>
             </div>
@@ -61,39 +50,62 @@
                 <h2 id="user-greeting" class="text-2xl font-black text-ncipsNavy relative z-10">Memuat...</h2>
                 <p id="user-email-display" class="text-xs text-gray-500 mt-2 font-medium relative z-10">...</p>
             </div>
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100/50 p-6 rounded-[2rem]">
-                <p class="text-sm text-blue-900/80 font-medium leading-relaxed">
-                    ✨ Sistem modular aktif. Silakan pilih menu <strong class="text-blue-900">Data Siswa</strong> di bawah untuk menguji direktori.
-                </p>
-            </div>
         </main>
 
         <!-- HALAMAN 2: DIREKTORI DATA SISWA -->
         <main id="view-students" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
+            <!-- TAMBAHAN: Tombol Refresh & Tombol Tambah Siswa -->
             <div class="flex justify-between items-center mb-2">
                 <div>
                     <h2 class="text-xl font-black text-ncipsNavy">Data Siswa</h2>
-                    <p class="text-xs text-gray-500">Daftar seluruh siswa terdaftar</p>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Direktori YPKR</p>
                 </div>
-                <button id="btn-reload-students" class="bg-ncipsNavy text-ncipsYellow px-4 py-2 rounded-full text-xs font-bold shadow hover:bg-slate-800 transition">
-                    Muat Ulang
-                </button>
+                <div class="flex gap-2">
+                    <button id="btn-reload-students" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-gray-100 active:bg-gray-100">
+                        ↻
+                    </button>
+                    <button id="btn-open-add" class="bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy px-5 py-2 rounded-full text-xs font-black shadow-lg shadow-ncipsYellow/20 hover:scale-105 transition-transform">
+                        + Tambah
+                    </button>
+                </div>
             </div>
+            
             <div id="student-list-container" class="space-y-3">
-                <div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">
-                    Memuat data siswa dari database...
-                </div>
+                <div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat data...</div>
             </div>
         </main>
+
+        <!-- MODAL: FORM TAMBAH SISWA (Awalnya Disembunyikan) -->
+        <div id="modal-add-student" class="absolute inset-0 bg-ncipsNavy/60 backdrop-blur-sm z-[100] hidden flex-col justify-end">
+            <div class="bg-white rounded-t-[2.5rem] p-8 w-full shadow-2xl translate-y-0 transition-transform">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-black text-ncipsNavy">Loket Pendaftaran</h3>
+                    <button id="btn-close-add" class="w-8 h-8 bg-gray-100 rounded-full text-gray-500 font-bold flex items-center justify-center hover:bg-red-100 hover:text-red-500">✕</button>
+                </div>
+                <form id="form-add-student" class="space-y-5">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 ml-3 uppercase tracking-wider">Nama Lengkap</label>
+                        <input type="text" id="new-student-name" class="w-full mt-1 p-4 bg-gray-50 border border-gray-100 rounded-[1.5rem] text-sm focus:outline-none focus:border-ncipsYellow" placeholder="Cth: Budi Santoso" required>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 ml-3 uppercase tracking-wider">NISN (Opsional)</label>
+                        <input type="number" id="new-student-nisn" class="w-full mt-1 p-4 bg-gray-50 border border-gray-100 rounded-[1.5rem] text-sm focus:outline-none focus:border-ncipsYellow" placeholder="Cth: 0012345678">
+                    </div>
+                    <button type="submit" id="btn-save-student" class="w-full bg-gradient-to-r from-ncipsNavy to-slate-800 text-white font-bold py-4 rounded-[1.5rem] shadow-xl mt-4">
+                        Daftarkan Penumpang
+                    </button>
+                </form>
+            </div>
+        </div>
 
         <!-- MENU BAWAH MENGAMBANG -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
             <nav class="bg-white/90 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-around items-center px-6 py-4">
-                <button id="nav-home" class="flex flex-col items-center gap-1.5 text-ncipsNavy transition-all duration-300 transform scale-105">
+                <button id="nav-home" class="flex flex-col items-center gap-1.5 text-ncipsNavy transition-transform scale-105">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     <span class="text-[9px] font-black tracking-wider uppercase">Beranda</span>
                 </button>
-                <button id="nav-students" class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-ncipsNavy transition-all duration-300">
+                <button id="nav-students" class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-ncipsNavy transition-transform">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wider uppercase">Data Siswa</span>
                 </button>
@@ -104,11 +116,16 @@
     <!-- PENGHUBUNG MODUL (MAIN CONTROLLER) -->
     <script type="module">
         import { checkSession, logout } from './auth.js';
-        import { loadStudents } from './students.js';
+        import { loadStudents, addStudent, openAddStudentModal, closeAddStudentModal } from './students.js';
 
-        // Hubungkan tombol aksi
+        // Sambungkan Tombol Utama
         document.getElementById('btn-logout').addEventListener('click', logout);
         document.getElementById('btn-reload-students').addEventListener('click', loadStudents);
+        
+        // Sambungkan Tombol Pendaftaran Siswa (Modal)
+        document.getElementById('btn-open-add').addEventListener('click', openAddStudentModal);
+        document.getElementById('btn-close-add').addEventListener('click', closeAddStudentModal);
+        document.getElementById('form-add-student').addEventListener('submit', addStudent);
 
         // Cek sesi login saat halaman dimuat
         checkSession(() => {
@@ -147,11 +164,8 @@
             }
         };
 
-        document.getElementById('nav-home').addEventListener('click', () => window.switchType ? null : window.switchView('home'));
+        document.getElementById('nav-home').addEventListener('click', () => window.switchView('home'));
         document.getElementById('nav-students').addEventListener('click', () => window.switchView('students'));
-        // Perbaikan kecil pemanggilan switchView langsung dari klik tombol
-        document.getElementById('nav-home').onclick = () => window.switchView('home');
-        document.getElementById('nav-students').onclick = () => window.switchView('students');
     </script>
 </body>
 </html>
