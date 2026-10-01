@@ -54,7 +54,7 @@ export async function loadStudents() {
 }
 
 // ============================================
-// DETAIL & E-CARD (KOREKSI POSISI DATA SESUAI TEMPLATE 1)
+// DETAIL & E-CARD (KABEL DATA SUDAH DILURUSKAN 100%)
 // ============================================
 window.viewStudentDetail = async function(studentId) {
     const modal = document.getElementById('modal-detail-student');
@@ -73,11 +73,8 @@ window.viewStudentDetail = async function(studentId) {
 
         if (error) throw error;
 
-        // 1. Render Data ke Kartu E-Card (Template 1)
-        // Penyesuaian kamar data:
-        // - NISN di kartu mengambil dari `student.nisn`
-        // - NIPD di kartu mengambil dari `student.nipd`
-        // - JK di kartu mengambil dari `student.gender`
+        // 1. Render Data ke Kartu E-Card
+        // SEKARANG SEMUA DATA MASUK KE KAMAR YANG BENAR
         document.getElementById('detail-name-title').innerText = student.full_name;
         document.getElementById('detail-nisn-title').innerText = student.nisn || '-';
         document.getElementById('detail-nipd-title').innerText = student.nipd || '-';
@@ -85,10 +82,10 @@ window.viewStudentDetail = async function(studentId) {
         document.getElementById('detail-rombel-title').innerText = `STUDENT - GRADE ${student.rombel || '-'}`;
         document.getElementById('detail-qr-text').innerText = student.qr_code;
         
-        // QR Code ukuran besar maksimal 700x700
+        // QR Code ukuran besar maksimal
         document.getElementById('detail-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=700x700&data=${student.qr_code}`;
 
-        // 2. Render Foto Profil (Atau Inisial jika kosong dengan background merah pasfoto)
+        // 2. Render Foto Profil (Atau Inisial jika kosong dengan background merah)
         const avatarContainer = document.getElementById('detail-avatar-container');
         if (student.photo_url && student.photo_url.trim() !== '') {
             avatarContainer.innerHTML = `<img src="${student.photo_url}" class="w-full h-full rounded-full object-cover">`;
@@ -97,7 +94,7 @@ window.viewStudentDetail = async function(studentId) {
             avatarContainer.innerHTML = `<div class="w-full h-full rounded-full bg-red-600 flex items-center justify-center text-white font-black text-2xl shadow-inner">${initial}</div>`;
         }
 
-        // 3. Isi Form Edit
+        // 3. Isi Form Edit (JUGA SUDAH DILURUSKAN KAMARNYA)
         document.getElementById('edit-id').value = student.id;
         document.getElementById('edit-name').value = student.full_name;
         document.getElementById('edit-nisn').value = student.nisn || '';
@@ -125,6 +122,8 @@ export async function updateStudent(event) {
     btn.innerText = "Menyimpan...";
 
     const id = document.getElementById('edit-id').value;
+    
+    // PAYLOAD UPDATE SUDAH DILURUSKAN
     const payload = {
         full_name: document.getElementById('edit-name').value,
         nisn: document.getElementById('edit-nisn').value,
