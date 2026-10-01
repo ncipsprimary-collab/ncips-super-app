@@ -54,7 +54,7 @@ export async function loadStudents() {
 }
 
 // ============================================
-// DETAIL, FOTO AVATAR, & ID CARD PORTRAIT
+// DETAIL, FOTO, & KARTU PELAJAR (KOREKSI DATA)
 // ============================================
 window.viewStudentDetail = async function(studentId) {
     const modal = document.getElementById('modal-detail-student');
@@ -73,7 +73,7 @@ window.viewStudentDetail = async function(studentId) {
 
         if (error) throw error;
 
-        // 1. Render Data ke Kartu ID Portrait
+        // 1. Render Data ke Kartu ID Portrait (KOREKSI POSISI DATA)
         document.getElementById('detail-name-title').innerText = student.full_name;
         document.getElementById('detail-nisn-title').innerText = student.nisn || '-';
         document.getElementById('detail-nipd-title').innerText = student.nipd || '-';
@@ -81,10 +81,10 @@ window.viewStudentDetail = async function(studentId) {
         document.getElementById('detail-rombel-title').innerText = `Kelas ${student.rombel || '-'}`;
         document.getElementById('detail-qr-text').innerText = student.qr_code;
         
-        // Render QR Code ukuran besar
-        document.getElementById('detail-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${student.qr_code}`;
+        // QR Code diperbesar ukurannya menjadi 500x500 agar sangat tajam dan mudah di-scan
+        document.getElementById('detail-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${student.qr_code}`;
 
-        // 2. Render Foto Profil (Ide Nakal Brilian: Foto Asli atau Inisial)
+        // 2. Render Foto Profil
         const avatarContainer = document.getElementById('detail-avatar-container');
         if (student.photo_url && student.photo_url.trim() !== '') {
             avatarContainer.innerHTML = `<img src="${student.photo_url}" class="w-full h-full rounded-full object-cover">`;
@@ -93,7 +93,7 @@ window.viewStudentDetail = async function(studentId) {
             avatarContainer.innerHTML = `<div class="w-full h-full rounded-full bg-gradient-to-br from-ncipsYellow to-ncipsGold flex items-center justify-center text-ncipsNavy font-black text-lg shadow-inner">${initial}</div>`;
         }
 
-        // 3. Isi Form Edit
+        // 3. Isi Form Edit (KOREKSI POSISI DATA)
         document.getElementById('edit-id').value = student.id;
         document.getElementById('edit-name').value = student.full_name;
         document.getElementById('edit-nisn').value = student.nisn || '';
