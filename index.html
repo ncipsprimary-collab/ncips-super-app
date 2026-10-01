@@ -46,9 +46,6 @@
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-gradient-to-br from-ncipsYellow/20 to-ncipsGold/5 rounded-full blur-2xl"></div>
                 <h2 id="user-greeting" class="text-2xl font-black text-ncipsNavy relative z-10">Memuat...</h2>
             </div>
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100/50 p-6 rounded-[2rem]">
-                <p class="text-sm text-blue-900/80 font-medium leading-relaxed">💡 Sentuh daftar siswa di menu <strong class="text-blue-900">Data Siswa</strong> untuk melihat kartu pelajar dan QR Codenya!</p>
-            </div>
         </main>
 
         <main id="view-students" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
@@ -78,9 +75,8 @@
             </div>
         </main>
 
-        <!-- MODAL: TAMBAH SISWA -->
+        <!-- MODAL: TAMBAH SISWA (Tetap Sama) -->
         <div id="modal-add-student" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
-            <!-- Form tambah siswa (Sama persis seperti sebelumnya) -->
             <div class="bg-white rounded-t-[2.5rem] p-6 w-full shadow-2xl h-[85vh] overflow-y-auto pb-20">
                 <div class="flex justify-between items-center mb-6 sticky top-0 bg-white z-10 py-2 border-b border-gray-100">
                     <h3 class="text-lg font-black text-ncipsNavy">Form Siswa Baru</h3>
@@ -104,54 +100,85 @@
             </div>
         </div>
 
-        <!-- MODAL BARU: DETAIL, EDIT & QR CODE SISWA -->
+        <!-- MODAL BARU: KARTU E-KTP & EDIT SISWA -->
         <div id="modal-detail-student" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end">
             <div class="bg-gray-50 rounded-t-[2.5rem] w-full shadow-2xl h-[90vh] overflow-y-auto flex flex-col relative">
                 
-                <!-- Header Jendela -->
                 <div class="flex justify-between items-center p-6 bg-white sticky top-0 z-20 shadow-sm rounded-t-[2.5rem]">
-                    <h3 class="text-lg font-black text-ncipsNavy">Profil & Tiket Siswa</h3>
+                    <h3 class="text-lg font-black text-ncipsNavy">Profil & Kartu Pelajar</h3>
                     <button id="btn-close-detail" class="w-8 h-8 bg-gray-100 rounded-full text-gray-500 font-bold flex items-center justify-center hover:bg-red-100">✕</button>
                 </div>
 
                 <div class="p-6 space-y-6 pb-20">
-                    <!-- Kartu QR Code Cantik -->
-                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col items-center relative overflow-hidden">
-                        <div class="absolute top-0 w-full h-16 bg-gradient-to-r from-ncipsYellow to-ncipsGold"></div>
-                        <div class="w-16 h-16 bg-white rounded-full p-1 z-10 -mt-2 shadow-md">
-                            <div class="w-full h-full rounded-full bg-ncipsNavy flex items-center justify-center text-white font-black text-xl" id="detail-avatar"></div>
-                        </div>
-                        <h2 id="detail-name-title" class="text-lg font-black text-ncipsNavy mt-3 text-center">Nama Siswa</h2>
-                        <p id="detail-rombel-title" class="text-xs text-gray-500 font-bold tracking-widest uppercase mb-4">Kelas 7A</p>
+                    
+                    <!-- KARTU ID UKURAN E-KTP (Rasio 86:54) -->
+                    <div id="print-id-card" class="relative w-full aspect-[86/54] bg-white rounded-xl shadow-lg border border-gray-300 flex flex-col overflow-hidden">
                         
-                        <!-- Gambar QR Code akan muncul di sini -->
-                        <div class="border-4 border-gray-50 p-2 rounded-2xl bg-white shadow-inner">
-                            <img id="detail-qr-image" src="" alt="QR Code" class="w-40 h-40 object-cover">
+                        <!-- Header Kartu -->
+                        <div class="bg-gradient-to-r from-ncipsNavy to-slate-800 h-[28%] flex items-center px-4 border-b-4 border-ncipsYellow shrink-0">
+                            <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-3 shrink-0 shadow-inner">
+                                <span class="text-[10px] font-black text-ncipsNavy">YPKR</span>
+                            </div>
+                            <div class="text-white mt-0.5">
+                                <h4 class="font-black text-xs sm:text-sm tracking-wider leading-none">NCIPS KUPANG</h4>
+                                <p class="text-[6px] sm:text-[7px] text-gray-300 font-bold tracking-widest uppercase mt-0.5">KARTU IDENTITAS PELAJAR</p>
+                            </div>
                         </div>
-                        <p class="text-[9px] text-gray-400 font-mono mt-3 text-center" id="detail-qr-text">QR-XXX</p>
-                    </div>
+                        
+                        <!-- Body Kartu -->
+                        <div class="flex-1 flex p-3 sm:p-4 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-yellow-50 to-white">
+                            
+                            <!-- Kiri: Data Lengkap -->
+                            <div class="flex flex-col justify-center w-[65%] space-y-2 pr-2">
+                                <div>
+                                    <p class="text-[7px] sm:text-[8px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Nama Lengkap</p>
+                                    <p id="detail-name-title" class="text-xs sm:text-sm font-black text-ncipsNavy leading-tight uppercase line-clamp-2">Memuat...</p>
+                                </div>
+                                <div class="flex gap-4">
+                                    <div>
+                                        <p class="text-[7px] sm:text-[8px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">NISN</p>
+                                        <p id="detail-nisn-title" class="text-[10px] sm:text-xs font-bold text-gray-800 tracking-wider">000000</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[7px] sm:text-[8px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">NIPD</p>
+                                        <p id="detail-nipd-title" class="text-[10px] sm:text-xs font-bold text-gray-800 tracking-wider">0000</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-[7px] sm:text-[8px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Rombel</p>
+                                    <p id="detail-rombel-title" class="text-[10px] sm:text-xs font-bold text-gray-800">Kelas</p>
+                                </div>
+                            </div>
 
-                    <!-- Form Edit Data (Bisa diubah dan disave ulang) -->
+                            <!-- Kanan: Area QR Code Besar -->
+                            <div class="flex flex-col items-center justify-center w-[35%] pl-2 border-l border-gray-200">
+                                <div class="bg-white p-1 border border-gray-200 rounded-lg shadow-sm w-full aspect-square flex items-center justify-center">
+                                    <img id="detail-qr-image" src="" alt="QR Code" class="w-full h-full object-contain">
+                                </div>
+                                <p class="text-[5px] sm:text-[6px] text-gray-400 font-mono mt-1 text-center w-full truncate" id="detail-qr-text">QR-XXX</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-center text-gray-400 font-medium">💡 Putar HP ke posisi mendatar (landscape) dan *screenshot* untuk mencetak kartu ini sesuai ukuran E-KTP.</p>
+
+                    <!-- Form Edit Data -->
                     <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
                         <h4 class="text-sm font-black text-ncipsNavy mb-4 flex items-center gap-2">✏️ Edit Data Pokok</h4>
                         <form id="form-edit-student" class="space-y-4">
-                            <input type="hidden" id="edit-id"> <!-- ID Tersembunyi -->
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-400 uppercase">Nama Lengkap</label>
-                                <input type="text" id="edit-name" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:border-blue-500" required>
+                            <input type="hidden" id="edit-id">
+                            <div><label class="text-[10px] font-bold text-gray-400 uppercase">Nama Lengkap</label><input type="text" id="edit-name" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:border-blue-500" required></div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="text-[10px] font-bold text-gray-400 uppercase">NISN</label><input type="number" id="edit-nisn" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
+                                <div><label class="text-[10px] font-bold text-gray-400 uppercase">NIPD</label><input type="number" id="edit-nipd" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
-                                <div><label class="text-[10px] font-bold text-gray-400 uppercase">NIPD</label><input type="number" id="edit-nipd" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
                                 <div><label class="text-[10px] font-bold text-gray-400 uppercase">Rombel</label><input type="text" id="edit-rombel" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-400 uppercase">Status</label>
-                                <select id="edit-status" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-ncipsNavy">
-                                    <option value="AKTIF">AKTIF</option>
-                                    <option value="MUTASI">MUTASI</option>
-                                    <option value="LULUS">LULUS</option>
-                                    <option value="KELUAR">KELUAR</option>
-                                </select>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Status</label>
+                                    <select id="edit-status" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-ncipsNavy">
+                                        <option value="AKTIF">AKTIF</option><option value="MUTASI">MUTASI</option><option value="LULUS">LULUS</option><option value="KELUAR">KELUAR</option>
+                                    </select>
+                                </div>
                             </div>
                             
                             <!-- Tombol Aksi -->
@@ -187,7 +214,6 @@
         document.getElementById('btn-trigger-upload').addEventListener('click', () => document.getElementById('input-csv-file').click());
         document.getElementById('input-csv-file').addEventListener('change', handleCSVUpload);
         
-        // PENGHUBUNG DETAIL SISWA
         document.getElementById('btn-close-detail').addEventListener('click', closeDetailModal);
         document.getElementById('form-edit-student').addEventListener('submit', updateStudent);
         document.getElementById('btn-delete-student').addEventListener('click', deleteStudent);
