@@ -6,7 +6,6 @@
     <meta name="theme-color" content="#0F172A">
     <title>NCIPS Super App</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- TAMBAHAN: Perpustakaan Pembaca Excel/CSV (PapaParse) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script>
         tailwind.config = { theme: { extend: { colors: { ncipsYellow: '#FFD700', ncipsNavy: '#0F172A', ncipsGold: '#D4AF37' } } } }
@@ -32,7 +31,6 @@
 
     <!-- KONTEN APLIKASI -->
     <div id="app-content" class="hidden flex-col h-full relative">
-        <!-- Header -->
         <header class="bg-gradient-to-r from-ncipsNavy to-slate-800 px-6 py-5 rounded-b-[2rem] shadow-lg flex justify-between items-center z-10 mx-2 mt-2">
             <div><h1 class="text-xl font-black text-ncipsYellow leading-none tracking-wide">NCIPS</h1></div>
             <div class="flex items-center gap-3">
@@ -43,7 +41,6 @@
             </div>
         </header>
 
-        <!-- HALAMAN BERANDA -->
         <main id="view-home" class="flex-1 overflow-y-auto p-6 space-y-6 pb-32 block">
             <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden">
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-gradient-to-br from-ncipsYellow/20 to-ncipsGold/5 rounded-full blur-2xl"></div>
@@ -51,7 +48,6 @@
             </div>
         </main>
 
-        <!-- HALAMAN DIREKTORI SISWA -->
         <main id="view-students" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
             <div class="flex justify-between items-end mb-2">
                 <div>
@@ -80,7 +76,7 @@
             </div>
         </main>
 
-        <!-- MODAL: FORM TAMBAH SISWA (Diperbesar untuk Data Lengkap) -->
+        <!-- MODAL: FORM TAMBAH SISWA -->
         <div id="modal-add-student" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
             <div class="bg-white rounded-t-[2.5rem] p-6 w-full shadow-2xl h-[85vh] overflow-y-auto pb-20">
                 <div class="flex justify-between items-center mb-6 sticky top-0 bg-white z-10 py-2 border-b border-gray-100">
@@ -88,7 +84,6 @@
                     <button id="btn-close-add" class="w-8 h-8 bg-gray-100 rounded-full text-gray-500 font-bold flex items-center justify-center hover:bg-red-100">✕</button>
                 </div>
                 <form id="form-add-student" class="space-y-4">
-                    <!-- Data Pokok -->
                     <div>
                         <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Nama Lengkap *</label>
                         <input type="text" id="stu-name" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:border-ncipsYellow" required>
@@ -156,6 +151,13 @@
                             </select>
                         </div>
                     </div>
+                    
+                    <!-- TAMBAHAN: Upload Foto Siswa -->
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 mt-2">
+                        <label class="text-[10px] font-black text-blue-800 uppercase tracking-widest block mb-2">Upload Foto Siswa (Opsional)</label>
+                        <input type="file" id="stu-photo" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
+                    </div>
+
                     <button type="submit" id="btn-save-student" class="w-full bg-gradient-to-r from-ncipsNavy to-slate-800 text-white font-bold py-4 rounded-2xl shadow-xl mt-4">
                         Simpan Data
                     </button>
@@ -163,7 +165,6 @@
             </div>
         </div>
 
-        <!-- MENU BAWAH MENGAMBANG -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
             <nav class="bg-white/90 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-around items-center px-6 py-4">
                 <button id="nav-home" class="flex flex-col items-center gap-1.5 text-ncipsNavy transition-transform scale-105"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[9px] font-black uppercase">Beranda</span></button>
@@ -172,7 +173,6 @@
         </div>
     </div>
 
-    <!-- PENGHUBUNG MODUL -->
     <script type="module">
         import { checkSession, logout } from './auth.js';
         import { loadStudents, addStudent, openAddStudentModal, closeAddStudentModal, downloadCSVTemplate, handleCSVUpload } from './students.js';
@@ -182,8 +182,6 @@
         document.getElementById('btn-open-add').addEventListener('click', openAddStudentModal);
         document.getElementById('btn-close-add').addEventListener('click', closeAddStudentModal);
         document.getElementById('form-add-student').addEventListener('submit', addStudent);
-        
-        // Pemicu Upload Massal
         document.getElementById('btn-download-template').addEventListener('click', downloadCSVTemplate);
         document.getElementById('btn-trigger-upload').addEventListener('click', () => document.getElementById('input-csv-file').click());
         document.getElementById('input-csv-file').addEventListener('change', handleCSVUpload);
@@ -193,7 +191,6 @@
         window.switchView = function(view) {
             const views = { home: document.getElementById('view-home'), students: document.getElementById('view-students') };
             const navs = { home: document.getElementById('nav-home'), students: document.getElementById('nav-students') };
-
             Object.keys(views).forEach(k => {
                 if(k === view) {
                     views[k].classList.replace('hidden', 'block') || views[k].classList.replace('hidden', 'flex');
