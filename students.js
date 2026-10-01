@@ -14,7 +14,7 @@ export async function loadStudents() {
         if (error) throw error;
 
         if (!students || students.length === 0) {
-            container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-500 text-xs font-medium">Belum ada data siswa di database.</div>`;
+            container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-500 text-xs font-medium">Belum ada penumpang (siswa) di database.</div>`;
             return;
         }
 
@@ -31,9 +31,11 @@ export async function loadStudents() {
                             <p class="text-[11px] text-gray-400 font-medium mt-0.5">NISN: ${student.nisn || '-'}</p>
                         </div>
                     </div>
-                    <span class="bg-gray-50 text-gray-600 px-3 py-1 rounded-full text-[10px] font-bold border border-gray-100">
-                        ${student.qr_code || 'Tanpa QR'}
-                    </span>
+                    <div class="flex flex-col items-end">
+                        <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[9px] font-black border border-blue-100 tracking-wider">
+                            ${student.qr_code || 'Tanpa QR'}
+                        </span>
+                    </div>
                 </div>
             `;
         });
@@ -43,4 +45,55 @@ export async function loadStudents() {
         console.error(err);
         container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-red-500 text-xs font-medium">Gagal memuat data siswa.</div>`;
     }
+}
+
+// FUNGSI BARU: Logika Simpan Penumpang Baru
+export async function addStudent(event) {
+    event.preventDefault();
+    const btn = document.getElementById('btn-save-student');
+    btn.innerText = 'Mencetak Tiket...';
+
+    const name = document.getElementById('new-student-name').value;
+    const nisn = document.getElementById('new-student-nisn').value;
+
+    // KEAJAIBAN: Bikin kode QR statis otomatis berdasarkan waktu (Anti-kembar)
+    const generatedQrText = `QR-NCIPS-${Date.now()}`;
+
+    try {
+        const { error } = await supabaseClient
+            .from('students')
+            .insert([
+                { full_name: name, nisn: nisn, qr_code: generatedQrText }
+            ]);
+
+        if (error) throw error;
+
+        alert('Siswa berhasil didaftarkan! Kode QR otomatis: ' + generatedQrText);
+        
+        // Tutup jendela dan bersihkan isian
+        closeAddStudentModal();
+        document.getElementById('form-add-student').reset();
+        
+        // Langsung muat ulang daftar siswa agar yang baru langsung muncul
+        loadStudents();
+
+    } catch (err) {
+        console.error(err);
+        alert('Gagal mendaftar: ' + err.message);
+    } finally {
+        btn.innerText = 'Daftarkan Penumpang';
+    }
+}
+
+// Kontrol Jendela (Modal) Pendaftaran
+export function openAddStudentModal() {
+    const modal = document.getElementById('modal-add-student');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+export function closeAddStudentModal() {
+    const modal = document.getElementById('modal-add-student');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
 }
