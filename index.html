@@ -108,8 +108,8 @@
     </div>
 
     <!-- SCRIPT LOGIKA -->
-    <!-- SCRIPT LOGIKA -->
     <script>
+        // JANGAN LUPA MASUKKAN KUNCINYA LAGI YA MAS BRO!
         const SUPABASE_URL = 'https://kvailwyhpvggpwlvtlxc.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_PUBqX34BtP9OmCcuQcSivQ_fo5nsQkS';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -227,25 +227,28 @@
             const cleanQrText = qrText.trim(); 
 
             try {
-                // 1. Cari data siswa
-                const { data: student, error: searchError } = await supabaseClient
+                // PERBAIKAN: Menghapus perintah .single() agar tidak panik kalau ada data kembar
+                const { data: studentsList, error: searchError } = await supabaseClient
                     .from('students')
                     .select('id, full_name')
-                    .eq('qr_code', cleanQrText)
-                    .single();
+                    .eq('qr_code', cleanQrText);
 
-                // PERBAIKAN: Menampilkan pesan asli dari Supabase
                 if (searchError) {
                     throw new Error(`DB Error [${searchError.code}]: ${searchError.message}`);
                 }
-                if (!student) {
-                    throw new Error("Data kosong dari database.");
+
+                // Cek apakah datanya benar-benar kosong
+                if (!studentsList || studentsList.length === 0) {
+                    throw new Error("QR Code tidak terdaftar di database kita.");
                 }
 
-                // 2. Ambil ID Akun Admin/Guru
+                // Ambil Budi Santoso yang pertama kali ditemukan di daftar
+                const student = studentsList[0];
+
+                // Ambil ID Akun Admin/Guru yang sedang login
                 const { data: authData } = await supabaseClient.auth.getUser();
                 
-                // 3. Simpan Kehadiran
+                // Simpan Kehadiran ke tabel attendances
                 const { error: insertError } = await supabaseClient
                     .from('attendances')
                     .insert([
@@ -258,10 +261,10 @@
                     ]);
 
                 if (insertError) {
-                    throw new Error(`Insert Error [${insertError.code}]: ${insertError.message}`);
+                    throw new Error(`Gagal menyimpan absen [${insertError.code}]: ${insertError.message}`);
                 }
 
-                // Sukses
+                // Notifikasi Sukses!
                 iconDiv.className = "w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-green-500/30";
                 iconDiv.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
                 titleText.className = "text-sm text-green-700 font-bold mb-2 text-center";
@@ -278,5 +281,3 @@
             }
         }
     </script>
-</body>
-</html>
