@@ -16,8 +16,8 @@ export async function checkSession(onLoggedIn) {
 
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    btnLogin.innerText = 'Memeriksa...';
-    errorMsg.classList.add('hidden');
+    if(btnLogin) btnLogin.innerText = 'Memeriksa...';
+    if(errorMsg) errorMsg.classList.add('hidden');
     
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
@@ -25,9 +25,11 @@ loginForm.addEventListener('submit', async (e) => {
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
     if (error) {
-        errorMsg.innerText = error.message;
-        errorMsg.classList.remove('hidden');
-        btnLogin.innerText = 'Masuk';
+        if(errorMsg) {
+            errorMsg.innerText = error.message;
+            errorMsg.classList.remove('hidden');
+        }
+        if(btnLogin) btnLogin.innerText = 'Masuk';
     } else {
         showApp(data.user);
     }
@@ -39,9 +41,11 @@ export async function logout() {
 }
 
 async function showApp(user, callback) {
-    loginScreen.classList.add('hidden');
-    appContent.classList.remove('hidden');
-    appContent.classList.add('flex');
+    if(loginScreen) loginScreen.classList.add('hidden');
+    if(appContent) {
+        appContent.classList.remove('hidden');
+        appContent.classList.add('flex');
+    }
     await fetchUserProfile(user.id, user.email);
     if (typeof callback === 'function') callback();
 }
@@ -49,8 +53,14 @@ async function showApp(user, callback) {
 async function fetchUserProfile(userId, email) {
     const { data } = await supabaseClient.from('users').select('full_name, role').eq('id', userId).single();
     if (data) {
-        document.getElementById('user-greeting').innerText = data.full_name;
-        document.getElementById('user-email-display').innerText = email;
-        document.getElementById('user-role-badge').innerText = data.role;
+        // PERBAIKAN: Cek dulu apakah tempatnya ada di layar sebelum diisi
+        const greetingEl = document.getElementById('user-greeting');
+        if (greetingEl) greetingEl.innerText = data.full_name;
+
+        const emailEl = document.getElementById('user-email-display');
+        if (emailEl) emailEl.innerText = email;
+
+        const roleEl = document.getElementById('user-role-badge');
+        if (roleEl) roleEl.innerText = data.role;
     }
 }
