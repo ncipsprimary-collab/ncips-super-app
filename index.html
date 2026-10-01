@@ -108,8 +108,8 @@
     </div>
 
     <!-- SCRIPT LOGIKA -->
+    <!-- SCRIPT LOGIKA -->
     <script>
-        // MASUKKAN KUNCI SUPABASE DI SINI (JANGAN LUPA!)
         const SUPABASE_URL = 'https://kvailwyhpvggpwlvtlxc.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_PUBqX34BtP9OmCcuQcSivQ_fo5nsQkS';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -224,7 +224,6 @@
             iconDiv.className = "w-12 h-12 bg-gray-200 animate-pulse rounded-full mx-auto mb-3";
             iconDiv.innerHTML = "";
 
-            // Membersihkan spasi
             const cleanQrText = qrText.trim(); 
 
             try {
@@ -235,12 +234,12 @@
                     .eq('qr_code', cleanQrText)
                     .single();
 
+                // PERBAIKAN: Menampilkan pesan asli dari Supabase
                 if (searchError) {
-                    throw new Error("Gagal mencari profil siswa.");
+                    throw new Error(`DB Error [${searchError.code}]: ${searchError.message}`);
                 }
-
                 if (!student) {
-                    throw new Error("QR Code tidak terdaftar.");
+                    throw new Error("Data kosong dari database.");
                 }
 
                 // 2. Ambil ID Akun Admin/Guru
@@ -259,7 +258,7 @@
                     ]);
 
                 if (insertError) {
-                    throw new Error("Gagal menyimpan ke database.");
+                    throw new Error(`Insert Error [${insertError.code}]: ${insertError.message}`);
                 }
 
                 // Sukses
@@ -274,8 +273,8 @@
                 iconDiv.className = "w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-red-500/30";
                 iconDiv.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>`;
                 titleText.className = "text-sm text-red-700 font-bold mb-2 text-center";
-                titleText.innerText = "Error Sistem";
-                detailText.innerHTML = `<strong>Teks QR:</strong> "${cleanQrText}"<br><strong>Pesan:</strong> ${err.message}`;
+                titleText.innerText = "Gagal Memproses";
+                detailText.innerHTML = `<strong>Pesan Asli:</strong><br>${err.message}`;
             }
         }
     </script>
