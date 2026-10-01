@@ -78,12 +78,12 @@
     </div>
 
     <!-- SCRIPT LOGIKA -->
+    <!-- SCRIPT LOGIKA -->
     <script>
         // MASUKKAN KUNCI DARI NOTEPAD DI SINI
-        const SUPABASE_URL = 'https://kvailwyhpvggpwlvtlxc.supabase.co/rest/v1/';
-        const SUPABASE_ANON_KEY = 'sb_publishable_PUBqX34BtP9OmCcuQcSivQ_fo5nsQkS';
+        const SUPABASE_URL = 'MASUKKAN_URL_SUPABASE_DI_SINI';
+        const SUPABASE_ANON_KEY = 'MASUKKAN_ANON_KEY_DI_SINI';
 
-        // PERBAIKAN: Mengganti variabel 'supabase' menjadi 'supabaseClient'
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const loginScreen = document.getElementById('login-screen');
@@ -92,7 +92,6 @@
         const btnLogin = document.getElementById('btn-login');
         const errorMsg = document.getElementById('login-error');
 
-        // Cek apakah user sudah login sebelumnya
         async function checkSession() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
@@ -100,7 +99,6 @@
             }
         }
 
-        // Proses Login
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             btnLogin.innerText = 'Memeriksa...';
@@ -109,24 +107,27 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-            if (error) {
+                if (error) {
+                    // INI YANG DIUBAH: Menampilkan pesan error asli dari Supabase
+                    errorMsg.innerText = "INFO ERROR: " + error.message;
+                    errorMsg.classList.remove('hidden');
+                    btnLogin.innerText = 'Masuk';
+                } else {
+                    showApp(data.user.email);
+                }
+            } catch (err) {
+                errorMsg.innerText = "SISTEM ERROR: " + err.message;
                 errorMsg.classList.remove('hidden');
                 btnLogin.innerText = 'Masuk';
-            } else {
-                showApp(data.user.email);
             }
         });
 
-        // Proses Logout
         async function logout() {
             await supabaseClient.auth.signOut();
-            loginScreen.classList.remove('hidden');
-            appContent.classList.add('hidden');
-            document.getElementById('email').value = '';
-            document.getElementById('password').value = '';
-            btnLogin.innerText = 'Masuk';
+            window.location.reload();
         }
 
         function showApp(email) {
