@@ -18,7 +18,7 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 h-screen flex flex-col relative overflow-hidden selection:bg-ncipsYellow selection:text-ncipsNavy">
     
-    <!-- LAYAR LOGIN DENGAN GRADASI NAVY -->
+    <!-- LAYAR LOGIN -->
     <div id="login-screen" class="absolute inset-0 bg-gradient-to-br from-ncipsNavy to-slate-800 z-50 flex flex-col justify-center items-center p-6 transition-opacity duration-700">
         <div class="w-full max-w-sm bg-white/95 backdrop-blur-sm p-10 rounded-[3rem] shadow-2xl">
             <div class="text-center mb-10">
@@ -44,7 +44,7 @@
     <!-- KONTEN APLIKASI -->
     <div id="app-content" class="hidden flex-col h-full">
         
-        <!-- Header Melengkung dengan Gradasi -->
+        <!-- Header -->
         <header class="bg-gradient-to-r from-ncipsNavy to-slate-800 px-6 py-5 rounded-b-[2rem] shadow-lg flex justify-between items-center z-10 mx-2 mt-2">
             <div>
                 <h1 class="text-xl font-black text-ncipsYellow leading-none tracking-wide">NCIPS</h1>
@@ -59,7 +59,6 @@
 
         <!-- HALAMAN 1: BERANDA -->
         <main id="view-home" class="flex-1 overflow-y-auto p-6 space-y-6 pb-32 block">
-            <!-- Kartu Profil Mewah -->
             <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden">
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-gradient-to-br from-ncipsYellow/20 to-ncipsGold/5 rounded-full blur-2xl"></div>
                 <h2 id="user-greeting" class="text-2xl font-black text-ncipsNavy relative z-10">Memuat...</h2>
@@ -68,7 +67,7 @@
             
             <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100/50 p-6 rounded-[2rem]">
                 <p class="text-sm text-blue-900/80 font-medium leading-relaxed">
-                    💡 Sentuh ikon <strong class="text-blue-900">Scan QR</strong> di menu bawah untuk mengaktifkan pemindai presensi pintar.
+                    💡 Sentuh ikon <strong class="text-blue-900">Pemindai</strong> di menu bawah untuk mencatat kehadiran siswa secara otomatis.
                 </p>
             </div>
         </main>
@@ -81,47 +80,36 @@
                     <p class="text-xs text-gray-500 font-medium">Arahkan kamera ke ID Card Siswa</p>
                 </div>
                 
-                <!-- Kotak Kamera Membulat -->
                 <div id="reader" class="w-full rounded-[2rem] overflow-hidden border-4 border-gray-50 shadow-inner bg-gray-50 min-h-[300px]"></div>
                 
-                <div id="scan-result-box" class="mt-6 p-6 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 rounded-[2rem] hidden">
-                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-green-500/30">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                    </div>
-                    <p class="text-sm text-green-900 font-bold mb-2">Data Terbaca!</p>
-                    <p id="scan-text" class="text-xs font-mono text-gray-600 break-all bg-white p-3 rounded-2xl mb-4"></p>
+                <!-- Kotak Hasil Scan Dinamis -->
+                <div id="scan-result-box" class="mt-6 p-6 bg-white border border-gray-100 rounded-[2rem] shadow-xl hidden">
+                    <div id="scan-icon" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"></div>
+                    <p id="scan-title" class="text-sm font-bold mb-2 text-center">Memproses...</p>
+                    <p id="scan-text" class="text-xs text-center text-gray-600 bg-gray-50 p-4 rounded-2xl mb-4"></p>
                     <button onclick="startScanner()" class="bg-gradient-to-r from-ncipsNavy to-slate-800 text-white px-6 py-3 rounded-full text-xs font-bold w-full shadow-lg hover:shadow-xl transition-all">Scan Selanjutnya</button>
                 </div>
             </div>
         </main>
 
-        <!-- MENU BAWAH MENGAMBANG (FLOATING PILL) DENGAN IKON ELEGAN -->
+        <!-- MENU BAWAH MENGAMBANG -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
             <nav class="bg-white/90 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-around items-center px-6 py-4">
-                
-                <!-- Tombol Beranda -->
                 <button onclick="switchView('home')" id="nav-home" class="flex flex-col items-center gap-1.5 text-ncipsNavy transition-all duration-300 transform scale-105">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     <span class="text-[9px] font-black tracking-wider uppercase">Beranda</span>
                 </button>
-                
-                <!-- Tombol Scan -->
                 <button onclick="switchView('scanner')" id="nav-scanner" class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-ncipsNavy transition-all duration-300">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
-                    </svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wider uppercase">Pemindai</span>
                 </button>
-                
             </nav>
         </div>
     </div>
 
     <!-- SCRIPT LOGIKA -->
     <script>
-        // MASUKKAN KUNCI SUPABASE DI SINI (JANGAN LUPA!)
+        // MASUKKAN KUNCI SUPABASE SEPERTI BIASA
         const SUPABASE_URL = 'https://kvailwyhpvggpwlvtlxc.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_PUBqX34BtP9OmCcuQcSivQ_fo5nsQkS';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -130,6 +118,7 @@
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) showApp(session.user);
         }
+        
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-login');
@@ -143,6 +132,7 @@
                 btn.innerText = 'Masuk';
             } else showApp(data.user);
         });
+
         async function logout() { await supabaseClient.auth.signOut(); window.location.reload(); }
         
         function showApp(user) {
@@ -151,6 +141,7 @@
             document.getElementById('app-content').classList.add('flex');
             fetchUserProfile(user.id, user.email);
         }
+
         async function fetchUserProfile(userId, email) {
             const { data } = await supabaseClient.from('users').select('full_name, role').eq('id', userId).single();
             if (data) {
@@ -159,8 +150,10 @@
                 document.getElementById('user-role-badge').innerText = data.role;
             }
         }
+        
         checkSession();
 
+        // LOGIKA SCANNER & PENGIRIMAN DATA
         let html5QrcodeScanner = null;
 
         function switchView(view) {
@@ -173,7 +166,6 @@
                 viewHome.classList.remove('hidden'); viewHome.classList.add('block');
                 viewScanner.classList.add('hidden'); viewScanner.classList.remove('flex');
                 
-                // Efek ikon aktif
                 navHome.classList.replace('text-gray-400', 'text-ncipsNavy');
                 navHome.classList.add('scale-105');
                 navHome.querySelector('span').classList.replace('font-bold', 'font-black');
@@ -206,9 +198,9 @@
                 { facingMode: "environment" },
                 { fps: 10, qrbox: { width: 250, height: 250 } },
                 (decodedText) => {
+                    // Ketika QR Terbaca!
                     stopScanner();
-                    document.getElementById('scan-result-box').classList.remove('hidden');
-                    document.getElementById('scan-text').innerText = decodedText;
+                    prosesDataKehadiran(decodedText);
                 },
                 (errorMessage) => { }
             ).catch((err) => {
@@ -219,6 +211,71 @@
         function stopScanner() {
             if (html5QrcodeScanner && html5QrcodeScanner.isScanning) {
                 html5QrcodeScanner.stop().catch(err => console.error(err));
+            }
+        }
+
+        // FUNGSI BARU: Mencocokkan data dan menyimpan ke Database
+        async function prosesDataKehadiran(qrText) {
+            const resultBox = document.getElementById('scan-result-box');
+            const iconDiv = document.getElementById('scan-icon');
+            const titleText = document.getElementById('scan-title');
+            const detailText = document.getElementById('scan-text');
+
+            resultBox.classList.remove('hidden');
+            titleText.innerText = "Mencari data...";
+            detailText.innerText = "Mohon tunggu sebentar.";
+            iconDiv.className = "w-12 h-12 bg-gray-200 animate-pulse rounded-full mx-auto mb-3";
+            iconDiv.innerHTML = "";
+
+            try {
+                // 1. Cari data siswa berdasarkan teks QR
+                const { data: student, error: searchError } = await supabaseClient
+                    .from('students')
+                    .select('id, full_name')
+                    .eq('qr_code', qrText)
+                    .single();
+
+                if (searchError || !student) {
+                    // Siswa tidak ditemukan
+                    iconDiv.className = "w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-red-500/30";
+                    iconDiv.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                    titleText.className = "text-sm text-red-700 font-bold mb-2 text-center";
+                    titleText.innerText = "Data Tidak Ditemukan!";
+                    detailText.innerText = `QR Code: ${qrText} tidak terdaftar di sistem.`;
+                    return;
+                }
+
+                // 2. Ambil ID Akun Admin/Guru yang men-scan
+                const { data: authData } = await supabaseClient.auth.getUser();
+                
+                // 3. Simpan data "HADIR" ke tabel attendances
+                const { error: insertError } = await supabaseClient
+                    .from('attendances')
+                    .insert([
+                        {
+                            person_type: 'SISWA',
+                            student_id: student.id,
+                            status: 'HADIR',
+                            scanned_by: authData.user.id
+                        }
+                    ]);
+
+                if (insertError) throw insertError;
+
+                // 4. Tampilkan notifikasi sukses!
+                iconDiv.className = "w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-green-500/30";
+                iconDiv.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
+                titleText.className = "text-sm text-green-700 font-bold mb-2 text-center";
+                titleText.innerText = "Berhasil Dicatat!";
+                detailText.innerHTML = `<strong class="text-ncipsNavy text-lg">${student.full_name}</strong><br>Status: HADIR`;
+
+            } catch (err) {
+                console.error(err);
+                iconDiv.className = "w-12 h-12 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-orange-500/30";
+                iconDiv.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                titleText.className = "text-sm text-orange-700 font-bold mb-2 text-center";
+                titleText.innerText = "Terjadi Kesalahan";
+                detailText.innerText = "Gagal terhubung ke database.";
             }
         }
     </script>
