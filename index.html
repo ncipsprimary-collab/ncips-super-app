@@ -6,15 +6,15 @@
     <meta name="theme-color" content="#0F172A">
     <title>NCIPS Super App</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- TAMBAHAN: Perpustakaan Pembaca Excel/CSV (PapaParse) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script>
-        tailwind.config = {
-            theme: { extend: { colors: { ncipsYellow: '#FFD700', ncipsNavy: '#0F172A', ncipsGold: '#D4AF37' } } }
-        }
+        tailwind.config = { theme: { extend: { colors: { ncipsYellow: '#FFD700', ncipsNavy: '#0F172A', ncipsGold: '#D4AF37' } } } }
     </script>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 h-screen flex flex-col relative overflow-hidden selection:bg-ncipsYellow selection:text-ncipsNavy">
     
-    <!-- LAYAR LOGIN (TETAP SAMA) -->
+    <!-- LAYAR LOGIN -->
     <div id="login-screen" class="absolute inset-0 bg-gradient-to-br from-ncipsNavy to-slate-800 z-50 flex flex-col justify-center items-center p-6 transition-opacity duration-700">
         <div class="w-full max-w-sm bg-white/95 backdrop-blur-sm p-10 rounded-[3rem] shadow-2xl">
             <div class="text-center mb-10">
@@ -22,8 +22,8 @@
                 <p class="text-[10px] text-gray-500 font-bold tracking-[0.3em] mt-2">SUPER APP</p>
             </div>
             <form id="login-form" class="space-y-5">
-                <div><input type="email" id="email" class="w-full p-4 bg-gray-50/50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-ncipsGold text-center" placeholder="Email Pengguna" required></div>
-                <div><input type="password" id="password" class="w-full p-4 bg-gray-50/50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-ncipsGold text-center" placeholder="Kata Sandi" required></div>
+                <div><input type="email" id="email" class="w-full p-4 bg-gray-50/50 border border-gray-200 rounded-full text-sm text-center focus:outline-none focus:border-ncipsGold" placeholder="Email Pengguna" required></div>
+                <div><input type="password" id="password" class="w-full p-4 bg-gray-50/50 border border-gray-200 rounded-full text-sm text-center focus:outline-none focus:border-ncipsGold" placeholder="Kata Sandi" required></div>
                 <p id="login-error" class="text-xs text-red-500 text-center hidden font-medium bg-red-50 p-2 rounded-full">Error</p>
                 <button type="submit" id="btn-login" class="w-full bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy font-bold py-4 rounded-full shadow-lg mt-4">Masuk</button>
             </form>
@@ -43,31 +43,36 @@
             </div>
         </header>
 
-        <!-- HALAMAN 1: BERANDA -->
+        <!-- HALAMAN BERANDA -->
         <main id="view-home" class="flex-1 overflow-y-auto p-6 space-y-6 pb-32 block">
             <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden">
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-gradient-to-br from-ncipsYellow/20 to-ncipsGold/5 rounded-full blur-2xl"></div>
                 <h2 id="user-greeting" class="text-2xl font-black text-ncipsNavy relative z-10">Memuat...</h2>
-                <p id="user-email-display" class="text-xs text-gray-500 mt-2 font-medium relative z-10">...</p>
             </div>
         </main>
 
-        <!-- HALAMAN 2: DIREKTORI DATA SISWA -->
+        <!-- HALAMAN DIREKTORI SISWA -->
         <main id="view-students" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
-            <!-- TAMBAHAN: Tombol Refresh & Tombol Tambah Siswa -->
-            <div class="flex justify-between items-center mb-2">
+            <div class="flex justify-between items-end mb-2">
                 <div>
                     <h2 class="text-xl font-black text-ncipsNavy">Data Siswa</h2>
                     <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Direktori YPKR</p>
                 </div>
                 <div class="flex gap-2">
-                    <button id="btn-reload-students" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-gray-100 active:bg-gray-100">
-                        ↻
-                    </button>
-                    <button id="btn-open-add" class="bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy px-5 py-2 rounded-full text-xs font-black shadow-lg shadow-ncipsYellow/20 hover:scale-105 transition-transform">
-                        + Tambah
-                    </button>
+                    <button id="btn-reload-students" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-gray-100 active:bg-gray-100">↻</button>
+                    <button id="btn-open-add" class="bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy px-4 py-2 rounded-full text-xs font-black shadow-lg shadow-ncipsYellow/20 hover:scale-105 transition-transform">+ Tambah</button>
                 </div>
+            </div>
+
+            <!-- Panel Upload Massal -->
+            <div class="bg-blue-50 border border-blue-100 rounded-[1.5rem] p-4 flex flex-col gap-3">
+                <p class="text-[10px] text-blue-800 font-bold uppercase tracking-wider text-center">Fitur Input Massal</p>
+                <div class="flex justify-between gap-2">
+                    <button id="btn-download-template" class="flex-1 bg-white text-blue-700 text-xs font-bold py-2 rounded-xl border border-blue-200 shadow-sm hover:bg-blue-100">1. Unduh Template</button>
+                    <button id="btn-trigger-upload" class="flex-1 bg-blue-600 text-white text-xs font-bold py-2 rounded-xl shadow-sm hover:bg-blue-700">2. Upload CSV</button>
+                    <input type="file" id="input-csv-file" accept=".csv" class="hidden">
+                </div>
+                <p id="upload-status" class="text-xs text-center font-bold hidden"></p>
             </div>
             
             <div id="student-list-container" class="space-y-3">
@@ -75,24 +80,84 @@
             </div>
         </main>
 
-        <!-- MODAL: FORM TAMBAH SISWA (Awalnya Disembunyikan) -->
-        <div id="modal-add-student" class="absolute inset-0 bg-ncipsNavy/60 backdrop-blur-sm z-[100] hidden flex-col justify-end">
-            <div class="bg-white rounded-t-[2.5rem] p-8 w-full shadow-2xl translate-y-0 transition-transform">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-black text-ncipsNavy">Loket Pendaftaran</h3>
-                    <button id="btn-close-add" class="w-8 h-8 bg-gray-100 rounded-full text-gray-500 font-bold flex items-center justify-center hover:bg-red-100 hover:text-red-500">✕</button>
+        <!-- MODAL: FORM TAMBAH SISWA (Diperbesar untuk Data Lengkap) -->
+        <div id="modal-add-student" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
+            <div class="bg-white rounded-t-[2.5rem] p-6 w-full shadow-2xl h-[85vh] overflow-y-auto pb-20">
+                <div class="flex justify-between items-center mb-6 sticky top-0 bg-white z-10 py-2 border-b border-gray-100">
+                    <h3 class="text-lg font-black text-ncipsNavy">Form Siswa Baru</h3>
+                    <button id="btn-close-add" class="w-8 h-8 bg-gray-100 rounded-full text-gray-500 font-bold flex items-center justify-center hover:bg-red-100">✕</button>
                 </div>
-                <form id="form-add-student" class="space-y-5">
+                <form id="form-add-student" class="space-y-4">
+                    <!-- Data Pokok -->
                     <div>
-                        <label class="text-xs font-bold text-gray-400 ml-3 uppercase tracking-wider">Nama Lengkap</label>
-                        <input type="text" id="new-student-name" class="w-full mt-1 p-4 bg-gray-50 border border-gray-100 rounded-[1.5rem] text-sm focus:outline-none focus:border-ncipsYellow" placeholder="Cth: Budi Santoso" required>
+                        <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Nama Lengkap *</label>
+                        <input type="text" id="stu-name" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:border-ncipsYellow" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">NIPD</label>
+                            <input type="number" id="stu-nipd" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">NISN</label>
+                            <input type="number" id="stu-nisn" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Jenis Kelamin</label>
+                            <select id="stu-jk" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
+                                <option value="L">Laki-laki</option>
+                                <option value="P">Perempuan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Agama</label>
+                            <select id="stu-agama" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
+                                <option value="Kristen">Kristen</option>
+                                <option value="Katolik">Katolik</option>
+                                <option value="Islam">Islam</option>
+                                <option value="Hindu">Hindu</option>
+                                <option value="Buddha">Buddha</option>
+                                <option value="Konghucu">Konghucu</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Tempat Lahir</label>
+                            <input type="text" id="stu-tempat" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Tanggal Lahir</label>
+                            <input type="date" id="stu-tgl" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
+                        </div>
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-gray-400 ml-3 uppercase tracking-wider">NISN (Opsional)</label>
-                        <input type="number" id="new-student-nisn" class="w-full mt-1 p-4 bg-gray-50 border border-gray-100 rounded-[1.5rem] text-sm focus:outline-none focus:border-ncipsYellow" placeholder="Cth: 0012345678">
+                        <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">NIK</label>
+                        <input type="number" id="stu-nik" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
                     </div>
-                    <button type="submit" id="btn-save-student" class="w-full bg-gradient-to-r from-ncipsNavy to-slate-800 text-white font-bold py-4 rounded-[1.5rem] shadow-xl mt-4">
-                        Daftarkan Penumpang
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Alamat Lengkap</label>
+                        <textarea id="stu-alamat" rows="2" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Rombel Saat Ini</label>
+                            <input type="text" id="stu-rombel" placeholder="Cth: 7A" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Status</label>
+                            <select id="stu-status" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-ncipsNavy">
+                                <option value="AKTIF">Aktif</option>
+                                <option value="MUTASI">Mutasi</option>
+                                <option value="LULUS">Lulus</option>
+                                <option value="KELUAR">Keluar</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-save-student" class="w-full bg-gradient-to-r from-ncipsNavy to-slate-800 text-white font-bold py-4 rounded-2xl shadow-xl mt-4">
+                        Simpan Data
                     </button>
                 </form>
             </div>
@@ -101,69 +166,46 @@
         <!-- MENU BAWAH MENGAMBANG -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
             <nav class="bg-white/90 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-around items-center px-6 py-4">
-                <button id="nav-home" class="flex flex-col items-center gap-1.5 text-ncipsNavy transition-transform scale-105">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    <span class="text-[9px] font-black tracking-wider uppercase">Beranda</span>
-                </button>
-                <button id="nav-students" class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-ncipsNavy transition-transform">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <span class="text-[9px] font-bold tracking-wider uppercase">Data Siswa</span>
-                </button>
+                <button id="nav-home" class="flex flex-col items-center gap-1.5 text-ncipsNavy transition-transform scale-105"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[9px] font-black uppercase">Beranda</span></button>
+                <button id="nav-students" class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-ncipsNavy transition-transform"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><span class="text-[9px] font-bold uppercase">Data Siswa</span></button>
             </nav>
         </div>
     </div>
 
-    <!-- PENGHUBUNG MODUL (MAIN CONTROLLER) -->
+    <!-- PENGHUBUNG MODUL -->
     <script type="module">
         import { checkSession, logout } from './auth.js';
-        import { loadStudents, addStudent, openAddStudentModal, closeAddStudentModal } from './students.js';
+        import { loadStudents, addStudent, openAddStudentModal, closeAddStudentModal, downloadCSVTemplate, handleCSVUpload } from './students.js';
 
-        // Sambungkan Tombol Utama
         document.getElementById('btn-logout').addEventListener('click', logout);
         document.getElementById('btn-reload-students').addEventListener('click', loadStudents);
-        
-        // Sambungkan Tombol Pendaftaran Siswa (Modal)
         document.getElementById('btn-open-add').addEventListener('click', openAddStudentModal);
         document.getElementById('btn-close-add').addEventListener('click', closeAddStudentModal);
         document.getElementById('form-add-student').addEventListener('submit', addStudent);
+        
+        // Pemicu Upload Massal
+        document.getElementById('btn-download-template').addEventListener('click', downloadCSVTemplate);
+        document.getElementById('btn-trigger-upload').addEventListener('click', () => document.getElementById('input-csv-file').click());
+        document.getElementById('input-csv-file').addEventListener('change', handleCSVUpload);
 
-        // Cek sesi login saat halaman dimuat
-        checkSession(() => {
-            loadStudents();
-        });
+        checkSession(() => { loadStudents(); });
 
-        // Pengaturan Navigasi Antar Halaman
         window.switchView = function(view) {
-            const viewHome = document.getElementById('view-home');
-            const viewStudents = document.getElementById('view-students');
-            const navHome = document.getElementById('nav-home');
-            const navStudents = document.getElementById('nav-students');
+            const views = { home: document.getElementById('view-home'), students: document.getElementById('view-students') };
+            const navs = { home: document.getElementById('nav-home'), students: document.getElementById('nav-students') };
 
-            if (view === 'home') {
-                viewHome.classList.remove('hidden'); viewHome.classList.add('block');
-                viewStudents.classList.add('hidden'); viewStudents.classList.remove('flex');
-                
-                navHome.classList.replace('text-gray-400', 'text-ncipsNavy');
-                navHome.classList.add('scale-105');
-                navHome.querySelector('span').classList.replace('font-bold', 'font-black');
-                
-                navStudents.classList.replace('text-ncipsNavy', 'text-gray-400');
-                navStudents.classList.remove('scale-105');
-                navStudents.querySelector('span').classList.replace('font-black', 'font-bold');
-            } else {
-                viewHome.classList.add('hidden'); viewHome.classList.remove('block');
-                viewStudents.classList.remove('hidden'); viewStudents.classList.add('flex');
-                
-                navStudents.classList.replace('text-gray-400', 'text-ncipsNavy');
-                navStudents.classList.add('scale-105');
-                navStudents.querySelector('span').classList.replace('font-bold', 'font-black');
-                
-                navHome.classList.replace('text-ncipsNavy', 'text-gray-400');
-                navHome.classList.remove('scale-105');
-                navHome.querySelector('span').classList.replace('font-black', 'font-bold');
-            }
+            Object.keys(views).forEach(k => {
+                if(k === view) {
+                    views[k].classList.replace('hidden', 'block') || views[k].classList.replace('hidden', 'flex');
+                    navs[k].classList.replace('text-gray-400', 'text-ncipsNavy');
+                    navs[k].querySelector('span').classList.replace('font-bold', 'font-black');
+                } else {
+                    views[k].classList.replace('block', 'hidden') || views[k].classList.replace('flex', 'hidden');
+                    navs[k].classList.replace('text-ncipsNavy', 'text-gray-400');
+                    navs[k].querySelector('span').classList.replace('font-black', 'font-bold');
+                }
+            });
         };
-
         document.getElementById('nav-home').addEventListener('click', () => window.switchView('home'));
         document.getElementById('nav-students').addEventListener('click', () => window.switchView('students'));
     </script>
