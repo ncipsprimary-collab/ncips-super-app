@@ -2,6 +2,7 @@ import { supabaseClient } from './supabase.js';
 
 export async function loadStudents() {
     const container = document.getElementById('student-list-container');
+    const totalText = document.getElementById('total-students');
     container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Sedang menyinkronkan data...</div>`;
 
     try {
@@ -13,24 +14,26 @@ export async function loadStudents() {
         if (error) throw error;
 
         if (!students || students.length === 0) {
+            totalText.innerText = "0";
             container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-500 text-xs font-medium">Belum ada data siswa di database.</div>`;
             return;
         }
 
-        let html = '';
-        students.forEach((student, index) => {
-            const statusColor = student.status === 'AKTIF' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
-            
-            // Tampilkan foto jika ada, atau bulatan inisial jika kosong
-            const photoContent = student.photo_url 
-                ? `<img src="${student.photo_url}" class="w-10 h-10 rounded-full object-cover shadow-sm border border-gray-200">`
-                : `<div class="w-10 h-10 rounded-full bg-slate-100 text-ncipsNavy flex items-center justify-center font-black text-[10px]">${index + 1}</div>`;
+        totalText.innerText = students.length; // Hitung total otomatis
 
+        let html = '';
+        students.forEach((student) => {
+            const statusColor = student.status === 'AKTIF' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+            const initial = student.full_name ? student.full_name.charAt(0).toUpperCase() : '?';
+
+            // KEAJAIBAN: Kita buat kartu ini bisa ditekan (onclick=viewStudentDetail)
             html += `
-                <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col gap-2">
+                <div onclick="window.viewStudentDetail('${student.id}')" class="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col gap-2 cursor-pointer hover:shadow-md hover:border-ncipsYellow transition-all">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            ${photoContent}
+                            <div class="w-10 h-10 rounded-full bg-slate-100 text-ncipsNavy flex items-center justify-center font-black text-sm">
+                                ${initial}
+                            </div>
                             <div>
                                 <h3 class="text-sm font-bold text-ncipsNavy">${student.full_name}</h3>
                                 <p class="text-[10px] text-gray-500 font-medium">Rombel: ${student.rombel || '-'} | NIPD: ${student.nipd || '-'}</p>
@@ -51,61 +54,125 @@ export async function loadStudents() {
     }
 }
 
-// LOGIKA INPUT 1 SISWA + FOTO
+// ============================================
+// FITUR BARU: LIHAT DETAIL & QR CODE SISWA
+// ============================================
+window.viewStudentDetail = async function(studentId) {
+    const modal = document.getElementById('modal-detail-student');
+    
+    // Tampilkan modal dengan gaya loading
+    document.getElementById('detail-name-title').innerText = "Memuat...";
+    document.getElementById('detail-qr-image').src = "";
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+
+    try {
+        const { data: student, error } = await supabaseClient
+            .from('students')
+            .select('*')
+            .eq('id', studentId)
+            .single();
+
+        if (error) throw error;
+
+        // 1. Render Kartu QR Code
+        document.getElementById('detail-name-title').innerText = student.full_name;
+        document.getElementById('detail-rombel-title').innerText = `Kelas ${student.rombel || '?'}`;
+        document.getElementById('detail-avatar').innerText = student.full_name.charAt(0).toUpperCase();
+        document.getElementById('detail-qr-text').innerText = student.qr_code;
+        
+        // Panggil API QR Generator untuk merender kode rahasianya jadi gambar!
+        document.getElementById('detail-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${student.qr_code}`;
+
+        // 2. Isi data form edit agar admin bisa mengubahnya
+        document.getElementById('edit-id').value = student.id;
+        document.getElementById('edit-name').value = student.full_name;
+        document.getElementById('edit-nipd').value = student.nipd || '';
+        document.getElementById('edit-rombel').value = student.rombel || '';
+        document.getElementById('edit-status').value = student.status || 'AKTIF';
+
+    } catch (err) {
+        alert("Gagal menarik data siswa: " + err.message);
+        closeDetailModal();
+    }
+};
+
+export function closeDetailModal() {
+    const modal = document.getElementById('modal-detail-student');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+// UPDATE DATA (EDIT)
+export async function updateStudent(event) {
+    event.preventDefault();
+    const btn = document.getElementById('btn-update-student');
+    btn.innerText = "Menyimpan...";
+
+    const id = document.getElementById('edit-id').value;
+    const payload = {
+        full_name: document.getElementById('edit-name').value,
+        nipd: document.getElementById('edit-nipd').value,
+        rombel: document.getElementById('edit-rombel').value,
+        status: document.getElementById('edit-status').value
+    };
+
+    try {
+        const { error } = await supabaseClient.from('students').update(payload).eq('id', id);
+        if (error) throw error;
+        
+        closeDetailModal();
+        loadStudents(); // Refresh data layar
+    } catch (err) {
+        alert('Gagal update: ' + err.message);
+    } finally {
+        btn.innerText = "Simpan Perubahan";
+    }
+}
+
+// HAPUS DATA (DELETE)
+export async function deleteStudent() {
+    const id = document.getElementById('edit-id').value;
+    const name = document.getElementById('edit-name').value;
+    
+    const confirmDelete = confirm(`Apakah Anda yakin ingin MENGHAPUS PERMANEN data siswa bernama ${name}?`);
+    if (!confirmDelete) return;
+
+    try {
+        const { error } = await supabaseClient.from('students').delete().eq('id', id);
+        if (error) throw error;
+        
+        closeDetailModal();
+        loadStudents();
+    } catch (err) {
+        alert("Gagal menghapus: " + err.message);
+    }
+}
+
+// ============================================
+// KODE LAMA: LOKET TAMBAH & UPLOAD MASSAL
+// ============================================
 export async function addStudent(event) {
     event.preventDefault();
     const btn = document.getElementById('btn-save-student');
-    btn.innerText = 'Mengunggah Data & Foto...';
+    btn.innerText = 'Menyimpan...';
+
+    const payload = {
+        full_name: document.getElementById('stu-name').value,
+        nipd: document.getElementById('stu-nipd').value,
+        nisn: document.getElementById('stu-nisn').value,
+        rombel: document.getElementById('stu-rombel').value,
+        status: document.getElementById('stu-status').value,
+        qr_code: `QR-NCIPS-${Date.now()}`
+    };
 
     try {
-        let photoUrl = null;
-        const photoFile = document.getElementById('stu-photo').files[0];
-
-        // Jika ada foto yang dipilih, unggah ke Storage dulu!
-        if (photoFile) {
-            const fileExt = photoFile.name.split('.').pop();
-            const fileName = `stu_${Date.now()}.${fileExt}`;
-            
-            // 1. Upload ke Storage Supabase
-            const { error: uploadError } = await supabaseClient.storage
-                .from('student_photos')
-                .upload(fileName, photoFile);
-
-            if (uploadError) throw new Error("Gagal mengunggah foto: " + uploadError.message);
-
-            // 2. Ambil Link Publiknya
-            const { data: publicUrlData } = supabaseClient.storage
-                .from('student_photos')
-                .getPublicUrl(fileName);
-            
-            photoUrl = publicUrlData.publicUrl;
-        }
-
-        // Ambil semua data teks
-        const payload = {
-            full_name: document.getElementById('stu-name').value,
-            nipd: document.getElementById('stu-nipd').value,
-            nisn: document.getElementById('stu-nisn').value,
-            gender: document.getElementById('stu-jk').value,
-            religion: document.getElementById('stu-agama').value,
-            birth_place: document.getElementById('stu-tempat').value,
-            birth_date: document.getElementById('stu-tgl').value || null,
-            nik: document.getElementById('stu-nik').value,
-            address: document.getElementById('stu-alamat').value,
-            rombel: document.getElementById('stu-rombel').value,
-            status: document.getElementById('stu-status').value,
-            qr_code: `QR-NCIPS-${Date.now()}`,
-            photo_url: photoUrl // Masukkan link foto ke tabel!
-        };
-
         const { error } = await supabaseClient.from('students').insert([payload]);
         if (error) throw error;
         
-        alert('Data siswa beserta foto berhasil disimpan!');
         closeAddStudentModal();
         document.getElementById('form-add-student').reset();
         loadStudents();
-
     } catch (err) {
         alert(err.message);
     } finally {
@@ -114,7 +181,7 @@ export async function addStudent(event) {
 }
 
 export function downloadCSVTemplate() {
-    const csvContent = "Nama,NIPD,NISN,JK,Tempat Lahir,Tanggal Lahir,NIK,Agama,Alamat,Rombel,Status,URL Foto\nBudi Santoso,1234,0012345,L,Kupang,2010-12-31,537123,Kristen,Jl. Merdeka No 1,7A,AKTIF,\nSusi Susanti,1235,0012346,P,Atambua,2011-01-15,537124,Katolik,Jl. El Tari,7A,AKTIF,";
+    const csvContent = "Nama,NIPD,NISN,JK,Tempat Lahir,Tanggal Lahir,NIK,Agama,Alamat,Rombel,Status\nBudi Santoso,1234,0012345,L,Kupang,2010-12-31,537123,Kristen,Jl. Merdeka No 1,7A,AKTIF\nSusi Susanti,1235,0012346,P,Atambua,2011-01-15,537124,Katolik,Jl. El Tari,7A,AKTIF";
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -140,13 +207,8 @@ export function handleCSVUpload(event) {
         skipEmptyLines: true,
         complete: async function(results) {
             const rows = results.data;
-            if(rows.length === 0) {
-                statusText.innerText = "File CSV kosong!";
-                statusText.classList.add('text-red-600');
-                return;
-            }
-
-            statusText.innerText = `Menyiapkan ${rows.length} data siswa...`;
+            if(rows.length === 0) return;
+            statusText.innerText = `Menyiapkan ${rows.length} data...`;
             
             const dataToInsert = rows.map((row, index) => {
                 return {
@@ -161,7 +223,6 @@ export function handleCSVUpload(event) {
                     address: row['Alamat'],
                     rombel: row['Rombel'],
                     status: row['Status'] || 'AKTIF',
-                    photo_url: row['URL Foto'] || null, // Tangkap URL dari Excel kalau ada
                     qr_code: `QR-NCIPS-${Date.now()}-${index}`
                 };
             });
@@ -173,7 +234,6 @@ export function handleCSVUpload(event) {
                 statusText.classList.replace('text-blue-600', 'text-green-600');
                 loadStudents();
             } catch (err) {
-                console.error(err);
                 statusText.innerText = `❌ Gagal: ${err.message}`;
                 statusText.classList.replace('text-blue-600', 'text-red-600');
             }
