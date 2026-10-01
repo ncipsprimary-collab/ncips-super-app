@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0F172A">
     <title>NCIPS Super App</title>
-    <!-- KABEL POWER UTAMA -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -51,7 +48,7 @@
             </div>
             <div class="flex items-center gap-3">
                 <span id="user-role-badge" class="bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy px-4 py-1.5 rounded-full text-[10px] font-black shadow-sm tracking-widest uppercase">...</span>
-                <button onclick="logout()" class="text-white/60 hover:text-white transition-colors bg-white/10 p-2 rounded-full">
+                <button id="btn-logout" class="text-white/60 hover:text-white transition-colors bg-white/10 p-2 rounded-full">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                 </button>
             </div>
@@ -64,30 +61,27 @@
                 <h2 id="user-greeting" class="text-2xl font-black text-ncipsNavy relative z-10">Memuat...</h2>
                 <p id="user-email-display" class="text-xs text-gray-500 mt-2 font-medium relative z-10">...</p>
             </div>
-            
             <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100/50 p-6 rounded-[2rem]">
                 <p class="text-sm text-blue-900/80 font-medium leading-relaxed">
-                    💡 Sentuh ikon <strong class="text-blue-900">Pemindai</strong> di menu bawah untuk mencatat kehadiran siswa secara otomatis.
+                    ✨ Sistem modular aktif. Silakan pilih menu <strong class="text-blue-900">Data Siswa</strong> di bawah untuk menguji direktori.
                 </p>
             </div>
         </main>
 
-        <!-- HALAMAN 2: SCANNER -->
-        <main id="view-scanner" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col">
-            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 text-center flex-1 flex flex-col justify-center">
-                <div class="mb-6">
-                    <h2 class="text-xl font-black text-ncipsNavy mb-2">Kamera Presensi</h2>
-                    <p class="text-xs text-gray-500 font-medium">Arahkan kamera ke ID Card Siswa</p>
+        <!-- HALAMAN 2: DIREKTORI DATA SISWA -->
+        <main id="view-students" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
+            <div class="flex justify-between items-center mb-2">
+                <div>
+                    <h2 class="text-xl font-black text-ncipsNavy">Data Siswa</h2>
+                    <p class="text-xs text-gray-500">Daftar seluruh siswa terdaftar</p>
                 </div>
-                
-                <div id="reader" class="w-full rounded-[2rem] overflow-hidden border-4 border-gray-50 shadow-inner bg-gray-50 min-h-[300px]"></div>
-                
-                <!-- Kotak Hasil Scan Dinamis -->
-                <div id="scan-result-box" class="mt-6 p-6 bg-white border border-gray-100 rounded-[2rem] shadow-xl hidden">
-                    <div id="scan-icon" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"></div>
-                    <p id="scan-title" class="text-sm font-bold mb-2 text-center">Memproses...</p>
-                    <p id="scan-text" class="text-xs text-center text-gray-600 bg-gray-50 p-4 rounded-2xl mb-4"></p>
-                    <button onclick="startScanner()" class="bg-gradient-to-r from-ncipsNavy to-slate-800 text-white px-6 py-3 rounded-full text-xs font-bold w-full shadow-lg hover:shadow-xl transition-all">Scan Selanjutnya</button>
+                <button id="btn-reload-students" class="bg-ncipsNavy text-ncipsYellow px-4 py-2 rounded-full text-xs font-bold shadow hover:bg-slate-800 transition">
+                    Muat Ulang
+                </button>
+            </div>
+            <div id="student-list-container" class="space-y-3">
+                <div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">
+                    Memuat data siswa dari database...
                 </div>
             </div>
         </main>
@@ -95,189 +89,69 @@
         <!-- MENU BAWAH MENGAMBANG -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
             <nav class="bg-white/90 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-around items-center px-6 py-4">
-                <button onclick="switchView('home')" id="nav-home" class="flex flex-col items-center gap-1.5 text-ncipsNavy transition-all duration-300 transform scale-105">
+                <button id="nav-home" class="flex flex-col items-center gap-1.5 text-ncipsNavy transition-all duration-300 transform scale-105">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     <span class="text-[9px] font-black tracking-wider uppercase">Beranda</span>
                 </button>
-                <button onclick="switchView('scanner')" id="nav-scanner" class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-ncipsNavy transition-all duration-300">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                    <span class="text-[9px] font-bold tracking-wider uppercase">Pemindai</span>
+                <button id="nav-students" class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-ncipsNavy transition-all duration-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wider uppercase">Data Siswa</span>
                 </button>
             </nav>
         </div>
     </div>
 
-    <!-- SCRIPT LOGIKA -->
-    <script>
-        // JANGAN LUPA MASUKKAN KUNCINYA LAGI YA MAS BRO!
-        const SUPABASE_URL = 'https://kvailwyhpvggpwlvtlxc.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_PUBqX34BtP9OmCcuQcSivQ_fo5nsQkS';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <!-- PENGHUBUNG MODUL (MAIN CONTROLLER) -->
+    <script type="module">
+        import { checkSession, logout } from './auth.js';
+        import { loadStudents } from './students.js';
 
-        async function checkSession() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) showApp(session.user);
-        }
-        
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-login');
-            btn.innerText = 'Memeriksa...';
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) {
-                document.getElementById('login-error').innerText = error.message;
-                document.getElementById('login-error').classList.remove('hidden');
-                btn.innerText = 'Masuk';
-            } else showApp(data.user);
+        // Hubungkan tombol aksi
+        document.getElementById('btn-logout').addEventListener('click', logout);
+        document.getElementById('btn-reload-students').addEventListener('click', loadStudents);
+
+        // Cek sesi login saat halaman dimuat
+        checkSession(() => {
+            loadStudents();
         });
 
-        async function logout() { await supabaseClient.auth.signOut(); window.location.reload(); }
-        
-        function showApp(user) {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app-content').classList.remove('hidden');
-            document.getElementById('app-content').classList.add('flex');
-            fetchUserProfile(user.id, user.email);
-        }
-
-        async function fetchUserProfile(userId, email) {
-            const { data } = await supabaseClient.from('users').select('full_name, role').eq('id', userId).single();
-            if (data) {
-                document.getElementById('user-greeting').innerText = data.full_name;
-                document.getElementById('user-email-display').innerText = email;
-                document.getElementById('user-role-badge').innerText = data.role;
-            }
-        }
-        
-        checkSession();
-
-        let html5QrcodeScanner = null;
-
-        function switchView(view) {
+        // Pengaturan Navigasi Antar Halaman
+        window.switchView = function(view) {
             const viewHome = document.getElementById('view-home');
-            const viewScanner = document.getElementById('view-scanner');
+            const viewStudents = document.getElementById('view-students');
             const navHome = document.getElementById('nav-home');
-            const navScanner = document.getElementById('nav-scanner');
+            const navStudents = document.getElementById('nav-students');
 
             if (view === 'home') {
                 viewHome.classList.remove('hidden'); viewHome.classList.add('block');
-                viewScanner.classList.add('hidden'); viewScanner.classList.remove('flex');
+                viewStudents.classList.add('hidden'); viewStudents.classList.remove('flex');
                 
                 navHome.classList.replace('text-gray-400', 'text-ncipsNavy');
                 navHome.classList.add('scale-105');
                 navHome.querySelector('span').classList.replace('font-bold', 'font-black');
                 
-                navScanner.classList.replace('text-ncipsNavy', 'text-gray-400');
-                navScanner.classList.remove('scale-105');
-                navScanner.querySelector('span').classList.replace('font-black', 'font-bold');
-                stopScanner();
+                navStudents.classList.replace('text-ncipsNavy', 'text-gray-400');
+                navStudents.classList.remove('scale-105');
+                navStudents.querySelector('span').classList.replace('font-black', 'font-bold');
             } else {
                 viewHome.classList.add('hidden'); viewHome.classList.remove('block');
-                viewScanner.classList.remove('hidden'); viewScanner.classList.add('flex');
+                viewStudents.classList.remove('hidden'); viewStudents.classList.add('flex');
                 
-                navScanner.classList.replace('text-gray-400', 'text-ncipsNavy');
-                navScanner.classList.add('scale-105');
-                navScanner.querySelector('span').classList.replace('font-bold', 'font-black');
+                navStudents.classList.replace('text-gray-400', 'text-ncipsNavy');
+                navStudents.classList.add('scale-105');
+                navStudents.querySelector('span').classList.replace('font-bold', 'font-black');
                 
                 navHome.classList.replace('text-ncipsNavy', 'text-gray-400');
                 navHome.classList.remove('scale-105');
                 navHome.querySelector('span').classList.replace('font-black', 'font-bold');
-                startScanner();
             }
-        }
+        };
 
-        function startScanner() {
-            document.getElementById('scan-result-box').classList.add('hidden');
-            if (!html5QrcodeScanner) {
-                html5QrcodeScanner = new Html5Qrcode("reader");
-            }
-            html5QrcodeScanner.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                (decodedText) => {
-                    stopScanner();
-                    prosesDataKehadiran(decodedText);
-                },
-                (errorMessage) => { }
-            ).catch((err) => {
-                alert("Gagal mengakses kamera. Pastikan izin kamera aktif!");
-            });
-        }
-
-        function stopScanner() {
-            if (html5QrcodeScanner && html5QrcodeScanner.isScanning) {
-                html5QrcodeScanner.stop().catch(err => console.error(err));
-            }
-        }
-
-        async function prosesDataKehadiran(qrText) {
-            const resultBox = document.getElementById('scan-result-box');
-            const iconDiv = document.getElementById('scan-icon');
-            const titleText = document.getElementById('scan-title');
-            const detailText = document.getElementById('scan-text');
-
-            resultBox.classList.remove('hidden');
-            titleText.innerText = "Mencari data...";
-            detailText.innerText = "Mohon tunggu sebentar.";
-            iconDiv.className = "w-12 h-12 bg-gray-200 animate-pulse rounded-full mx-auto mb-3";
-            iconDiv.innerHTML = "";
-
-            const cleanQrText = qrText.trim(); 
-
-            try {
-                // PERBAIKAN: Menghapus perintah .single() agar tidak panik kalau ada data kembar
-                const { data: studentsList, error: searchError } = await supabaseClient
-                    .from('students')
-                    .select('id, full_name')
-                    .eq('qr_code', cleanQrText);
-
-                if (searchError) {
-                    throw new Error(`DB Error [${searchError.code}]: ${searchError.message}`);
-                }
-
-                // Cek apakah datanya benar-benar kosong
-                if (!studentsList || studentsList.length === 0) {
-                    throw new Error("QR Code tidak terdaftar di database kita.");
-                }
-
-                // Ambil Budi Santoso yang pertama kali ditemukan di daftar
-                const student = studentsList[0];
-
-                // Ambil ID Akun Admin/Guru yang sedang login
-                const { data: authData } = await supabaseClient.auth.getUser();
-                
-                // Simpan Kehadiran ke tabel attendances
-                const { error: insertError } = await supabaseClient
-                    .from('attendances')
-                    .insert([
-                        {
-                            person_type: 'SISWA',
-                            student_id: student.id,
-                            status: 'HADIR',
-                            scanned_by: authData.user.id
-                        }
-                    ]);
-
-                if (insertError) {
-                    throw new Error(`Gagal menyimpan absen [${insertError.code}]: ${insertError.message}`);
-                }
-
-                // Notifikasi Sukses!
-                iconDiv.className = "w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-green-500/30";
-                iconDiv.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
-                titleText.className = "text-sm text-green-700 font-bold mb-2 text-center";
-                titleText.innerText = "Berhasil Dicatat!";
-                detailText.innerHTML = `<strong class="text-ncipsNavy text-lg">${student.full_name}</strong><br>Status: HADIR`;
-
-            } catch (err) {
-                console.error(err);
-                iconDiv.className = "w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-red-500/30";
-                iconDiv.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>`;
-                titleText.className = "text-sm text-red-700 font-bold mb-2 text-center";
-                titleText.innerText = "Gagal Memproses";
-                detailText.innerHTML = `<strong>Pesan Asli:</strong><br>${err.message}`;
-            }
-        }
+        document.getElementById('nav-home').addEventListener('click', () => window.switchType ? null : window.switchView('home'));
+        document.getElementById('nav-students').addEventListener('click', () => window.switchView('students'));
+        // Perbaikan kecil pemanggilan switchView langsung dari klik tombol
+        document.getElementById('nav-home').onclick = () => window.switchView('home');
+        document.getElementById('nav-students').onclick = () => window.switchView('students');
     </script>
+</body>
+</html>
