@@ -100,7 +100,7 @@
             </div>
         </div>
 
-        <!-- MODAL BARU: KARTU PORTRAIT V.4 (HEADER KUNING GRADASI/GOLD & QR CODE MAKSIMAL) -->
+        <!-- MODAL: KARTU PELAJAR (MENGIKUTI TEMPLATE GAMBAR 1) -->
         <div id="modal-detail-student" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end">
             <div class="bg-gray-50 rounded-t-[2.5rem] w-full shadow-2xl h-[90vh] overflow-y-auto flex flex-col relative">
                 
@@ -109,64 +109,84 @@
                     <button id="btn-close-detail" class="w-8 h-8 bg-gray-100 rounded-full text-gray-500 font-bold flex items-center justify-center hover:bg-red-100">✕</button>
                 </div>
 
-                <div class="p-6 space-y-6 pb-20">
+                <div class="p-6 space-y-6 pb-20 flex flex-col items-center">
                     
-                    <!-- KARTU ID PORTRAIT -->
-                    <div class="flex justify-center w-full">
-                        <div id="print-id-card" class="relative w-[75%] sm:w-[250px] aspect-[54/86] bg-white rounded-[1.5rem] shadow-xl border border-gray-200 flex flex-col overflow-hidden">
-                            
-                            <!-- Header Kartu: Kuning Bergradasi & Gold dengan Teks Blue -->
-                            <div class="bg-gradient-to-r from-ncipsYellow via-ncipsGold to-yellow-500 pt-3 pb-6 px-2 text-center shrink-0 border-b-2 border-ncipsGold/30">
-                                <p class="text-[5px] text-ncipsNavy font-black tracking-widest uppercase leading-tight">Christ the King Education Foundation</p>
-                                <h4 class="font-black text-[11px] sm:text-xs text-ncipsNavy tracking-wider mt-0.5 leading-tight">NCIPS Primary Kupang</h4>
-                                <p class="text-[5px] text-blue-900 font-bold tracking-[0.2em] uppercase mt-1">Student E-Card</p>
-                            </div>
-                            
-                            <!-- Foto Avatar Siswa -->
-                            <div class="flex justify-center -mt-5 z-10">
-                                <div id="detail-avatar-container" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-1 shadow-md border border-gray-200 flex items-center justify-center overflow-hidden">
-                                    <!-- Foto atau Inisial -->
-                                </div>
-                            </div>
-                            
-                            <!-- Body Kartu -->
-                            <div class="flex-1 flex flex-col items-center px-3 pb-3 pt-1 bg-white text-center justify-between">
-                                
-                                <div class="w-full">
-                                    <h2 id="detail-name-title" class="text-xs font-black text-ncipsNavy uppercase line-clamp-2 leading-tight">Nama Siswa</h2>
-                                    <p id="detail-rombel-title" class="text-[7px] text-gray-500 font-bold uppercase mt-0.5 tracking-wider">Kelas -</p>
-                                    
-                                    <!-- Informasi Lengkap: NISN, NIPD, JK -->
-                                    <div class="grid grid-cols-3 gap-1 mt-2 bg-gray-50 p-1.5 rounded-lg border border-gray-100 text-[6px]">
-                                        <div>
-                                            <span class="text-gray-400 block font-bold uppercase">NISN</span>
-                                            <span id="detail-nisn-title" class="font-black text-gray-800 truncate block">-</span>
-                                        </div>
-                                        <div>
-                                            <span class="text-gray-400 block font-bold uppercase">NIPD</span>
-                                            <span id="detail-nipd-title" class="font-black text-gray-800 truncate block">-</span>
-                                        </div>
-                                        <div>
-                                            <span class="text-gray-400 block font-bold uppercase">JK</span>
-                                            <span id="detail-jk-title" class="font-black text-gray-800 truncate block">-</span>
-                                        </div>
-                                    </div>
-                                </div>
+                    <!-- KARTU E-CARD SESUAI TEMPLATE 1 -->
+                    <div id="print-id-card" class="relative w-[280px] sm:w-[300px] aspect-[54/86] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden select-none">
+                        <!-- Background Graphic Accents (Top Right & Bottom Left) -->
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-amber-400 via-orange-400 to-transparent opacity-90 pointer-events-none"></div>
+                        <div class="absolute bottom-0 left-0 w-36 h-36 bg-gradient-to-tr from-amber-500 via-orange-500 to-transparent opacity-90 pointer-events-none"></div>
 
-                                <!-- Area QR Code (DIPERBESAR MAKSIMAL MEMENUHI SPACE KOSONG) -->
-                                <div class="w-full flex flex-col items-center mt-1">
-                                    <div class="bg-white p-1 border border-gray-200 rounded-lg w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center shadow-sm">
-                                        <img id="detail-qr-image" src="" alt="QR Code" class="w-full h-full object-contain">
-                                    </div>
-                                    <p class="text-[5px] text-gray-400 font-mono mt-0.5 w-full truncate text-center" id="detail-qr-text">QR-XXX</p>
+                        <!-- Watermark Shield Logo -->
+                        <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                            <div class="w-48 h-48 border-8 border-orange-500 rounded-full flex items-center justify-center">
+                                <span class="text-4xl font-black text-orange-600">NCIPS</span>
+                            </div>
+                        </div>
+
+                        <!-- Header Section -->
+                        <div class="relative z-10 pt-3 px-3 flex items-start gap-2">
+                            <!-- Logo Badge Top Left -->
+                            <div class="w-9 h-9 rounded-full bg-white border-2 border-amber-400 p-0.5 shadow shrink-0 flex items-center justify-center overflow-hidden">
+                                <div class="w-full h-full rounded-full bg-amber-100 flex items-center justify-center text-[8px] font-black text-amber-800">YPKR</div>
+                            </div>
+                            <!-- Title[cite: 1] -->
+                            <div class="flex-1 text-center pr-6">
+                                <p class="text-[7px] font-black text-orange-500 tracking-tight uppercase leading-none">CHRIST THE KING EDUCATION Foundation</p>
+                                <h3 class="text-sm font-black tracking-tight leading-tight mt-0.5">
+                                    <span class="text-orange-500">NCIPS</span> <span class="text-slate-800">PRIMARY</span>
+                                </h3>
+                            </div>
+                        </div>
+
+                        <!-- Middle Section: Photo & Info Fields -->
+                        <div class="relative z-10 px-3 mt-2 flex items-center gap-3">
+                            <!-- Circular Photo with Gold/Orange Border -->
+                            <div id="detail-avatar-container" class="w-24 h-24 rounded-full border-4 border-amber-400 shadow-md bg-red-600 shrink-0 overflow-hidden flex items-center justify-center text-white font-black text-2xl">
+                                <!-- Avatar -->
+                            </div>
+
+                            <!-- NISN, NIPD, JK Fields -->
+                            <div class="flex-1 space-y-1 text-right pr-1">
+                                <div class="border-b border-gray-100 pb-0.5">
+                                    <span class="text-[8px] font-black text-gray-400 block uppercase">NISN</span>
+                                    <span id="detail-nisn-title" class="text-[10px] font-bold text-slate-800">-</span>
+                                </div>
+                                <div class="border-b border-gray-100 pb-0.5">
+                                    <span class="text-[8px] font-black text-gray-400 block uppercase">NIPD</span>
+                                    <span id="detail-nipd-title" class="text-[10px] font-bold text-slate-800">-</span>
+                                </div>
+                                <div>
+                                    <span class="text-[8px] font-black text-gray-400 block uppercase">JK</span>
+                                    <span id="detail-jk-title" class="text-[10px] font-bold text-slate-800">-</span>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Name & Grade[cite: 1] -->
+                        <div class="relative z-10 px-3 mt-2 text-center">
+                            <h2 id="detail-name-title" class="text-sm font-black text-orange-500 uppercase tracking-wide leading-tight truncate">NAMA SISWA</h2>
+                            <p id="detail-rombel-title" class="text-[10px] font-bold text-slate-700 uppercase tracking-wider mt-0.5">STUDENT - GRADE 7A</p>
+                        </div>
+
+                        <!-- Bottom QR Box (Maksimal Space) -->
+                        <div class="relative z-10 mt-auto px-4 pb-3 flex flex-col items-center">
+                            <div class="bg-slate-200/90 p-2 rounded-2xl shadow-inner w-32 h-32 flex items-center justify-center border border-gray-300">
+                                <img id="detail-qr-image" src="" alt="QR Code" class="w-full h-full object-contain">
+                            </div>
+                            <p class="text-[6px] text-gray-400 font-mono mt-1 text-center truncate w-full" id="detail-qr-text">QR-XXX</p>
+                        </div>
+
+                        <!-- Footer Website[cite: 1] -->
+                        <div class="relative z-10 bg-white py-1 text-center border-t border-gray-100">
+                            <p class="text-[8px] font-bold text-orange-500 tracking-wider">www.ncipsprimary.com</p>
+                        </div>
                     </div>
-                    <p class="text-[10px] text-center text-gray-400 font-medium">💡 E-Card tampil mewah dengan nuansa Kuning-Gold dan QR Code berukuran maksimal.</p>
+                    
+                    <p class="text-[10px] text-center text-gray-400 font-medium">💡 E-Card menggunakan template resmi sesuai standar sekolah.</p>
 
                     <!-- Form Edit Data -->
-                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 w-full">
                         <h4 class="text-sm font-black text-ncipsNavy mb-4 flex items-center gap-2">✏️ Edit Data Pokok</h4>
                         <form id="form-edit-student" class="space-y-4">
                             <input type="hidden" id="edit-id">
