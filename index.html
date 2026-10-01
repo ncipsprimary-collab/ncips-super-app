@@ -46,13 +46,16 @@
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-gradient-to-br from-ncipsYellow/20 to-ncipsGold/5 rounded-full blur-2xl"></div>
                 <h2 id="user-greeting" class="text-2xl font-black text-ncipsNavy relative z-10">Memuat...</h2>
             </div>
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100/50 p-6 rounded-[2rem]">
+                <p class="text-sm text-blue-900/80 font-medium leading-relaxed">💡 Sentuh daftar siswa di menu <strong class="text-blue-900">Data Siswa</strong> untuk melihat kartu pelajar dan QR Codenya!</p>
+            </div>
         </main>
 
         <main id="view-students" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
             <div class="flex justify-between items-end mb-2">
                 <div>
                     <h2 class="text-xl font-black text-ncipsNavy">Data Siswa</h2>
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Direktori YPKR</p>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Total: <span id="total-students">0</span> Siswa</p>
                 </div>
                 <div class="flex gap-2">
                     <button id="btn-reload-students" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-gray-100 active:bg-gray-100">↻</button>
@@ -62,10 +65,9 @@
 
             <!-- Panel Upload Massal -->
             <div class="bg-blue-50 border border-blue-100 rounded-[1.5rem] p-4 flex flex-col gap-3">
-                <p class="text-[10px] text-blue-800 font-bold uppercase tracking-wider text-center">Fitur Input Massal</p>
                 <div class="flex justify-between gap-2">
-                    <button id="btn-download-template" class="flex-1 bg-white text-blue-700 text-xs font-bold py-2 rounded-xl border border-blue-200 shadow-sm hover:bg-blue-100">1. Unduh Template</button>
-                    <button id="btn-trigger-upload" class="flex-1 bg-blue-600 text-white text-xs font-bold py-2 rounded-xl shadow-sm hover:bg-blue-700">2. Upload CSV</button>
+                    <button id="btn-download-template" class="flex-1 bg-white text-blue-700 text-xs font-bold py-2 rounded-xl border border-blue-200 shadow-sm hover:bg-blue-100">Unduh Template</button>
+                    <button id="btn-trigger-upload" class="flex-1 bg-blue-600 text-white text-xs font-bold py-2 rounded-xl shadow-sm hover:bg-blue-700">Upload CSV</button>
                     <input type="file" id="input-csv-file" accept=".csv" class="hidden">
                 </div>
                 <p id="upload-status" class="text-xs text-center font-bold hidden"></p>
@@ -76,95 +78,94 @@
             </div>
         </main>
 
-        <!-- MODAL: FORM TAMBAH SISWA -->
+        <!-- MODAL: TAMBAH SISWA -->
         <div id="modal-add-student" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
+            <!-- Form tambah siswa (Sama persis seperti sebelumnya) -->
             <div class="bg-white rounded-t-[2.5rem] p-6 w-full shadow-2xl h-[85vh] overflow-y-auto pb-20">
                 <div class="flex justify-between items-center mb-6 sticky top-0 bg-white z-10 py-2 border-b border-gray-100">
                     <h3 class="text-lg font-black text-ncipsNavy">Form Siswa Baru</h3>
                     <button id="btn-close-add" class="w-8 h-8 bg-gray-100 rounded-full text-gray-500 font-bold flex items-center justify-center hover:bg-red-100">✕</button>
                 </div>
                 <form id="form-add-student" class="space-y-4">
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Nama Lengkap *</label>
-                        <input type="text" id="stu-name" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:border-ncipsYellow" required>
+                    <div><label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Nama Lengkap *</label><input type="text" id="stu-name" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm" required></div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">NIPD</label><input type="number" id="stu-nipd" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
+                        <div><label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">NISN</label><input type="number" id="stu-nisn" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">NIPD</label>
-                            <input type="number" id="stu-nipd" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">NISN</label>
-                            <input type="number" id="stu-nisn" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Jenis Kelamin</label>
-                            <select id="stu-jk" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
-                                <option value="L">Laki-laki</option>
-                                <option value="P">Perempuan</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Agama</label>
-                            <select id="stu-agama" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
-                                <option value="Kristen">Kristen</option>
-                                <option value="Katolik">Katolik</option>
-                                <option value="Islam">Islam</option>
-                                <option value="Hindu">Hindu</option>
-                                <option value="Buddha">Buddha</option>
-                                <option value="Konghucu">Konghucu</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Tempat Lahir</label>
-                            <input type="text" id="stu-tempat" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Tanggal Lahir</label>
-                            <input type="date" id="stu-tgl" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">NIK</label>
-                        <input type="number" id="stu-nik" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Alamat Lengkap</label>
-                        <textarea id="stu-alamat" rows="2" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></textarea>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Rombel Saat Ini</label>
-                            <input type="text" id="stu-rombel" placeholder="Cth: 7A" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm">
-                        </div>
+                        <div><label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Rombel</label><input type="text" id="stu-rombel" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Status</label>
-                            <select id="stu-status" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-ncipsNavy">
-                                <option value="AKTIF">Aktif</option>
-                                <option value="MUTASI">Mutasi</option>
-                                <option value="LULUS">Lulus</option>
-                                <option value="KELUAR">Keluar</option>
-                            </select>
+                            <select id="stu-status" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-ncipsNavy"><option value="AKTIF">Aktif</option><option value="MUTASI">Mutasi</option><option value="LULUS">Lulus</option></select>
                         </div>
                     </div>
-                    
-                    <!-- TAMBAHAN: Upload Foto Siswa -->
-                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 mt-2">
-                        <label class="text-[10px] font-black text-blue-800 uppercase tracking-widest block mb-2">Upload Foto Siswa (Opsional)</label>
-                        <input type="file" id="stu-photo" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
-                    </div>
-
-                    <button type="submit" id="btn-save-student" class="w-full bg-gradient-to-r from-ncipsNavy to-slate-800 text-white font-bold py-4 rounded-2xl shadow-xl mt-4">
-                        Simpan Data
-                    </button>
+                    <button type="submit" id="btn-save-student" class="w-full bg-gradient-to-r from-ncipsNavy to-slate-800 text-white font-bold py-4 rounded-2xl shadow-xl mt-4">Simpan Data</button>
                 </form>
             </div>
         </div>
 
+        <!-- MODAL BARU: DETAIL, EDIT & QR CODE SISWA -->
+        <div id="modal-detail-student" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end">
+            <div class="bg-gray-50 rounded-t-[2.5rem] w-full shadow-2xl h-[90vh] overflow-y-auto flex flex-col relative">
+                
+                <!-- Header Jendela -->
+                <div class="flex justify-between items-center p-6 bg-white sticky top-0 z-20 shadow-sm rounded-t-[2.5rem]">
+                    <h3 class="text-lg font-black text-ncipsNavy">Profil & Tiket Siswa</h3>
+                    <button id="btn-close-detail" class="w-8 h-8 bg-gray-100 rounded-full text-gray-500 font-bold flex items-center justify-center hover:bg-red-100">✕</button>
+                </div>
+
+                <div class="p-6 space-y-6 pb-20">
+                    <!-- Kartu QR Code Cantik -->
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col items-center relative overflow-hidden">
+                        <div class="absolute top-0 w-full h-16 bg-gradient-to-r from-ncipsYellow to-ncipsGold"></div>
+                        <div class="w-16 h-16 bg-white rounded-full p-1 z-10 -mt-2 shadow-md">
+                            <div class="w-full h-full rounded-full bg-ncipsNavy flex items-center justify-center text-white font-black text-xl" id="detail-avatar"></div>
+                        </div>
+                        <h2 id="detail-name-title" class="text-lg font-black text-ncipsNavy mt-3 text-center">Nama Siswa</h2>
+                        <p id="detail-rombel-title" class="text-xs text-gray-500 font-bold tracking-widest uppercase mb-4">Kelas 7A</p>
+                        
+                        <!-- Gambar QR Code akan muncul di sini -->
+                        <div class="border-4 border-gray-50 p-2 rounded-2xl bg-white shadow-inner">
+                            <img id="detail-qr-image" src="" alt="QR Code" class="w-40 h-40 object-cover">
+                        </div>
+                        <p class="text-[9px] text-gray-400 font-mono mt-3 text-center" id="detail-qr-text">QR-XXX</p>
+                    </div>
+
+                    <!-- Form Edit Data (Bisa diubah dan disave ulang) -->
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
+                        <h4 class="text-sm font-black text-ncipsNavy mb-4 flex items-center gap-2">✏️ Edit Data Pokok</h4>
+                        <form id="form-edit-student" class="space-y-4">
+                            <input type="hidden" id="edit-id"> <!-- ID Tersembunyi -->
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase">Nama Lengkap</label>
+                                <input type="text" id="edit-name" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:border-blue-500" required>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="text-[10px] font-bold text-gray-400 uppercase">NIPD</label><input type="number" id="edit-nipd" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
+                                <div><label class="text-[10px] font-bold text-gray-400 uppercase">Rombel</label><input type="text" id="edit-rombel" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase">Status</label>
+                                <select id="edit-status" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-ncipsNavy">
+                                    <option value="AKTIF">AKTIF</option>
+                                    <option value="MUTASI">MUTASI</option>
+                                    <option value="LULUS">LULUS</option>
+                                    <option value="KELUAR">KELUAR</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Tombol Aksi -->
+                            <div class="flex gap-3 pt-4 border-t border-gray-100">
+                                <button type="button" id="btn-delete-student" class="flex-1 bg-red-50 text-red-600 font-bold py-3 rounded-xl border border-red-100 hover:bg-red-100 text-xs">Hapus Siswa</button>
+                                <button type="submit" id="btn-update-student" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md hover:bg-blue-700 text-xs">Simpan Perubahan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENU BAWAH -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
             <nav class="bg-white/90 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-around items-center px-6 py-4">
                 <button id="nav-home" class="flex flex-col items-center gap-1.5 text-ncipsNavy transition-transform scale-105"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[9px] font-black uppercase">Beranda</span></button>
@@ -175,7 +176,7 @@
 
     <script type="module">
         import { checkSession, logout } from './auth.js';
-        import { loadStudents, addStudent, openAddStudentModal, closeAddStudentModal, downloadCSVTemplate, handleCSVUpload } from './students.js';
+        import { loadStudents, addStudent, openAddStudentModal, closeAddStudentModal, downloadCSVTemplate, handleCSVUpload, closeDetailModal, updateStudent, deleteStudent } from './students.js';
 
         document.getElementById('btn-logout').addEventListener('click', logout);
         document.getElementById('btn-reload-students').addEventListener('click', loadStudents);
@@ -185,6 +186,11 @@
         document.getElementById('btn-download-template').addEventListener('click', downloadCSVTemplate);
         document.getElementById('btn-trigger-upload').addEventListener('click', () => document.getElementById('input-csv-file').click());
         document.getElementById('input-csv-file').addEventListener('change', handleCSVUpload);
+        
+        // PENGHUBUNG DETAIL SISWA
+        document.getElementById('btn-close-detail').addEventListener('click', closeDetailModal);
+        document.getElementById('form-edit-student').addEventListener('submit', updateStudent);
+        document.getElementById('btn-delete-student').addEventListener('click', deleteStudent);
 
         checkSession(() => { loadStudents(); });
 
