@@ -85,8 +85,8 @@
                 <form id="form-add-student" class="space-y-4">
                     <div><label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Nama Lengkap *</label><input type="text" id="stu-name" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm" required></div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">NIPD</label><input type="number" id="stu-nipd" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
-                        <div><label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">NISN</label><input type="number" id="stu-nisn" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
+                        <div><label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">NIPD</label><input type="text" id="stu-nipd" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
+                        <div><label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">NISN</label><input type="text" id="stu-nisn" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div><label class="text-[10px] font-bold text-gray-400 ml-3 uppercase">Rombel</label><input type="text" id="stu-rombel" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
@@ -100,7 +100,7 @@
             </div>
         </div>
 
-        <!-- MODAL BARU: KARTU PORTRAIT V.2 & EDIT -->
+        <!-- MODAL BARU: KARTU PORTRAIT V.3 (PERBAIKAN TATA LETAK & QR DIPERBESAR) -->
         <div id="modal-detail-student" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end">
             <div class="bg-gray-50 rounded-t-[2.5rem] w-full shadow-2xl h-[90vh] overflow-y-auto flex flex-col relative">
                 
@@ -111,20 +111,21 @@
 
                 <div class="p-6 space-y-6 pb-20">
                     
-                    <!-- KARTU ID PORTRAIT (DIPERBAIKI: HEADER LAPANG & FOTO DI TENGAH) -->
+                    <!-- KARTU ID PORTRAIT -->
                     <div class="flex justify-center w-full">
-                        <div id="print-id-card" class="relative w-[65%] sm:w-[230px] aspect-[54/86] bg-white rounded-[1.5rem] shadow-xl border border-gray-200 flex flex-col overflow-hidden">
+                        <div id="print-id-card" class="relative w-[75%] sm:w-[250px] aspect-[54/86] bg-white rounded-[1.5rem] shadow-xl border border-gray-200 flex flex-col overflow-hidden">
                             
-                            <!-- Header Kartu (Dibuat lega agar teks tidak bertabrakan) -->
-                            <div class="bg-gradient-to-br from-ncipsNavy to-slate-800 pt-3 pb-6 px-3 text-center shrink-0">
-                                <h4 class="font-black text-xs sm:text-sm text-ncipsYellow tracking-widest leading-none">NCIPS KUPANG</h4>
-                                <p class="text-[5px] text-white font-bold tracking-[0.2em] uppercase opacity-80 mt-1">KARTU PELAJAR YPKR</p>
+                            <!-- Header Kartu: Yayasan & Nama Sekolah Diperbarui -->
+                            <div class="bg-gradient-to-br from-ncipsNavy to-slate-800 pt-3 pb-6 px-2 text-center shrink-0">
+                                <p class="text-[5px] text-ncipsYellow font-bold tracking-widest uppercase opacity-90 leading-tight">Christ the King Education Foundation</p>
+                                <h4 class="font-black text-[11px] sm:text-xs text-white tracking-wider mt-0.5 leading-tight">NCIPS Primary Kupang</h4>
+                                <p class="text-[5px] text-gray-300 font-bold tracking-[0.2em] uppercase mt-1">Student E-Card</p>
                             </div>
                             
-                            <!-- Foto Avatar Siswa (Ditaruh di tengah tanpa menutupi teks header) -->
+                            <!-- Foto Avatar Siswa -->
                             <div class="flex justify-center -mt-5 z-10">
                                 <div id="detail-avatar-container" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-1 shadow-md border border-gray-200 flex items-center justify-center overflow-hidden">
-                                    <!-- Foto atau Inisial dimuat lewat JS -->
+                                    <!-- Foto atau Inisial -->
                                 </div>
                             </div>
                             
@@ -152,17 +153,17 @@
                                     </div>
                                 </div>
 
-                                <!-- Area QR Code -->
+                                <!-- Area QR Code (DIPERBESAR AGAR MUDAH DI-SCAN) -->
                                 <div class="w-full flex flex-col items-center mt-1">
-                                    <div class="bg-gray-50 p-1 border border-gray-100 rounded-lg w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center shadow-inner">
-                                        <img id="detail-qr-image" src="" alt="QR Code" class="w-full h-full object-contain mix-blend-multiply">
+                                    <div class="bg-white p-1 border border-gray-200 rounded-lg w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shadow-sm">
+                                        <img id="detail-qr-image" src="" alt="QR Code" class="w-full h-full object-contain">
                                     </div>
                                     <p class="text-[5px] text-gray-400 font-mono mt-0.5 w-full truncate text-center" id="detail-qr-text">QR-XXX</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <p class="text-[10px] text-center text-gray-400 font-medium">💡 Kartu ID Portrait siap di-*screenshot* atau dicetak sesuai ukuran standar.</p>
+                    <p class="text-[10px] text-center text-gray-400 font-medium">💡 QR Code telah diperbesar agar lebih responsif saat dipindai oleh kamera.</p>
 
                     <!-- Form Edit Data -->
                     <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
@@ -171,8 +172,8 @@
                             <input type="hidden" id="edit-id">
                             <div><label class="text-[10px] font-bold text-gray-400 uppercase">Nama Lengkap</label><input type="text" id="edit-name" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:border-blue-500" required></div>
                             <div class="grid grid-cols-3 gap-2">
-                                <div><label class="text-[9px] font-bold text-gray-400 uppercase">NISN</label><input type="number" id="edit-nisn" class="w-full mt-1 p-2 bg-gray-50 border border-gray-100 rounded-xl text-xs"></div>
-                                <div><label class="text-[9px] font-bold text-gray-400 uppercase">NIPD</label><input type="number" id="edit-nipd" class="w-full mt-1 p-2 bg-gray-50 border border-gray-100 rounded-xl text-xs"></div>
+                                <div><label class="text-[9px] font-bold text-gray-400 uppercase">NISN</label><input type="text" id="edit-nisn" class="w-full mt-1 p-2 bg-gray-50 border border-gray-100 rounded-xl text-xs"></div>
+                                <div><label class="text-[9px] font-bold text-gray-400 uppercase">NIPD</label><input type="text" id="edit-nipd" class="w-full mt-1 p-2 bg-gray-50 border border-gray-100 rounded-xl text-xs"></div>
                                 <div><label class="text-[9px] font-bold text-gray-400 uppercase">JK</label><input type="text" id="edit-jk" placeholder="L/P" class="w-full mt-1 p-2 bg-gray-50 border border-gray-100 rounded-xl text-xs"></div>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
