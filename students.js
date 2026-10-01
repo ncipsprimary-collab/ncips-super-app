@@ -54,7 +54,7 @@ export async function loadStudents() {
 }
 
 // ============================================
-// DETAIL, FOTO, & KARTU PELAJAR (KOREKSI KAMAR DATA)
+// DETAIL & E-CARD (KOREKSI POSISI DATA SESUAI TEMPLATE 1)
 // ============================================
 window.viewStudentDetail = async function(studentId) {
     const modal = document.getElementById('modal-detail-student');
@@ -73,36 +73,36 @@ window.viewStudentDetail = async function(studentId) {
 
         if (error) throw error;
 
-        // 1. Render Data ke Kartu ID Portrait 
-        // KOREKSI KAMAR: 
-        // - Data NISN di kartu diisi oleh nilai DB `gender` (JK dari CSV)
-        // - Data NIPD di kartu diisi oleh nilai DB `nisn` 
-        // - Data JK di kartu diisi oleh nilai DB `nipd`
+        // 1. Render Data ke Kartu E-Card (Template 1)
+        // Penyesuaian kamar data:
+        // - NISN di kartu mengambil dari `student.nisn`
+        // - NIPD di kartu mengambil dari `student.nipd`
+        // - JK di kartu mengambil dari `student.gender`
         document.getElementById('detail-name-title').innerText = student.full_name;
-        document.getElementById('detail-nisn-title').innerText = student.gender || '-';
-        document.getElementById('detail-nipd-title').innerText = student.nisn || '-';
-        document.getElementById('detail-jk-title').innerText = student.nipd || '-';
-        document.getElementById('detail-rombel-title').innerText = `Kelas ${student.rombel || '-'}`;
+        document.getElementById('detail-nisn-title').innerText = student.nisn || '-';
+        document.getElementById('detail-nipd-title').innerText = student.nipd || '-';
+        document.getElementById('detail-jk-title').innerText = student.gender || '-';
+        document.getElementById('detail-rombel-title').innerText = `STUDENT - GRADE ${student.rombel || '-'}`;
         document.getElementById('detail-qr-text').innerText = student.qr_code;
         
-        // QR Code diperbesar ukurannya menjadi 600x600 agar memenuhi ruang kosong kartu
-        document.getElementById('detail-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${student.qr_code}`;
+        // QR Code ukuran besar maksimal 700x700
+        document.getElementById('detail-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=700x700&data=${student.qr_code}`;
 
-        // 2. Render Foto Profil
+        // 2. Render Foto Profil (Atau Inisial jika kosong dengan background merah pasfoto)
         const avatarContainer = document.getElementById('detail-avatar-container');
         if (student.photo_url && student.photo_url.trim() !== '') {
             avatarContainer.innerHTML = `<img src="${student.photo_url}" class="w-full h-full rounded-full object-cover">`;
         } else {
             const initial = student.full_name ? student.full_name.charAt(0).toUpperCase() : '?';
-            avatarContainer.innerHTML = `<div class="w-full h-full rounded-full bg-gradient-to-br from-ncipsYellow to-ncipsGold flex items-center justify-center text-ncipsNavy font-black text-lg shadow-inner">${initial}</div>`;
+            avatarContainer.innerHTML = `<div class="w-full h-full rounded-full bg-red-600 flex items-center justify-center text-white font-black text-2xl shadow-inner">${initial}</div>`;
         }
 
-        // 3. Isi Form Edit (disesuaikan juga dengan kamar yang benar)
+        // 3. Isi Form Edit
         document.getElementById('edit-id').value = student.id;
         document.getElementById('edit-name').value = student.full_name;
-        document.getElementById('edit-nisn').value = student.gender || '';
-        document.getElementById('edit-nipd').value = student.nisn || '';
-        document.getElementById('edit-jk').value = student.nipd || '';
+        document.getElementById('edit-nisn').value = student.nisn || '';
+        document.getElementById('edit-nipd').value = student.nipd || '';
+        document.getElementById('edit-jk').value = student.gender || '';
         document.getElementById('edit-rombel').value = student.rombel || '';
         document.getElementById('edit-status').value = student.status || 'AKTIF';
 
@@ -127,9 +127,9 @@ export async function updateStudent(event) {
     const id = document.getElementById('edit-id').value;
     const payload = {
         full_name: document.getElementById('edit-name').value,
-        gender: document.getElementById('edit-nisn').value, // Disimpan ke gender
-        nisn: document.getElementById('edit-nipd').value,   // Disimpan ke nisn
-        nipd: document.getElementById('edit-jk').value,     // Disimpan ke nipd
+        nisn: document.getElementById('edit-nisn').value,
+        nipd: document.getElementById('edit-nipd').value,
+        gender: document.getElementById('edit-jk').value,
         rombel: document.getElementById('edit-rombel').value,
         status: document.getElementById('edit-status').value
     };
