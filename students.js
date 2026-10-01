@@ -30,7 +30,7 @@ export async function loadStudents() {
                 <div onclick="window.viewStudentDetail('${student.id}')" class="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col gap-2 cursor-pointer hover:shadow-md hover:border-ncipsYellow transition-all">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-slate-100 text-ncipsNavy flex items-center justify-center font-black text-sm">
+                            <div class="w-10 h-10 rounded-full bg-slate-100 text-ncipsNavy flex items-center justify-center font-black text-sm shadow-inner">
                                 ${initial}
                             </div>
                             <div>
@@ -54,7 +54,7 @@ export async function loadStudents() {
 }
 
 // ============================================
-// FITUR LIHAT ID CARD E-KTP & EDIT SISWA
+// DETAIL, FOTO AVATAR, & ID CARD PORTRAIT
 // ============================================
 window.viewStudentDetail = async function(studentId) {
     const modal = document.getElementById('modal-detail-student');
@@ -73,21 +73,32 @@ window.viewStudentDetail = async function(studentId) {
 
         if (error) throw error;
 
-        // 1. Render Data ke Dalam Desain Kartu E-KTP
+        // 1. Render Data ke Kartu ID Portrait
         document.getElementById('detail-name-title').innerText = student.full_name;
         document.getElementById('detail-nisn-title').innerText = student.nisn || '-';
         document.getElementById('detail-nipd-title').innerText = student.nipd || '-';
-        document.getElementById('detail-rombel-title').innerText = student.rombel || '-';
+        document.getElementById('detail-jk-title').innerText = student.gender || '-';
+        document.getElementById('detail-rombel-title').innerText = `Kelas ${student.rombel || '-'}`;
         document.getElementById('detail-qr-text').innerText = student.qr_code;
         
-        // Panggil QR ukuran besar agar tidak pecah saat dicetak
+        // Render QR Code ukuran besar
         document.getElementById('detail-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${student.qr_code}`;
 
-        // 2. Isi Form Edit
+        // 2. Render Foto Profil (Ide Nakal Brilian: Foto Asli atau Inisial)
+        const avatarContainer = document.getElementById('detail-avatar-container');
+        if (student.photo_url && student.photo_url.trim() !== '') {
+            avatarContainer.innerHTML = `<img src="${student.photo_url}" class="w-full h-full rounded-full object-cover">`;
+        } else {
+            const initial = student.full_name ? student.full_name.charAt(0).toUpperCase() : '?';
+            avatarContainer.innerHTML = `<div class="w-full h-full rounded-full bg-gradient-to-br from-ncipsYellow to-ncipsGold flex items-center justify-center text-ncipsNavy font-black text-lg shadow-inner">${initial}</div>`;
+        }
+
+        // 3. Isi Form Edit
         document.getElementById('edit-id').value = student.id;
         document.getElementById('edit-name').value = student.full_name;
         document.getElementById('edit-nisn').value = student.nisn || '';
         document.getElementById('edit-nipd').value = student.nipd || '';
+        document.getElementById('edit-jk').value = student.gender || '';
         document.getElementById('edit-rombel').value = student.rombel || '';
         document.getElementById('edit-status').value = student.status || 'AKTIF';
 
@@ -114,6 +125,7 @@ export async function updateStudent(event) {
         full_name: document.getElementById('edit-name').value,
         nisn: document.getElementById('edit-nisn').value,
         nipd: document.getElementById('edit-nipd').value,
+        gender: document.getElementById('edit-jk').value,
         rombel: document.getElementById('edit-rombel').value,
         status: document.getElementById('edit-status').value
     };
@@ -151,7 +163,7 @@ export async function deleteStudent() {
 }
 
 // ============================================
-// LOKET TAMBAH & UPLOAD MASSAL
+// TAMBAH & UPLOAD MASSAL
 // ============================================
 export async function addStudent(event) {
     event.preventDefault();
@@ -182,7 +194,7 @@ export async function addStudent(event) {
 }
 
 export function downloadCSVTemplate() {
-    const csvContent = "Nama,NIPD,NISN,JK,Tempat Lahir,Tanggal Lahir,NIK,Agama,Alamat,Rombel,Status\nBudi Santoso,1234,0012345,L,Kupang,2010-12-31,537123,Kristen,Jl. Merdeka No 1,7A,AKTIF\nSusi Susanti,1235,0012346,P,Atambua,2011-01-15,537124,Katolik,Jl. El Tari,7A,AKTIF";
+    const csvContent = "Nama,NIPD,NISN,JK,Tempat Lahir,Tanggal Lahir,NIK,Agama,Alamat,Rombel,Status,URL Foto\nBudi Santoso,1234,0012345,L,Kupang,2010-12-31,537123,Kristen,Jl. Merdeka No 1,7A,AKTIF,\nSusi Susanti,1235,0012346,P,Atambua,2011-01-15,537124,Katolik,Jl. El Tari,7A,AKTIF,";
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -224,6 +236,7 @@ export function handleCSVUpload(event) {
                     address: row['Alamat'],
                     rombel: row['Rombel'],
                     status: row['Status'] || 'AKTIF',
+                    photo_url: row['URL Foto'] || null,
                     qr_code: `QR-NCIPS-${Date.now()}-${index}`
                 };
             });
