@@ -19,14 +19,13 @@ export async function loadStudents() {
             return;
         }
 
-        totalText.innerText = students.length; // Hitung total otomatis
+        totalText.innerText = students.length;
 
         let html = '';
         students.forEach((student) => {
             const statusColor = student.status === 'AKTIF' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
             const initial = student.full_name ? student.full_name.charAt(0).toUpperCase() : '?';
 
-            // KEAJAIBAN: Kita buat kartu ini bisa ditekan (onclick=viewStudentDetail)
             html += `
                 <div onclick="window.viewStudentDetail('${student.id}')" class="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col gap-2 cursor-pointer hover:shadow-md hover:border-ncipsYellow transition-all">
                     <div class="flex items-center justify-between">
@@ -55,12 +54,11 @@ export async function loadStudents() {
 }
 
 // ============================================
-// FITUR BARU: LIHAT DETAIL & QR CODE SISWA
+// FITUR LIHAT ID CARD E-KTP & EDIT SISWA
 // ============================================
 window.viewStudentDetail = async function(studentId) {
     const modal = document.getElementById('modal-detail-student');
     
-    // Tampilkan modal dengan gaya loading
     document.getElementById('detail-name-title').innerText = "Memuat...";
     document.getElementById('detail-qr-image').src = "";
     modal.classList.remove('hidden');
@@ -75,18 +73,20 @@ window.viewStudentDetail = async function(studentId) {
 
         if (error) throw error;
 
-        // 1. Render Kartu QR Code
+        // 1. Render Data ke Dalam Desain Kartu E-KTP
         document.getElementById('detail-name-title').innerText = student.full_name;
-        document.getElementById('detail-rombel-title').innerText = `Kelas ${student.rombel || '?'}`;
-        document.getElementById('detail-avatar').innerText = student.full_name.charAt(0).toUpperCase();
+        document.getElementById('detail-nisn-title').innerText = student.nisn || '-';
+        document.getElementById('detail-nipd-title').innerText = student.nipd || '-';
+        document.getElementById('detail-rombel-title').innerText = student.rombel || '-';
         document.getElementById('detail-qr-text').innerText = student.qr_code;
         
-        // Panggil API QR Generator untuk merender kode rahasianya jadi gambar!
-        document.getElementById('detail-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${student.qr_code}`;
+        // Panggil QR ukuran besar agar tidak pecah saat dicetak
+        document.getElementById('detail-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${student.qr_code}`;
 
-        // 2. Isi data form edit agar admin bisa mengubahnya
+        // 2. Isi Form Edit
         document.getElementById('edit-id').value = student.id;
         document.getElementById('edit-name').value = student.full_name;
+        document.getElementById('edit-nisn').value = student.nisn || '';
         document.getElementById('edit-nipd').value = student.nipd || '';
         document.getElementById('edit-rombel').value = student.rombel || '';
         document.getElementById('edit-status').value = student.status || 'AKTIF';
@@ -112,6 +112,7 @@ export async function updateStudent(event) {
     const id = document.getElementById('edit-id').value;
     const payload = {
         full_name: document.getElementById('edit-name').value,
+        nisn: document.getElementById('edit-nisn').value,
         nipd: document.getElementById('edit-nipd').value,
         rombel: document.getElementById('edit-rombel').value,
         status: document.getElementById('edit-status').value
@@ -122,7 +123,7 @@ export async function updateStudent(event) {
         if (error) throw error;
         
         closeDetailModal();
-        loadStudents(); // Refresh data layar
+        loadStudents(); 
     } catch (err) {
         alert('Gagal update: ' + err.message);
     } finally {
@@ -150,7 +151,7 @@ export async function deleteStudent() {
 }
 
 // ============================================
-// KODE LAMA: LOKET TAMBAH & UPLOAD MASSAL
+// LOKET TAMBAH & UPLOAD MASSAL
 // ============================================
 export async function addStudent(event) {
     event.preventDefault();
