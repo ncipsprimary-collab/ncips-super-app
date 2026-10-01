@@ -2,12 +2,11 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0F172A">
     <title>NCIPS Super App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- TAMBAHAN: Perpustakaan Pembaca QR Code -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
         tailwind.config = {
@@ -19,7 +18,7 @@
 </head>
 <body class="bg-gray-100 font-sans text-gray-800 h-screen flex flex-col relative overflow-hidden">
     
-    <!-- LAYAR LOGIN (Tetap Sama) -->
+    <!-- LAYAR LOGIN -->
     <div id="login-screen" class="absolute inset-0 bg-ncipsNavy z-50 flex flex-col justify-center items-center p-6 transition-opacity duration-500">
         <div class="w-full max-w-sm bg-white p-8 rounded-3xl shadow-2xl">
             <div class="text-center mb-8">
@@ -55,7 +54,7 @@
         </header>
 
         <!-- HALAMAN 1: BERANDA -->
-        <main id="view-home" class="flex-1 overflow-y-auto p-4 space-y-4 pb-24 block">
+        <main id="view-home" class="flex-1 overflow-y-auto p-4 space-y-4 pb-28 block">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 relative overflow-hidden">
                 <div class="absolute -right-4 -top-4 w-16 h-16 bg-ncipsYellow rounded-full opacity-20"></div>
                 <h2 id="user-greeting" class="text-lg font-bold text-ncipsNavy">Memuat...</h2>
@@ -66,16 +65,14 @@
             </div>
         </main>
 
-        <!-- HALAMAN 2: SCANNER (Disembunyikan di awal) -->
-        <main id="view-scanner" class="flex-1 overflow-y-auto p-4 pb-24 hidden flex-col">
+        <!-- HALAMAN 2: SCANNER -->
+        <main id="view-scanner" class="flex-1 overflow-y-auto p-4 pb-28 hidden flex-col">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 text-center">
                 <h2 class="text-lg font-bold text-ncipsNavy mb-1">Kamera Piket</h2>
                 <p class="text-xs text-gray-500 mb-4">Arahkan kamera ke ID Card Siswa/Guru</p>
                 
-                <!-- Kotak Kamera -->
                 <div id="reader" class="w-full rounded-xl overflow-hidden border-2 border-ncipsYellow bg-gray-100 min-h-[250px]"></div>
                 
-                <!-- Hasil Scan -->
                 <div id="scan-result-box" class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg hidden">
                     <p class="text-xs text-green-800 font-bold mb-1">Berhasil Terbaca!</p>
                     <p id="scan-text" class="text-sm font-mono text-gray-700 break-all"></p>
@@ -84,14 +81,14 @@
             </div>
         </main>
 
-        <!-- Bottom Nav -->
-        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center pb-safe pt-2 px-2 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-20">
+        <!-- PERBAIKAN: Menggunakan "fixed" agar selalu menempel di layar bawah, dan "pb-6" untuk padding khusus HP -->
+        <nav class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around items-center pt-3 pb-6 px-2 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-50">
             <button onclick="switchView('home')" id="nav-home" class="flex flex-col items-center p-2 text-ncipsNavy">
-                <span class="text-xl mb-1">🏠</span>
+                <span class="text-2xl mb-1">🏠</span>
                 <span class="text-[10px] font-bold">Beranda</span>
             </button>
             <button onclick="switchView('scanner')" id="nav-scanner" class="flex flex-col items-center p-2 text-gray-400 hover:text-ncipsNavy transition">
-                <span class="text-xl mb-1">📷</span>
+                <span class="text-2xl mb-1">📷</span>
                 <span class="text-[10px] font-bold">Scan QR</span>
             </button>
         </nav>
@@ -99,12 +96,11 @@
 
     <!-- SCRIPT LOGIKA -->
     <script>
-        // MASUKKAN KUNCI SUPABASE DI SINI
+        // MASUKKAN KUNCI SUPABASE DI SINI (JANGAN LUPA!)
         const SUPABASE_URL = 'https://kvailwyhpvggpwlvtlxc.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_PUBqX34BtP9OmCcuQcSivQ_fo5nsQkS';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // LOGIKA LOGIN & PROFIL
         async function checkSession() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) showApp(session.user);
@@ -137,7 +133,6 @@
         }
         checkSession();
 
-        // LOGIKA NAVIGASI & SCANNER
         let html5QrcodeScanner = null;
 
         function switchView(view) {
@@ -151,13 +146,13 @@
                 viewScanner.classList.add('hidden'); viewScanner.classList.remove('flex');
                 navHome.classList.replace('text-gray-400', 'text-ncipsNavy');
                 navScanner.classList.replace('text-ncipsNavy', 'text-gray-400');
-                stopScanner(); // Matikan kamera jika balik ke Beranda
+                stopScanner();
             } else {
                 viewHome.classList.add('hidden'); viewHome.classList.remove('block');
                 viewScanner.classList.remove('hidden'); viewScanner.classList.add('flex');
                 navScanner.classList.replace('text-gray-400', 'text-ncipsNavy');
                 navHome.classList.replace('text-ncipsNavy', 'text-gray-400');
-                startScanner(); // Nyalakan kamera
+                startScanner();
             }
         }
 
@@ -167,18 +162,14 @@
                 html5QrcodeScanner = new Html5Qrcode("reader");
             }
             html5QrcodeScanner.start(
-                { facingMode: "environment" }, // Pakai kamera belakang
+                { facingMode: "environment" },
                 { fps: 10, qrbox: { width: 250, height: 250 } },
                 (decodedText) => {
-                    // Jika QR berhasil terbaca
                     stopScanner();
                     document.getElementById('scan-result-box').classList.remove('hidden');
                     document.getElementById('scan-text').innerText = decodedText;
-                    
-                    // Nanti di tahap selanjutnya, teks ini akan kita kirim otomatis ke Supabase!
-                    console.log("Terbaca: ", decodedText);
                 },
-                (errorMessage) => { /* Abaikan error pencarian frame */ }
+                (errorMessage) => { }
             ).catch((err) => {
                 alert("Gagal mengakses kamera. Pastikan Anda memberi izin kamera pada browser!");
             });
