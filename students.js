@@ -19,15 +19,18 @@ export async function loadStudents() {
 
         let html = '';
         students.forEach((student, index) => {
-            // Tampilan Kartu Diperkaya
             const statusColor = student.status === 'AKTIF' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+            
+            // Tampilkan foto jika ada, atau bulatan inisial jika kosong
+            const photoContent = student.photo_url 
+                ? `<img src="${student.photo_url}" class="w-10 h-10 rounded-full object-cover shadow-sm border border-gray-200">`
+                : `<div class="w-10 h-10 rounded-full bg-slate-100 text-ncipsNavy flex items-center justify-center font-black text-[10px]">${index + 1}</div>`;
+
             html += `
                 <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col gap-2">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-slate-100 text-ncipsNavy flex items-center justify-center font-black text-[10px]">
-                                ${index + 1}
-                            </div>
+                            ${photoContent}
                             <div>
                                 <h3 class="text-sm font-bold text-ncipsNavy">${student.full_name}</h3>
                                 <p class="text-[10px] text-gray-500 font-medium">Rombel: ${student.rombel || '-'} | NIPD: ${student.nipd || '-'}</p>
@@ -48,48 +51,70 @@ export async function loadStudents() {
     }
 }
 
-// LOGIKA INPUT 1 SISWA (MANUAL)
+// LOGIKA INPUT 1 SISWA + FOTO
 export async function addStudent(event) {
     event.preventDefault();
     const btn = document.getElementById('btn-save-student');
-    btn.innerText = 'Menyimpan...';
-
-    // Ambil semua data dari form
-    const payload = {
-        full_name: document.getElementById('stu-name').value,
-        nipd: document.getElementById('stu-nipd').value,
-        nisn: document.getElementById('stu-nisn').value,
-        gender: document.getElementById('stu-jk').value,
-        religion: document.getElementById('stu-agama').value,
-        birth_place: document.getElementById('stu-tempat').value,
-        birth_date: document.getElementById('stu-tgl').value || null, // Pastikan format tanggal aman
-        nik: document.getElementById('stu-nik').value,
-        address: document.getElementById('stu-alamat').value,
-        rombel: document.getElementById('stu-rombel').value,
-        status: document.getElementById('stu-status').value,
-        qr_code: `QR-NCIPS-${Date.now()}` // Buat QR otomatis
-    };
+    btn.innerText = 'Mengunggah Data & Foto...';
 
     try {
+        let photoUrl = null;
+        const photoFile = document.getElementById('stu-photo').files[0];
+
+        // Jika ada foto yang dipilih, unggah ke Storage dulu!
+        if (photoFile) {
+            const fileExt = photoFile.name.split('.').pop();
+            const fileName = `stu_${Date.now()}.${fileExt}`;
+            
+            // 1. Upload ke Storage Supabase
+            const { error: uploadError } = await supabaseClient.storage
+                .from('student_photos')
+                .upload(fileName, photoFile);
+
+            if (uploadError) throw new Error("Gagal mengunggah foto: " + uploadError.message);
+
+            // 2. Ambil Link Publiknya
+            const { data: publicUrlData } = supabaseClient.storage
+                .from('student_photos')
+                .getPublicUrl(fileName);
+            
+            photoUrl = publicUrlData.publicUrl;
+        }
+
+        // Ambil semua data teks
+        const payload = {
+            full_name: document.getElementById('stu-name').value,
+            nipd: document.getElementById('stu-nipd').value,
+            nisn: document.getElementById('stu-nisn').value,
+            gender: document.getElementById('stu-jk').value,
+            religion: document.getElementById('stu-agama').value,
+            birth_place: document.getElementById('stu-tempat').value,
+            birth_date: document.getElementById('stu-tgl').value || null,
+            nik: document.getElementById('stu-nik').value,
+            address: document.getElementById('stu-alamat').value,
+            rombel: document.getElementById('stu-rombel').value,
+            status: document.getElementById('stu-status').value,
+            qr_code: `QR-NCIPS-${Date.now()}`,
+            photo_url: photoUrl // Masukkan link foto ke tabel!
+        };
+
         const { error } = await supabaseClient.from('students').insert([payload]);
         if (error) throw error;
         
-        alert('Data siswa berhasil disimpan!');
+        alert('Data siswa beserta foto berhasil disimpan!');
         closeAddStudentModal();
         document.getElementById('form-add-student').reset();
         loadStudents();
+
     } catch (err) {
-        alert('Gagal menyimpan: ' + err.message);
+        alert(err.message);
     } finally {
         btn.innerText = 'Simpan Data';
     }
 }
 
-// FUNGSI 1: Download Template CSV
 export function downloadCSVTemplate() {
-    // Header CSV sesuai format
-    const csvContent = "Nama,NIPD,NISN,JK,Tempat Lahir,Tanggal Lahir,NIK,Agama,Alamat,Rombel,Status\nBudi Santoso,1234,0012345,L,Kupang,2010-12-31,537123,Kristen,Jl. Merdeka No 1,7A,AKTIF\nSusi Susanti,1235,0012346,P,Atambua,2011-01-15,537124,Katolik,Jl. El Tari,7A,AKTIF";
-    
+    const csvContent = "Nama,NIPD,NISN,JK,Tempat Lahir,Tanggal Lahir,NIK,Agama,Alamat,Rombel,Status,URL Foto\nBudi Santoso,1234,0012345,L,Kupang,2010-12-31,537123,Kristen,Jl. Merdeka No 1,7A,AKTIF,\nSusi Susanti,1235,0012346,P,Atambua,2011-01-15,537124,Katolik,Jl. El Tari,7A,AKTIF,";
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -101,7 +126,6 @@ export function downloadCSVTemplate() {
     document.body.removeChild(link);
 }
 
-// FUNGSI 2: Upload CSV Massal menggunakan PapaParse
 export function handleCSVUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -112,7 +136,7 @@ export function handleCSVUpload(event) {
     statusText.innerText = "Membaca file CSV...";
 
     Papa.parse(file, {
-        header: true, // Beri tahu PapaParse baris pertama adalah nama kolom
+        header: true,
         skipEmptyLines: true,
         complete: async function(results) {
             const rows = results.data;
@@ -124,7 +148,6 @@ export function handleCSVUpload(event) {
 
             statusText.innerText = `Menyiapkan ${rows.length} data siswa...`;
             
-            // Konversi data CSV agar sesuai dengan kolom tabel database kita
             const dataToInsert = rows.map((row, index) => {
                 return {
                     full_name: row['Nama'],
@@ -138,33 +161,27 @@ export function handleCSVUpload(event) {
                     address: row['Alamat'],
                     rombel: row['Rombel'],
                     status: row['Status'] || 'AKTIF',
-                    qr_code: `QR-NCIPS-${Date.now()}-${index}` // QR Unik massal
+                    photo_url: row['URL Foto'] || null, // Tangkap URL dari Excel kalau ada
+                    qr_code: `QR-NCIPS-${Date.now()}-${index}`
                 };
             });
 
             try {
-                // Tembak massal ke Supabase
                 const { error } = await supabaseClient.from('students').insert(dataToInsert);
                 if (error) throw error;
-
                 statusText.innerText = `✅ Berhasil mengunggah ${rows.length} siswa!`;
                 statusText.classList.replace('text-blue-600', 'text-green-600');
-                
-                // Refresh data di layar
                 loadStudents();
             } catch (err) {
                 console.error(err);
                 statusText.innerText = `❌ Gagal: ${err.message}`;
                 statusText.classList.replace('text-blue-600', 'text-red-600');
             }
-            
-            // Bersihkan input file agar bisa upload ulang file yang sama nanti
             document.getElementById('input-csv-file').value = '';
         }
     });
 }
 
-// Kontrol Modal
 export function openAddStudentModal() {
     const modal = document.getElementById('modal-add-student');
     modal.classList.remove('hidden');
