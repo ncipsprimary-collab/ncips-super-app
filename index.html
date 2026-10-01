@@ -100,7 +100,7 @@
             </div>
         </div>
 
-        <!-- MODAL BARU: KARTU PORTRAIT & EDIT SISWA -->
+        <!-- MODAL BARU: KARTU PORTRAIT V.2 & EDIT -->
         <div id="modal-detail-student" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end">
             <div class="bg-gray-50 rounded-t-[2.5rem] w-full shadow-2xl h-[90vh] overflow-y-auto flex flex-col relative">
                 
@@ -111,54 +111,58 @@
 
                 <div class="p-6 space-y-6 pb-20">
                     
-                    <!-- KARTU ID UKURAN E-KTP (PORTRAIT) - Kembali ke warna minimalis -->
+                    <!-- KARTU ID PORTRAIT (DIPERBAIKI: HEADER LAPANG & FOTO DI TENGAH) -->
                     <div class="flex justify-center w-full">
-                        <div id="print-id-card" class="relative w-[60%] sm:w-[220px] aspect-[54/86] bg-white rounded-[1.5rem] shadow-xl border border-gray-200 flex flex-col overflow-hidden">
+                        <div id="print-id-card" class="relative w-[65%] sm:w-[230px] aspect-[54/86] bg-white rounded-[1.5rem] shadow-xl border border-gray-200 flex flex-col overflow-hidden">
                             
-                            <!-- Header Kartu -->
-                            <div class="bg-gradient-to-br from-ncipsNavy to-slate-800 h-[22%] flex flex-col items-center justify-center relative">
-                                <h4 class="font-black text-base text-ncipsYellow tracking-widest mt-2 leading-none">NCIPS</h4>
+                            <!-- Header Kartu (Dibuat lega agar teks tidak bertabrakan) -->
+                            <div class="bg-gradient-to-br from-ncipsNavy to-slate-800 pt-3 pb-6 px-3 text-center shrink-0">
+                                <h4 class="font-black text-xs sm:text-sm text-ncipsYellow tracking-widest leading-none">NCIPS KUPANG</h4>
                                 <p class="text-[5px] text-white font-bold tracking-[0.2em] uppercase opacity-80 mt-1">KARTU PELAJAR YPKR</p>
                             </div>
                             
-                            <!-- Body Kartu -->
-                            <div class="flex-1 flex flex-col items-center px-4 pb-3 bg-white text-center">
-                                
-                                <!-- Bulatan Foto/Inisial (Setengah masuk ke header) -->
-                                <div class="w-14 h-14 bg-white rounded-full p-1 -mt-7 shadow-sm border border-gray-100 z-10">
-                                    <div class="w-full h-full rounded-full bg-gradient-to-br from-ncipsYellow to-ncipsGold flex items-center justify-center text-ncipsNavy font-black text-xl" id="detail-avatar">
-                                        ?
-                                    </div>
+                            <!-- Foto Avatar Siswa (Ditaruh di tengah tanpa menutupi teks header) -->
+                            <div class="flex justify-center -mt-5 z-10">
+                                <div id="detail-avatar-container" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-1 shadow-md border border-gray-200 flex items-center justify-center overflow-hidden">
+                                    <!-- Foto atau Inisial dimuat lewat JS -->
                                 </div>
+                            </div>
+                            
+                            <!-- Body Kartu -->
+                            <div class="flex-1 flex flex-col items-center px-3 pb-3 pt-1 bg-white text-center justify-between">
                                 
-                                <!-- Data Lengkap -->
-                                <div class="mt-2 w-full">
-                                    <h2 id="detail-name-title" class="text-xs sm:text-sm font-black text-ncipsNavy uppercase line-clamp-2 leading-tight">Nama Siswa</h2>
-                                    <p id="detail-rombel-title" class="text-[8px] text-gray-500 font-bold uppercase mt-1 tracking-wider">Kelas 7A</p>
+                                <div class="w-full">
+                                    <h2 id="detail-name-title" class="text-xs font-black text-ncipsNavy uppercase line-clamp-2 leading-tight">Nama Siswa</h2>
+                                    <p id="detail-rombel-title" class="text-[7px] text-gray-500 font-bold uppercase mt-0.5 tracking-wider">Kelas -</p>
                                     
-                                    <div class="flex justify-center gap-4 mt-2">
+                                    <!-- Informasi Lengkap: NISN, NIPD, JK -->
+                                    <div class="grid grid-cols-3 gap-1 mt-2 bg-gray-50 p-1.5 rounded-lg border border-gray-100 text-[6px]">
                                         <div>
-                                            <p class="text-[5px] text-gray-400 font-bold uppercase tracking-wider">NISN</p>
-                                            <p id="detail-nisn-title" class="text-[8px] font-bold text-gray-800 tracking-wider">000000</p>
+                                            <span class="text-gray-400 block font-bold uppercase">NISN</span>
+                                            <span id="detail-nisn-title" class="font-black text-gray-800 truncate block">-</span>
                                         </div>
                                         <div>
-                                            <p class="text-[5px] text-gray-400 font-bold uppercase tracking-wider">NIPD</p>
-                                            <p id="detail-nipd-title" class="text-[8px] font-bold text-gray-800 tracking-wider">0000</p>
+                                            <span class="text-gray-400 block font-bold uppercase">NIPD</span>
+                                            <span id="detail-nipd-title" class="font-black text-gray-800 truncate block">-</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-400 block font-bold uppercase">JK</span>
+                                            <span id="detail-jk-title" class="font-black text-gray-800 truncate block">-</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Area QR Code -->
-                                <div class="mt-auto w-full flex flex-col items-center justify-end">
-                                    <div class="bg-gray-50 p-1.5 border border-gray-100 rounded-[1rem] w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center shadow-inner">
+                                <div class="w-full flex flex-col items-center mt-1">
+                                    <div class="bg-gray-50 p-1 border border-gray-100 rounded-lg w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center shadow-inner">
                                         <img id="detail-qr-image" src="" alt="QR Code" class="w-full h-full object-contain mix-blend-multiply">
                                     </div>
-                                    <p class="text-[5px] sm:text-[6px] text-gray-400 font-mono mt-1 w-full truncate text-center" id="detail-qr-text">QR-XXX</p>
+                                    <p class="text-[5px] text-gray-400 font-mono mt-0.5 w-full truncate text-center" id="detail-qr-text">QR-XXX</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <p class="text-[10px] text-center text-gray-400 font-medium">💡 Tampilan kartu ID dalam posisi Portrait. Sentuh tombol Edit di bawah jika ada kesalahan data.</p>
+                    <p class="text-[10px] text-center text-gray-400 font-medium">💡 Kartu ID Portrait siap di-*screenshot* atau dicetak sesuai ukuran standar.</p>
 
                     <!-- Form Edit Data -->
                     <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
@@ -166,9 +170,10 @@
                         <form id="form-edit-student" class="space-y-4">
                             <input type="hidden" id="edit-id">
                             <div><label class="text-[10px] font-bold text-gray-400 uppercase">Nama Lengkap</label><input type="text" id="edit-name" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:border-blue-500" required></div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div><label class="text-[10px] font-bold text-gray-400 uppercase">NISN</label><input type="number" id="edit-nisn" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
-                                <div><label class="text-[10px] font-bold text-gray-400 uppercase">NIPD</label><input type="number" id="edit-nipd" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div><label class="text-[9px] font-bold text-gray-400 uppercase">NISN</label><input type="number" id="edit-nisn" class="w-full mt-1 p-2 bg-gray-50 border border-gray-100 rounded-xl text-xs"></div>
+                                <div><label class="text-[9px] font-bold text-gray-400 uppercase">NIPD</label><input type="number" id="edit-nipd" class="w-full mt-1 p-2 bg-gray-50 border border-gray-100 rounded-xl text-xs"></div>
+                                <div><label class="text-[9px] font-bold text-gray-400 uppercase">JK</label><input type="text" id="edit-jk" placeholder="L/P" class="w-full mt-1 p-2 bg-gray-50 border border-gray-100 rounded-xl text-xs"></div>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div><label class="text-[10px] font-bold text-gray-400 uppercase">Rombel</label><input type="text" id="edit-rombel" class="w-full mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-sm"></div>
@@ -180,7 +185,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Tombol Aksi -->
                             <div class="flex gap-3 pt-4 border-t border-gray-100">
                                 <button type="button" id="btn-delete-student" class="flex-1 bg-red-50 text-red-600 font-bold py-3 rounded-xl border border-red-100 hover:bg-red-100 text-xs">Hapus Siswa</button>
                                 <button type="submit" id="btn-update-student" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md hover:bg-blue-700 text-xs">Simpan Perubahan</button>
