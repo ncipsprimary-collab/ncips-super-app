@@ -1,4 +1,4 @@
-import { supabaseClient } from './supabase.js';
+import { supabase } from './supabase.js';
 
 export async function loadTeachers() {
     const container = document.getElementById('teacher-list-container');
@@ -6,7 +6,7 @@ export async function loadTeachers() {
     container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat data guru...</div>`;
 
     try {
-        const { data: teachers, error } = await supabaseClient
+        const { data: teachers, error } = await supabase
             .from('teachers')
             .select('*')
             .order('full_name', { ascending: true });
@@ -53,7 +53,7 @@ window.viewTeacherDetail = async function(tchId) {
     modal.classList.add('flex');
 
     try {
-        const { data: tch, error } = await supabaseClient.from('teachers').select('*').eq('id', tchId).single();
+        const { data: tch, error } = await supabase.from('teachers').select('*').eq('id', tchId).single();
         if (error) throw error;
 
         // Render E-Card
@@ -104,7 +104,7 @@ export async function addTeacher(event) {
     };
 
     try {
-        const { error } = await supabaseClient.from('teachers').insert([payload]);
+        const { error } = await supabase.from('teachers').insert([payload]);
         if (error) throw error;
         closeAddTeacherModal();
         document.getElementById('form-add-teacher').reset();
@@ -132,7 +132,7 @@ export async function updateTeacher(event) {
     };
 
     try {
-        const { error } = await supabaseClient.from('teachers').update(payload).eq('id', id);
+        const { error } = await supabase.from('teachers').update(payload).eq('id', id);
         if (error) throw error;
         closeDetailTeacherModal();
         loadTeachers(); 
@@ -147,7 +147,7 @@ export async function deleteTeacher() {
     const id = document.getElementById('edit-tch-id').value;
     if (!confirm(`Hapus guru ini permanen?`)) return;
     try {
-        const { error } = await supabaseClient.from('teachers').delete().eq('id', id);
+        const { error } = await supabase.from('teachers').delete().eq('id', id);
         if (error) throw error;
         closeDetailTeacherModal();
         loadTeachers();
@@ -204,7 +204,7 @@ export function handleTeacherCSVUpload(event) {
             });
 
             try {
-                const { error } = await supabaseClient.from('teachers').insert(dataToInsert);
+                const { error } = await supabase.from('teachers').insert(dataToInsert);
                 if (error) throw error;
                 statusText.innerText = `✅ Berhasil mengunggah ${rows.length} guru!`;
                 statusText.classList.replace('text-amber-600', 'text-green-600');
