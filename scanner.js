@@ -87,7 +87,7 @@ async function onScanSuccess(decodedText) {
         let userType = 'SISWA';
         let userName = '';
         
-        // Cek ke gudang siswa
+        // 1. Cek ke gudang siswa
         let { data: student } = await supabaseClient
             .from('students')
             .select('*')
@@ -97,7 +97,7 @@ async function onScanSuccess(decodedText) {
         if (student) {
             userName = student.full_name;
         } else {
-            // Cek ke gudang guru
+            // 2. Cek ke gudang guru
             let { data: teacher } = await supabaseClient
                 .from('teachers')
                 .select('*')
@@ -110,14 +110,14 @@ async function onScanSuccess(decodedText) {
             }
         }
 
-        // Jika QR Code tidak terdaftar
+        // Jika QR Code tidak terdaftar di database mana pun
         if (!userName) {
             if (statusText) statusText.innerText = "❌ QR CODE TIDAK DIKENAL!";
             setTimeout(resumeScanning, 3000);
             return;
         }
 
-        // Simpan ke buku absen
+        // 3. Simpan ke tabel attendance (buku absen)
         const { error: insertErr } = await supabaseClient.from('attendance').insert([{
             qr_code: decodedText,
             user_type: userType,
@@ -126,6 +126,7 @@ async function onScanSuccess(decodedText) {
 
         if (insertErr) throw insertErr;
 
+        // Jika berhasil
         if (statusText) statusText.innerText = "✅ PRESENSI BERHASIL!";
         if (resultBox) resultBox.classList.remove('hidden');
         if (resultName) resultName.innerText = userName;
@@ -140,9 +141,10 @@ async function onScanSuccess(decodedText) {
         }, 3000);
 
     } catch (err) {
-        console.error(err);
-        if (statusText) statusText.innerText = "⚠️ TERJADI GANGGUAN JARINGAN";
-        setTimeout(resumeScanning, 3000);
+        console.error("Detail Error:", err);
+        // Tampilkan pesan error asli dari Supabase di layar agar terlihat jelas
+        if (statusText) statusText.innerText = `⚠️ Gagal: ${err.message || "Kesalahan Server"}`;
+        setTimeout(resumeScanning, 4000);
     }
 }
 
@@ -162,5 +164,5 @@ function resumeScanning() {
 }
 
 function onScanFailure(error) {
-    // Abaikan frame kecil saat mencari QR
+    // Abaikan frame kosong saat mencari QR
 }
