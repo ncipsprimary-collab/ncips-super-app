@@ -26,6 +26,9 @@ export async function loadStudents() {
             const statusColor = student.status === 'AKTIF' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
             const initial = student.full_name ? student.full_name.charAt(0).toUpperCase() : '?';
 
+            // Menampilkan NIPD di daftar (NIPD saat ini ada di kolom nisn)
+            const nipdDisplay = student.nisn || '-';
+
             html += `
                 <div onclick="window.viewStudentDetail('${student.id}')" class="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col gap-2 cursor-pointer hover:shadow-md hover:border-ncipsYellow transition-all">
                     <div class="flex items-center justify-between">
@@ -35,7 +38,7 @@ export async function loadStudents() {
                             </div>
                             <div>
                                 <h3 class="text-sm font-bold text-ncipsNavy">${student.full_name}</h3>
-                                <p class="text-[10px] text-gray-500 font-medium">Rombel: ${student.rombel || '-'} | NIPD: ${student.nipd || '-'}</p>
+                                <p class="text-[10px] text-gray-500 font-medium">Rombel: ${student.rombel || '-'} | NIPD: ${nipdDisplay}</p>
                             </div>
                         </div>
                         <span class="${statusColor} px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-wider border border-white">
@@ -54,7 +57,7 @@ export async function loadStudents() {
 }
 
 // ============================================
-// DETAIL & E-CARD (KABEL DATA SUDAH DILURUSKAN 100%)
+// DETAIL & E-CARD (ROTASI KABEL DATA)
 // ============================================
 window.viewStudentDetail = async function(studentId) {
     const modal = document.getElementById('modal-detail-student');
@@ -73,19 +76,17 @@ window.viewStudentDetail = async function(studentId) {
 
         if (error) throw error;
 
-        // 1. Render Data ke Kartu E-Card
-        // SEKARANG SEMUA DATA MASUK KE KAMAR YANG BENAR
+        // 1. Render Data ke Kartu E-Card dengan Rotasi
         document.getElementById('detail-name-title').innerText = student.full_name;
-        document.getElementById('detail-nisn-title').innerText = student.nisn || '-';
-        document.getElementById('detail-nipd-title').innerText = student.nipd || '-';
-        document.getElementById('detail-jk-title').innerText = student.gender || '-';
+        document.getElementById('detail-nisn-title').innerText = student.gender || '-'; // JK ke NISN
+        document.getElementById('detail-nipd-title').innerText = student.nisn || '-';   // NISN ke NIPD
+        document.getElementById('detail-jk-title').innerText = student.nipd || '-';     // NIPD ke JK
         document.getElementById('detail-rombel-title').innerText = `STUDENT - GRADE ${student.rombel || '-'}`;
         document.getElementById('detail-qr-text').innerText = student.qr_code;
         
-        // QR Code ukuran besar maksimal
         document.getElementById('detail-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=700x700&data=${student.qr_code}`;
 
-        // 2. Render Foto Profil (Atau Inisial jika kosong dengan background merah)
+        // 2. Render Foto Profil
         const avatarContainer = document.getElementById('detail-avatar-container');
         if (student.photo_url && student.photo_url.trim() !== '') {
             avatarContainer.innerHTML = `<img src="${student.photo_url}" class="w-full h-full rounded-full object-cover">`;
@@ -94,12 +95,12 @@ window.viewStudentDetail = async function(studentId) {
             avatarContainer.innerHTML = `<div class="w-full h-full rounded-full bg-red-600 flex items-center justify-center text-white font-black text-2xl shadow-inner">${initial}</div>`;
         }
 
-        // 3. Isi Form Edit (JUGA SUDAH DILURUSKAN KAMARNYA)
+        // 3. Isi Form Edit dengan Rotasi yang Sama
         document.getElementById('edit-id').value = student.id;
         document.getElementById('edit-name').value = student.full_name;
-        document.getElementById('edit-nisn').value = student.nisn || '';
-        document.getElementById('edit-nipd').value = student.nipd || '';
-        document.getElementById('edit-jk').value = student.gender || '';
+        document.getElementById('edit-nisn').value = student.gender || ''; // JK ke NISN
+        document.getElementById('edit-nipd').value = student.nisn || '';   // NISN ke NIPD
+        document.getElementById('edit-jk').value = student.nipd || '';     // NIPD ke JK
         document.getElementById('edit-rombel').value = student.rombel || '';
         document.getElementById('edit-status').value = student.status || 'AKTIF';
 
@@ -123,12 +124,12 @@ export async function updateStudent(event) {
 
     const id = document.getElementById('edit-id').value;
     
-    // PAYLOAD UPDATE SUDAH DILURUSKAN
+    // PAYLOAD UPDATE DIKEMBALIKAN KE KAMAR ASALNYA
     const payload = {
         full_name: document.getElementById('edit-name').value,
-        nisn: document.getElementById('edit-nisn').value,
-        nipd: document.getElementById('edit-nipd').value,
-        gender: document.getElementById('edit-jk').value,
+        gender: document.getElementById('edit-nisn').value, // Simpan slot NISN ke DB gender
+        nisn: document.getElementById('edit-nipd').value,   // Simpan slot NIPD ke DB nisn
+        nipd: document.getElementById('edit-jk').value,     // Simpan slot JK ke DB nipd
         rombel: document.getElementById('edit-rombel').value,
         status: document.getElementById('edit-status').value
     };
@@ -173,10 +174,12 @@ export async function addStudent(event) {
     const btn = document.getElementById('btn-save-student');
     btn.innerText = 'Menyimpan...';
 
+    // Form Tambah Siswa (Juga disesuaikan agar tersimpan di kamar yang sama)
     const payload = {
         full_name: document.getElementById('stu-name').value,
-        nipd: document.getElementById('stu-nipd').value,
-        nisn: document.getElementById('stu-nisn').value,
+        gender: document.getElementById('stu-nisn').value,
+        nisn: document.getElementById('stu-nipd').value,
+        nipd: document.getElementById('stu-jk')?.value || '-', 
         rombel: document.getElementById('stu-rombel').value,
         status: document.getElementById('stu-status').value,
         qr_code: `QR-NCIPS-${Date.now()}`
@@ -229,9 +232,9 @@ export function handleCSVUpload(event) {
             const dataToInsert = rows.map((row, index) => {
                 return {
                     full_name: row['Nama'],
-                    nipd: row['NIPD'],
-                    nisn: row['NISN'],
-                    gender: row['JK'],
+                    nipd: row['JK'],       // Disesuaikan dengan struktur tergeser
+                    nisn: row['NIPD'],     // Disesuaikan dengan struktur tergeser
+                    gender: row['NISN'],   // Disesuaikan dengan struktur tergeser
                     birth_place: row['Tempat Lahir'],
                     birth_date: row['Tanggal Lahir'] || null,
                     nik: row['NIK'],
