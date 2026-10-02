@@ -72,7 +72,7 @@ export async function savePiketEntry(e) {
                 type: 'SISWA',
                 status: status, // SAKIT, IZIN, ALPHA, TERLAMBAT
                 date: today,
-                time: time + ':00',
+                scan_time: time + ':00',
                 notes: `Piket: ${notes}`
             }]);
 
