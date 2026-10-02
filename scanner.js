@@ -77,11 +77,12 @@ async function onScanSuccess(decodedText) {
     
     const statusText = document.getElementById('scanner-status');
     const resultBox = document.getElementById('scanner-result');
+    const resultIcon = document.getElementById('result-icon');
     const resultName = document.getElementById('result-name');
     const resultType = document.getElementById('result-type');
     const resultTime = document.getElementById('result-time');
     
-    if (statusText) statusText.innerText = "⏳ MEMPROSES DATA KE SERVER...";
+    if (statusText) statusText.innerText = "⏳ MEMPROSES DATA...";
 
     try {
         let userType = 'SISWA';
@@ -110,14 +111,52 @@ async function onScanSuccess(decodedText) {
             }
         }
 
-        // Jika QR Code tidak terdaftar di database mana pun
+        // Jika QR Code tidak terdaftar
         if (!userName) {
             if (statusText) statusText.innerText = "❌ QR CODE TIDAK DIKENAL!";
-            setTimeout(resumeScanning, 3000);
+            if (resultBox) {
+                resultBox.classList.remove('hidden');
+                if (resultIcon) { resultIcon.className = "w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md"; resultIcon.innerText = "✕"; }
+                if (resultName) resultName.innerText = "TIDAK DIKENAL";
+                if (resultType) resultType.innerText = "GAGAL";
+                if (resultTime) resultTime.innerText = "QR Code invalid";
+            }
+            setTimeout(() => {
+                if (resultBox) resultBox.classList.add('hidden');
+                resumeScanning();
+            }, 3000);
             return;
         }
 
-        // 3. Simpan ke tabel attendance (buku absen)
+        // 3. LOGIKA ANTI-DOUBLE SCAN (CEK ABSEN HARI INI)
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        const { data: existingRecords } = await supabaseClient
+            .from('attendance')
+            .select('*')
+            .eq('qr_code', decodedText)
+            .gte('scan_time', todayStart.toISOString());
+
+        if (existingRecords && existingRecords.length > 0) {
+            // Sudah absen hari ini
+            const scanTimeFormatted = new Date(existingRecords[0].scan_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            if (statusText) statusText.innerText = "⚠️ SUDAH ABSEN HARI INI!";
+            if (resultBox) {
+                resultBox.classList.remove('hidden');
+                if (resultIcon) { resultIcon.className = "w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md"; resultIcon.innerText = "⚡"; }
+                if (resultName) resultName.innerText = userName;
+                if (resultType) resultType.innerText = `${userType} (DOUBLE SCAN)`;
+                if (resultTime) resultTime.innerText = `Absen Pukul: ${scanTimeFormatted}`;
+            }
+            setTimeout(() => {
+                if (resultBox) resultBox.classList.add('hidden');
+                resumeScanning();
+            }, 3500);
+            return;
+        }
+
+        // 4. Simpan ke tabel attendance (buku absen)
         const { error: insertErr } = await supabaseClient.from('attendance').insert([{
             qr_code: decodedText,
             user_type: userType,
@@ -126,14 +165,16 @@ async function onScanSuccess(decodedText) {
 
         if (insertErr) throw insertErr;
 
-        // Jika berhasil
+        // Berhasil Absen Baru
         if (statusText) statusText.innerText = "✅ PRESENSI BERHASIL!";
-        if (resultBox) resultBox.classList.remove('hidden');
-        if (resultName) resultName.innerText = userName;
-        if (resultType) resultType.innerText = userType;
-        
-        const now = new Date();
-        if (resultTime) resultTime.innerText = now.toLocaleTimeString('id-ID');
+        if (resultBox) {
+            resultBox.classList.remove('hidden');
+            if (resultIcon) { resultIcon.className = "w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md"; resultIcon.innerText = "✓"; }
+            if (resultName) resultName.innerText = userName;
+            if (resultType) resultType.innerText = userType;
+            const now = new Date();
+            if (resultTime) resultTime.innerText = now.toLocaleTimeString('id-ID');
+        }
 
         setTimeout(() => {
             if (resultBox) resultBox.classList.add('hidden');
@@ -142,8 +183,7 @@ async function onScanSuccess(decodedText) {
 
     } catch (err) {
         console.error("Detail Error:", err);
-        // Tampilkan pesan error asli dari Supabase di layar agar terlihat jelas
-        if (statusText) statusText.innerText = `⚠️ Gagal: ${err.message || "Kesalahan Server"}`;
+        if (statusText) statusText.innerText = `⚠️ Gagal: ${err.message || "Server Error"}`;
         setTimeout(resumeScanning, 4000);
     }
 }
@@ -164,5 +204,5 @@ function resumeScanning() {
 }
 
 function onScanFailure(error) {
-    // Abaikan frame kosong saat mencari QR
+    // Abaikan frame kecil saat mencari QR
 }
