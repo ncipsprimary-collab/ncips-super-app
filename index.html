@@ -68,7 +68,7 @@
             <div id="student-list-container" class="space-y-3"><div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat data...</div></div>
         </main>
 
-        <!-- VIEW: DATA GURU (BARU) -->
+        <!-- VIEW: DATA GURU (DENGAN TOMBOL UPLOAD MASSAL) -->
         <main id="view-teachers" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
             <div class="flex justify-between items-end mb-2">
                 <div><h2 class="text-xl font-black text-ncipsNavy">Data Guru</h2><p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Total: <span id="total-teachers">0</span> Guru</p></div>
@@ -77,14 +77,25 @@
                     <button id="btn-open-add-teacher" class="bg-gradient-to-r from-ncipsNavy to-slate-800 text-white px-4 py-2 rounded-full text-xs font-black shadow-lg hover:scale-105 transition-transform">+ Tambah</button>
                 </div>
             </div>
+
+            <!-- Panel Upload Massal Guru -->
+            <div class="bg-amber-50 border border-amber-100 rounded-[1.5rem] p-4 flex flex-col gap-3">
+                <p class="text-[9px] text-amber-800 font-bold uppercase tracking-wider text-center">Fitur Input Massal Guru</p>
+                <div class="flex justify-between gap-2">
+                    <button id="btn-download-teacher-template" class="flex-1 bg-white text-amber-700 text-xs font-bold py-2 rounded-xl border border-amber-200 shadow-sm hover:bg-amber-100">Unduh Template</button>
+                    <button id="btn-trigger-teacher-upload" class="flex-1 bg-amber-600 text-white text-xs font-bold py-2 rounded-xl shadow-sm hover:bg-amber-700">Upload CSV</button>
+                    <input type="file" id="input-teacher-csv-file" accept=".csv" class="hidden">
+                </div>
+                <p id="upload-teacher-status" class="text-xs text-center font-bold hidden"></p>
+            </div>
+
             <div id="teacher-list-container" class="space-y-3"><div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat data...</div></div>
         </main>
 
-        <!-- MODAL TAMBAH & DETAIL SISWA (TETAP SAMA SEPERTI SEBELUMNYA) -->
+        <!-- MODAL TAMBAH & DETAIL SISWA -->
         <div id="modal-add-student" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
-            <!-- (Sengaja dipersingkat di view ini agar tidak kepanjangan, isinya tetap di-handle js) -->
             <div class="bg-white rounded-t-[2.5rem] p-6 w-full h-[85vh] overflow-y-auto pb-20">
-                <div class="flex justify-between items-center mb-6"><h3 class="text-lg font-black">Form Siswa Baru</h3><button id="btn-close-add" class="w-8 h-8 bg-gray-100 rounded-full">✕</button></div>
+                <div class="flex justify-between items-center mb-6"><h3 class="text-lg font-black text-ncipsNavy">Form Siswa Baru</h3><button id="btn-close-add" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button></div>
                 <form id="form-add-student" class="space-y-4">
                     <input type="text" id="stu-name" placeholder="Nama Lengkap" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required>
                     <div class="grid grid-cols-2 gap-3"><input type="text" id="stu-nipd" placeholder="NIPD" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="text" id="stu-nisn" placeholder="NISN" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div>
@@ -98,7 +109,6 @@
             <div class="bg-gray-50 rounded-t-[2.5rem] w-full h-[90vh] overflow-y-auto flex flex-col relative">
                 <div class="flex justify-between items-center p-6 bg-white sticky top-0 z-20 shadow-sm rounded-t-[2.5rem]"><h3 class="text-lg font-black text-ncipsNavy">E-Card Siswa</h3><button id="btn-close-detail" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button></div>
                 <div class="p-6 space-y-6 pb-20 flex flex-col items-center">
-                    <!-- KARTU SISWA -->
                     <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template.png');">
                         <div class="h-[26%] w-full"></div>
                         <div class="px-5 flex items-center gap-4 mt-1">
@@ -112,7 +122,6 @@
                         <div class="px-5 mt-3 text-left"><h2 id="detail-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2><p id="detail-rombel-title" class="text-[9px] font-bold text-slate-700 mt-0.5">GRADE</p></div>
                         <div class="mt-auto mb-6 px-6 flex flex-col items-center"><div class="bg-white/95 p-1 rounded-xl w-28 h-28 flex items-center justify-center"><img id="detail-qr-image" src="" class="w-full h-full object-contain"></div></div>
                     </div>
-                    <!-- FORM EDIT SISWA -->
                     <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 w-full">
                         <form id="form-edit-student" class="space-y-4">
                             <input type="hidden" id="edit-id">
@@ -126,9 +135,9 @@
             </div>
         </div>
 
-        <!-- MODAL BARU: TAMBAH GURU -->
+        <!-- MODAL BARU: TAMBAH GURU (DENGAN TEMPAT & TANGGAL LAHIR) -->
         <div id="modal-add-teacher" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
-            <div class="bg-white rounded-t-[2.5rem] p-6 w-full shadow-2xl h-[70vh] overflow-y-auto pb-20">
+            <div class="bg-white rounded-t-[2.5rem] p-6 w-full shadow-2xl h-[85vh] overflow-y-auto pb-20">
                 <div class="flex justify-between items-center mb-6"><h3 class="text-lg font-black text-ncipsNavy">Form Guru Baru</h3><button id="btn-close-add-teacher" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button></div>
                 <form id="form-add-teacher" class="space-y-4">
                     <input type="text" id="tch-name" placeholder="Nama Lengkap Beserta Gelar" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required>
@@ -136,12 +145,17 @@
                         <input type="text" id="tch-nuptk" placeholder="NUPTK" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
                         <input type="text" id="tch-jk" placeholder="JK (L/P)" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
                     </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="tch-tempat" placeholder="Tempat Lahir" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                        <input type="date" id="tch-tgl" class="w-full p-3 bg-gray-50 rounded-xl text-sm text-gray-400">
+                    </div>
+                    <select id="tch-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm font-bold"><option value="AKTIF">AKTIF</option><option value="NONAKTIF">NONAKTIF</option></select>
                     <button type="submit" id="btn-save-teacher" class="w-full bg-gradient-to-r from-ncipsNavy to-slate-800 text-white font-bold py-4 rounded-2xl shadow-xl mt-4">Simpan Data Guru</button>
                 </form>
             </div>
         </div>
 
-        <!-- MODAL BARU: E-CARD GURU (Menggunakan template-guru.png) -->
+        <!-- MODAL: E-CARD GURU -->
         <div id="modal-detail-teacher" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end">
             <div class="bg-gray-50 rounded-t-[2.5rem] w-full shadow-2xl h-[90vh] overflow-y-auto flex flex-col relative">
                 <div class="flex justify-between items-center p-6 bg-white sticky top-0 z-20 shadow-sm rounded-t-[2.5rem]"><h3 class="text-lg font-black text-ncipsNavy">E-Card Guru</h3><button id="btn-close-detail-teacher" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button></div>
@@ -150,43 +164,24 @@
                     <!-- KARTU GURU -->
                     <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template-guru.png');">
                         <div class="h-[26%] w-full"></div>
-                        
-                        <!-- Penyesuaian Kolom NUPTK & JK untuk Guru -->
                         <div class="px-5 flex items-center gap-4 mt-1">
                             <div id="tch-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div>
                             <div class="flex-1 space-y-2 text-right pr-1 pt-2">
-                                <div class="border-b border-gray-200/80 pb-0.5">
-                                    <span class="text-[7px] font-black text-gray-500 block uppercase">NUPTK</span>
-                                    <span id="tch-nuptk-title" class="text-[10px] font-extrabold text-slate-800">-</span>
-                                </div>
-                                <div>
-                                    <span class="text-[7px] font-black text-gray-500 block uppercase">JK</span>
-                                    <span id="tch-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span>
-                                </div>
+                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block uppercase">NUPTK</span><span id="tch-nuptk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                <div><span class="text-[7px] font-black text-gray-500 block uppercase">JK</span><span id="tch-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
                             </div>
                         </div>
-
-                        <!-- Nama Guru -->
-                        <div class="px-5 mt-4 text-left">
-                            <h2 id="tch-name-title" class="text-sm sm:text-base font-black text-orange-600 uppercase tracking-wide leading-tight truncate">NAMA GURU</h2>
-                            <p class="text-[9px] font-bold text-slate-700 uppercase tracking-wider mt-0.5">TEACHER</p>
-                        </div>
-
-                        <!-- QR Code Guru -->
-                        <div class="mt-auto mb-6 px-6 flex flex-col items-center">
-                            <div class="bg-white/95 p-1 rounded-xl shadow-inner w-28 h-28 flex items-center justify-center border border-gray-300">
-                                <img id="tch-qr-image" src="" class="w-full h-full object-contain">
-                            </div>
-                            <p class="text-[5px] text-gray-400 font-mono mt-0.5 text-center truncate w-full" id="tch-qr-text">QR-XXX</p>
-                        </div>
+                        <div class="px-5 mt-4 text-left"><h2 id="tch-name-title" class="text-sm sm:text-base font-black text-orange-600 uppercase truncate">NAMA GURU</h2><p class="text-[9px] font-bold text-slate-700 uppercase mt-0.5">TEACHER</p></div>
+                        <div class="mt-auto mb-6 px-6 flex flex-col items-center"><div class="bg-white/95 p-1 rounded-xl w-28 h-28 flex items-center justify-center"><img id="tch-qr-image" src="" class="w-full h-full object-contain"></div><p class="text-[5px] text-gray-400 font-mono mt-0.5 w-full truncate text-center" id="tch-qr-text"></p></div>
                     </div>
 
-                    <!-- FORM EDIT GURU -->
+                    <!-- FORM EDIT GURU (DENGAN TEMPAT/TANGGAL LAHIR) -->
                     <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 w-full">
                         <form id="form-edit-teacher" class="space-y-4">
                             <input type="hidden" id="edit-tch-id">
                             <input type="text" id="edit-tch-name" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required>
                             <div class="grid grid-cols-2 gap-3"><input type="text" id="edit-tch-nuptk" placeholder="NUPTK" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="text" id="edit-tch-jk" placeholder="JK" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div>
+                            <div class="grid grid-cols-2 gap-3"><input type="text" id="edit-tch-tempat" placeholder="Tempat Lahir" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="date" id="edit-tch-tgl" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div>
                             <select id="edit-tch-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm font-bold text-ncipsNavy"><option value="AKTIF">AKTIF</option><option value="NONAKTIF">NONAKTIF</option></select>
                             <div class="flex gap-3"><button type="button" id="btn-delete-teacher" class="flex-1 bg-red-50 text-red-600 text-xs py-3 rounded-xl">Hapus</button><button type="submit" id="btn-update-teacher" class="flex-1 bg-ncipsNavy text-white text-xs py-3 rounded-xl">Simpan</button></div>
                         </form>
@@ -195,14 +190,11 @@
             </div>
         </div>
 
-        <!-- MENU BAWAH (DITAMBAH MENU GURU) -->
+        <!-- MENU BAWAH -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
             <nav class="bg-white/90 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-between items-center px-8 py-4">
                 <button id="nav-home" class="flex flex-col items-center gap-1.5 text-ncipsNavy scale-105"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[8px] font-black uppercase">Beranda</span></button>
-                
                 <button id="nav-students" class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-ncipsNavy"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><span class="text-[8px] font-bold uppercase">Siswa</span></button>
-                
-                <!-- ICON MENU GURU -->
                 <button id="nav-teachers" class="flex flex-col items-center gap-1.5 text-gray-400 hover:text-ncipsNavy"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><span class="text-[8px] font-bold uppercase">Guru</span></button>
             </nav>
         </div>
@@ -212,9 +204,9 @@
     <script type="module">
         import { checkSession, logout } from './auth.js';
         import { loadStudents, addStudent, openAddStudentModal, closeAddStudentModal, downloadCSVTemplate, handleCSVUpload, closeDetailModal, updateStudent, deleteStudent } from './students.js';
-        import { loadTeachers, addTeacher, openAddTeacherModal, closeAddTeacherModal, closeDetailTeacherModal, updateTeacher, deleteTeacher } from './teachers.js'; // FILE BARU KITA!
+        import { loadTeachers, addTeacher, openAddTeacherModal, closeAddTeacherModal, closeDetailTeacherModal, updateTeacher, deleteTeacher, downloadTeacherCSVTemplate, handleTeacherCSVUpload } from './teachers.js';
 
-        // Event Listeners Siswa (Tetap Sama)
+        // Event Siswa
         document.getElementById('btn-logout').addEventListener('click', logout);
         document.getElementById('btn-reload-students').addEventListener('click', loadStudents);
         document.getElementById('btn-open-add').addEventListener('click', openAddStudentModal);
@@ -227,7 +219,7 @@
         document.getElementById('form-edit-student').addEventListener('submit', updateStudent);
         document.getElementById('btn-delete-student').addEventListener('click', deleteStudent);
 
-        // Event Listeners Guru
+        // Event Guru (Dengan Pemicu CSV)
         document.getElementById('btn-reload-teachers').addEventListener('click', loadTeachers);
         document.getElementById('btn-open-add-teacher').addEventListener('click', openAddTeacherModal);
         document.getElementById('btn-close-add-teacher').addEventListener('click', closeAddTeacherModal);
@@ -235,6 +227,9 @@
         document.getElementById('form-add-teacher').addEventListener('submit', addTeacher);
         document.getElementById('form-edit-teacher').addEventListener('submit', updateTeacher);
         document.getElementById('btn-delete-teacher').addEventListener('click', deleteTeacher);
+        document.getElementById('btn-download-teacher-template').addEventListener('click', downloadTeacherCSVTemplate);
+        document.getElementById('btn-trigger-teacher-upload').addEventListener('click', () => document.getElementById('input-teacher-csv-file').click());
+        document.getElementById('input-teacher-csv-file').addEventListener('change', handleTeacherCSVUpload);
 
         checkSession(() => { loadStudents(); loadTeachers(); });
 
