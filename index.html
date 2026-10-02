@@ -120,6 +120,14 @@
                         </div>
                     </div>
 
+                    <!-- POPUP HASIL DI TENGAH KAMERA (SUPAYA TIDAK TERPOTONG) -->
+                    <div id="scanner-result" class="absolute inset-x-6 top-1/2 -translate-y-1/2 z-30 hidden bg-white/95 backdrop-blur-md border border-gray-200 p-5 rounded-2xl text-center shadow-2xl">
+                        <div id="result-icon" class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md">✓</div>
+                        <h3 id="result-name" class="font-black text-slate-800 text-base uppercase tracking-wide truncate">NAMA</h3>
+                        <p id="result-type" class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">STATUS</p>
+                        <p id="result-time" class="text-xs text-slate-700 font-bold mt-2 bg-gray-100 inline-block px-3 py-1 rounded-full">07:15:00</p>
+                    </div>
+
                     <div id="scanner-start-overlay" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/90 backdrop-blur-sm p-6 text-center">
                         <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 text-ncipsYellow shadow-lg border border-ncipsYellow/20">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -130,13 +138,6 @@
                 </div>
 
                 <p id="scanner-status" class="mt-4 text-[10px] font-bold text-gray-400 text-center uppercase tracking-widest">Kamera Belum Aktif</p>
-                
-                <div id="scanner-result" class="hidden mt-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 w-full p-5 rounded-2xl text-center shadow-sm">
-                    <div class="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center text-white text-3xl mx-auto mb-3 shadow-md">✓</div>
-                    <h3 id="result-name" class="font-black text-green-800 text-lg uppercase tracking-wide">NAMA</h3>
-                    <p id="result-type" class="text-[10px] text-green-600 font-bold uppercase tracking-widest mt-0.5">STATUS</p>
-                    <p id="result-time" class="text-sm text-green-700 font-bold mt-2 bg-white inline-block px-4 py-1 rounded-full border border-green-100">07:15:00</p>
-                </div>
             </div>
         </main>
 
@@ -253,12 +254,18 @@
             </div>
         </div>
 
-        <!-- MENU BAWAH -->
+        <!-- MENU BAWAH (DINAMIS: TAMPILAN SCAN MENYESUAIKAN) -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
             <nav class="bg-white/95 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-between items-center px-6 py-3">
                 <button id="nav-home" class="flex flex-col items-center gap-1 text-ncipsNavy w-12"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[7px] font-black uppercase">Beranda</span></button>
                 <button id="nav-students" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-12"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><span class="text-[7px] font-bold uppercase">Siswa</span></button>
-                <button id="nav-scanner" class="flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-8 hover:scale-110 transition-transform border-4 border-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg></button>
+                
+                <!-- TOMBOL SCAN (STANDAR KETIKA TIDAK AKTIF) -->
+                <button id="nav-scanner" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-12">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                    <span class="text-[7px] font-bold uppercase">Scan</span>
+                </button>
+
                 <button id="nav-teachers" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-12"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><span class="text-[7px] font-bold uppercase">Guru</span></button>
             </nav>
         </div>
@@ -305,19 +312,32 @@
             if(view === 'scanner') { startScanner(); } else { stopScanner(); }
 
             Object.keys(views).forEach(k => {
+                const btn = navs[k];
                 if(k === view) {
                     views[k].classList.replace('hidden', 'block') || views[k].classList.replace('hidden', 'flex');
-                    if(k !== 'scanner') {
-                        navs[k].classList.replace('text-gray-400', 'text-ncipsNavy');
-                        navs[k].querySelector('span').classList.replace('font-bold', 'font-black');
-                        navs[k].classList.add('scale-105');
+                    
+                    if(k === 'scanner') {
+                        // Tampilan Spesial Bulat Mengambang saat Scanner Aktif
+                        btn.className = "flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-8 hover:scale-110 transition-transform border-4 border-white";
+                        btn.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>`;
+                    } else {
+                        btn.classList.remove('text-gray-400');
+                        btn.classList.add('text-ncipsNavy', 'scale-105');
+                        const span = btn.querySelector('span');
+                        if(span) span.classList.replace('font-bold', 'font-black');
                     }
                 } else {
                     views[k].classList.replace('block', 'hidden') || views[k].classList.replace('flex', 'hidden');
-                    if(k !== 'scanner') {
-                        navs[k].classList.replace('text-ncipsNavy', 'text-gray-400');
-                        navs[k].querySelector('span').classList.replace('font-black', 'font-bold');
-                        navs[k].classList.remove('scale-105');
+                    
+                    if(k === 'scanner') {
+                        // Kembali ke Bentuk Standar Menu Saat Tidak Aktif
+                        btn.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-12";
+                        btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg><span class="text-[7px] font-bold uppercase">Scan</span>`;
+                    } else {
+                        btn.classList.remove('text-ncipsNavy', 'scale-105');
+                        btn.classList.add('text-gray-400');
+                        const span = btn.querySelector('span');
+                        if(span) span.classList.replace('font-black', 'font-bold');
                     }
                 }
             });
