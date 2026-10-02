@@ -3,7 +3,6 @@ import { supabaseClient } from './supabase.js';
 let html5QrCode;
 let isScanning = false;
 
-// 1. Fungsi ini dipanggil saat aplikasi dimuat untuk mengaktifkan tombol izin
 export function initScannerUI() {
     const btnStart = document.getElementById('btn-start-camera');
     if (btnStart) {
@@ -11,15 +10,13 @@ export function initScannerUI() {
     }
 }
 
-// 2. Fungsi ini berjalan otomatis saat kita pindah ke Tab Scanner
 export function startScanner() {
     document.getElementById('scanner-result').classList.add('hidden');
-    document.getElementById('scanner-start-overlay').classList.remove('hidden'); // Munculkan Tombol Izin
-    document.getElementById('scanner-overlay').classList.replace('flex', 'hidden'); // Sembunyikan Laser
+    document.getElementById('scanner-start-overlay').classList.remove('hidden');
+    document.getElementById('scanner-overlay').classList.replace('flex', 'hidden');
     document.getElementById('scanner-status').innerText = "SIAP DIGUNAKAN";
 }
 
-// 3. Fungsi memanggil kamera (HANYA AKTIF SAAT TOMBOL DIKETUK)
 async function startScanningProcess() {
     const startOverlay = document.getElementById('scanner-start-overlay');
     const scannerOverlay = document.getElementById('scanner-overlay');
@@ -29,29 +26,27 @@ async function startScanningProcess() {
     statusText.innerText = "MEMINTA IZIN KAMERA...";
 
     if (!html5QrCode) {
-        // Kita panggil inti mesin pemindai tanpa UI bawaannya yang jelek
         html5QrCode = new Html5Qrcode("qr-reader"); 
     }
 
     try {
         await html5QrCode.start(
-            { facingMode: "environment" }, // Paksa pakai kamera belakang
+            { facingMode: "environment" }, 
             { fps: 10, qrbox: { width: 250, height: 250 } },
             onScanSuccess,
             onScanFailure
         );
         isScanning = true;
-        scannerOverlay.classList.replace('hidden', 'flex'); // Nyalakan animasi laser!
+        scannerOverlay.classList.replace('hidden', 'flex');
         statusText.innerText = "ARAHKAN KAMERA KE QR CODE E-CARD";
     } catch (err) {
         console.error("Kesalahan Kamera:", err);
         startOverlay.classList.remove('hidden');
         statusText.innerText = "GAGAL MENGAKSES KAMERA!";
-        alert("Peringatan: Gagal mengakses kamera. Mohon pastikan browser (Chrome/Safari) memiliki izin mengakses kamera HP Anda.");
+        alert("Peringatan: Gagal mengakses kamera. Mohon pastikan browser Anda memiliki izin kamera.");
     }
 }
 
-// 4. Matikan kamera saat pindah menu
 export function stopScanner() {
     if (html5QrCode && isScanning) {
         html5QrCode.stop().then(() => {
@@ -61,11 +56,9 @@ export function stopScanner() {
     }
 }
 
-// 5. Proses Sukses Membaca QR Code
 async function onScanSuccess(decodedText) {
     if (!isScanning) return;
     
-    // Jeda kamera sebentar agar tidak scan berulang kali
     isScanning = false;
     html5QrCode.pause();
     document.getElementById('scanner-overlay').classList.replace('flex', 'hidden');
@@ -82,27 +75,37 @@ async function onScanSuccess(decodedText) {
         let userType = 'SISWA';
         let userName = '';
         
-        // Cek ke gudang siswa
-        let { data: student } = await supabaseClient.from('students').select('*').eq('qr_code', decodedText).single();
+        // Cek ke gudang siswa menggunakan maybeSingle (aman dari error 0 data)
+        let { data: student } = await supabaseClient
+            .from('students')
+            .select('*')
+            .eq('qr_code', decodedText)
+            .maybeSingle();
         
         if (student) {
             userName = student.full_name;
         } else {
             // Cek ke gudang guru
-            let { data: teacher } = await supabaseClient.from('teachers').select('*').eq('qr_code', decodedText).single();
+            let { data: teacher } = await supabaseClient
+                .from('teachers')
+                .select('*')
+                .eq('qr_code', decodedText)
+                .maybeSingle();
+                
             if (teacher) {
                 userType = 'GURU';
                 userName = teacher.full_name;
             }
         }
 
+        // Jika QR Code tidak terdaftar di database
         if (!userName) {
             statusText.innerText = "❌ QR CODE TIDAK DIKENAL!";
-            setTimeout(resumeScanning, 2500);
+            setTimeout(resumeScanning, 3فل00); // 3 detik lalu scan lagi
             return;
         }
 
-        // Simpan data masuk ke buku absen
+        // Simpan ke tabel attendance (buku absen)
         const { error: insertErr } = await supabaseClient.from('attendance').insert([{
             qr_code: decodedText,
             user_type: userType,
@@ -111,7 +114,7 @@ async function onScanSuccess(decodedText) {
 
         if (insertErr) throw insertErr;
 
-        // Munculkan notifikasi hijau sukses
+        // Tampilkan hasil sukses presensi
         statusText.innerText = "✅ PRESENSI BERHASIL!";
         resultBox.classList.remove('hidden');
         resultName.innerText = userName;
@@ -127,21 +130,21 @@ async function onScanSuccess(decodedText) {
         }, 3000);
 
     } catch (err) {
+        console.error(err);
         statusText.innerText = "⚠️ TERJADI GANGGUAN JARINGAN";
         setTimeout(resumeScanning, 3000);
     }
 }
 
-// Lanjutkan pemindaian kembali
 function resumeScanning() {
     if (html5QrCode) {
         html5QrCode.resume();
         isScanning = true;
         document.getElementById('scanner-overlay').classList.replace('hidden', 'flex');
-        document.getElementById('scanner-status').innerText = "ARAHKAN KAMERA KE QR CODE E-CARD";
+        statusText.innerText = "ARAHKAN KAMERA KE QR CODE E-CARD";
     }
 }
 
 function onScanFailure(error) {
-    // Mesin diam saat gagal membaca (normal)
+    // Abaikan gagal baca frame kecil
 }
