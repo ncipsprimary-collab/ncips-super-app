@@ -141,6 +141,44 @@
             </div>
         </main>
 
+        <!-- VIEW REKAP ABSENSI (PELABUHAN 1) -->
+        <main id="view-attendance" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
+            <div class="flex justify-between items-end mb-2">
+                <div>
+                    <h2 class="text-xl font-black text-ncipsNavy">Rekap Presensi</h2>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Total Hadir: <span id="total-attendance">0</span> Data</p>
+                </div>
+                <button id="btn-reload-attendance" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-gray-100 active:bg-gray-100">↻</button>
+            </div>
+
+            <!-- FILTER & EXPORT BAR -->
+            <div class="bg-white border border-gray-100 rounded-[1.5rem] p-4 flex flex-col gap-3 shadow-sm">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Pilih Tanggal</label>
+                        <input type="date" id="filter-date" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy">
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Tipe Pengguna</label>
+                        <select id="filter-type" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy">
+                            <option value="ALL">Semua (Siswa & Guru)</option>
+                            <option value="SISWA">Siswa Saja</option>
+                            <option value="GURU">Guru Saja</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-2 pt-1">
+                    <button id="btn-filter-attendance" class="flex-1 bg-ncipsNavy text-white text-xs font-bold py-2.5 rounded-xl shadow-sm hover:bg-slate-800">Terapkan Filter</button>
+                    <button id="btn-export-csv" class="flex-1 bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy text-xs font-black py-2.5 rounded-xl shadow-sm hover:scale-[1.02] transition-transform">Unduh CSV</button>
+                </div>
+            </div>
+
+            <!-- DAFTAR KEHADIRAN -->
+            <div id="attendance-list-container" class="space-y-3">
+                <div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat data presensi...</div>
+            </div>
+        </main>
+
         <!-- MODAL SISWA -->
         <div id="modal-add-student" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
             <div class="bg-white rounded-t-[2.5rem] p-6 w-full h-[85vh] overflow-y-auto pb-20">
@@ -164,8 +202,6 @@
                     <button id="btn-close-detail" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
                 </div>
                 <div class="p-6 space-y-6 pb-20 flex flex-col items-center">
-                    
-                    <!-- E-CARD SISWA (POSISI PRESISI + QR CODE W-32) -->
                     <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template.png');">
                         <div class="h-[26%] w-full"></div>
                         <div class="px-5 flex items-center gap-4 mt-1">
@@ -225,8 +261,6 @@
                     <button id="btn-close-detail-teacher" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
                 </div>
                 <div class="p-6 space-y-6 pb-20 flex flex-col items-center">
-                    
-                    <!-- E-CARD GURU (POSISI PRESISI + QR CODE W-32) -->
                     <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template-guru.png');">
                         <div class="h-[26%] w-full"></div>
                         <div class="px-5 flex items-center gap-4 mt-1">
@@ -262,19 +296,25 @@
             </div>
         </div>
 
-        <!-- MENU BAWAH (DINAMIS) -->
+        <!-- MENU BAWAH (5 MENU: BERANDA, SISWA, SCAN, ABSEN, GURU) -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
-            <nav class="bg-white/95 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-between items-center px-6 py-3">
-                <button id="nav-home" class="flex flex-col items-center gap-1 text-ncipsNavy w-12"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[7px] font-black uppercase">Beranda</span></button>
-                <button id="nav-students" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-12"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><span class="text-[7px] font-bold uppercase">Siswa</span></button>
+            <nav class="bg-white/95 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-between items-center px-5 py-3">
+                <button id="nav-home" class="flex flex-col items-center gap-1 text-ncipsNavy w-11"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[7px] font-black uppercase">Beranda</span></button>
+                <button id="nav-students" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><span class="text-[7px] font-bold uppercase">Siswa</span></button>
                 
                 <!-- TOMBOL SCAN -->
-                <button id="nav-scanner" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-12">
+                <button id="nav-scanner" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                     <span class="text-[7px] font-bold uppercase">Scan</span>
                 </button>
 
-                <button id="nav-teachers" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-12"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><span class="text-[7px] font-bold uppercase">Guru</span></button>
+                <!-- TOMBOL ABSEN (REKAP) -->
+                <button id="nav-attendance" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    <span class="text-[7px] font-bold uppercase">Absen</span>
+                </button>
+
+                <button id="nav-teachers" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><span class="text-[7px] font-bold uppercase">Guru</span></button>
             </nav>
         </div>
     </div>
@@ -285,6 +325,7 @@
         import { loadStudents, addStudent, openAddStudentModal, closeAddStudentModal, downloadCSVTemplate, handleCSVUpload, closeDetailModal, updateStudent, deleteStudent } from './students.js';
         import { loadTeachers, addTeacher, openAddTeacherModal, closeAddTeacherModal, closeDetailTeacherModal, updateTeacher, deleteTeacher, downloadTeacherCSVTemplate, handleTeacherCSVUpload } from './teachers.js';
         import { initScannerUI, startScanner, stopScanner } from './scanner.js';
+        import { loadAttendance, exportAttendanceCSV } from './attendance.js';
 
         document.getElementById('btn-logout').addEventListener('click', logout);
         initScannerUI();
@@ -311,13 +352,31 @@
         document.getElementById('btn-trigger-teacher-upload').addEventListener('click', () => document.getElementById('input-teacher-csv-file').click());
         document.getElementById('input-teacher-csv-file').addEventListener('change', handleTeacherCSVUpload);
 
-        checkSession(() => { loadStudents(); loadTeachers(); });
+        // Event listener untuk rekap absensi
+        document.getElementById('btn-reload-attendance').addEventListener('click', loadAttendance);
+        document.getElementById('btn-filter-attendance').addEventListener('click', loadAttendance);
+        document.getElementById('btn-export-csv').addEventListener('click', exportAttendanceCSV);
+
+        checkSession(() => { loadStudents(); loadTeachers(); loadAttendance(); });
 
         window.switchView = function(view) {
-            const views = { home: document.getElementById('view-home'), students: document.getElementById('view-students'), teachers: document.getElementById('view-teachers'), scanner: document.getElementById('view-scanner') };
-            const navs = { home: document.getElementById('nav-home'), students: document.getElementById('nav-students'), teachers: document.getElementById('nav-teachers'), scanner: document.getElementById('nav-scanner') };
+            const views = { 
+                home: document.getElementById('view-home'), 
+                students: document.getElementById('view-students'), 
+                teachers: document.getElementById('view-teachers'), 
+                scanner: document.getElementById('view-scanner'),
+                attendance: document.getElementById('view-attendance') 
+            };
+            const navs = { 
+                home: document.getElementById('nav-home'), 
+                students: document.getElementById('nav-students'), 
+                teachers: document.getElementById('nav-teachers'), 
+                scanner: document.getElementById('nav-scanner'),
+                attendance: document.getElementById('nav-attendance') 
+            };
             
             if(view === 'scanner') { startScanner(); } else { stopScanner(); }
+            if(view === 'attendance') { loadAttendance(); }
 
             Object.keys(views).forEach(k => {
                 const btn = navs[k];
@@ -325,9 +384,8 @@
                     views[k].classList.replace('hidden', 'block') || views[k].classList.replace('hidden', 'flex');
                     
                     if(k === 'scanner') {
-                        // Tampilan Spesial Bulat Mengambang saat Scanner Aktif
-                        btn.className = "flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-8 hover:scale-110 transition-transform border-4 border-white";
-                        btn.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>`;
+                        btn.className = "flex flex-col items-center justify-center w-12 h-12 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-8 hover:scale-110 transition-transform border-4 border-white";
+                        btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>`;
                     } else {
                         btn.classList.remove('text-gray-400');
                         btn.classList.add('text-ncipsNavy', 'scale-105');
@@ -338,8 +396,7 @@
                     views[k].classList.replace('block', 'hidden') || views[k].classList.replace('flex', 'hidden');
                     
                     if(k === 'scanner') {
-                        // Kembali ke Bentuk Standar Menu Saat Tidak Aktif
-                        btn.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-12";
+                        btn.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11";
                         btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg><span class="text-[7px] font-bold uppercase">Scan</span>`;
                     } else {
                         btn.classList.remove('text-ncipsNavy', 'scale-105');
@@ -355,6 +412,7 @@
         document.getElementById('nav-students').addEventListener('click', () => window.switchView('students'));
         document.getElementById('nav-teachers').addEventListener('click', () => window.switchView('teachers'));
         document.getElementById('nav-scanner').addEventListener('click', () => window.switchView('scanner'));
+        document.getElementById('nav-attendance').addEventListener('click', () => window.switchView('attendance'));
     </script>
 </body>
 </html>
