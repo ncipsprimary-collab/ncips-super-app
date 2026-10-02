@@ -1,4 +1,4 @@
-import { supabaseClient } from './supabase.js';
+import { supabase } from './supabase.js';
 
 export async function loadStudents() {
     const container = document.getElementById('student-list-container');
@@ -6,7 +6,7 @@ export async function loadStudents() {
     container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Sedang menyinkronkan data...</div>`;
 
     try {
-        const { data: students, error } = await supabaseClient
+        const { data: students, error } = await supabase
             .from('students')
             .select('*')
             .order('full_name', { ascending: true });
@@ -68,7 +68,7 @@ window.viewStudentDetail = async function(studentId) {
     modal.classList.add('flex');
 
     try {
-        const { data: student, error } = await supabaseClient
+        const { data: student, error } = await supabase
             .from('students')
             .select('*')
             .eq('id', studentId)
@@ -135,7 +135,7 @@ export async function updateStudent(event) {
     };
 
     try {
-        const { error } = await supabaseClient.from('students').update(payload).eq('id', id);
+        const { error } = await supabase.from('students').update(payload).eq('id', id);
         if (error) throw error;
         
         closeDetailModal();
@@ -156,7 +156,7 @@ export async function deleteStudent() {
     if (!confirmDelete) return;
 
     try {
-        const { error } = await supabaseClient.from('students').delete().eq('id', id);
+        const { error } = await supabase.from('students').delete().eq('id', id);
         if (error) throw error;
         
         closeDetailModal();
@@ -186,7 +186,7 @@ export async function addStudent(event) {
     };
 
     try {
-        const { error } = await supabaseClient.from('students').insert([payload]);
+        const { error } = await supabase.from('students').insert([payload]);
         if (error) throw error;
         
         closeAddStudentModal();
@@ -248,7 +248,7 @@ export function handleCSVUpload(event) {
             });
 
             try {
-                const { error } = await supabaseClient.from('students').insert(dataToInsert);
+                const { error } = await supabase.from('students').insert(dataToInsert);
                 if (error) throw error;
                 statusText.innerText = `✅ Berhasil mengunggah ${rows.length} siswa!`;
                 statusText.classList.replace('text-blue-600', 'text-green-600');
