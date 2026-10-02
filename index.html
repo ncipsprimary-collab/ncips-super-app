@@ -120,7 +120,7 @@
                         </div>
                     </div>
 
-                    <!-- POPUP HASIL DI TENGAH KAMERA (SUPAYA TIDAK TERPOTONG) -->
+                    <!-- POPUP HASIL DI TENGAH KAMERA -->
                     <div id="scanner-result" class="absolute inset-x-6 top-1/2 -translate-y-1/2 z-30 hidden bg-white/95 backdrop-blur-md border border-gray-200 p-5 rounded-2xl text-center shadow-2xl">
                         <div id="result-icon" class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md">✓</div>
                         <h3 id="result-name" class="font-black text-slate-800 text-base uppercase tracking-wide truncate">NAMA</h3>
@@ -164,22 +164,29 @@
                     <button id="btn-close-detail" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
                 </div>
                 <div class="p-6 space-y-6 pb-20 flex flex-col items-center">
-                    <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template.png');">
-                        <div class="h-[26%] w-full"></div>
-                        <div class="px-5 flex items-center gap-4 mt-1">
-                            <div id="detail-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div>
-                            <div class="flex-1 space-y-1 text-right pr-1">
-                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NISN</span><span id="detail-nisn-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
-                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NIPD</span><span id="detail-nipd-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
-                                <div><span class="text-[7px] font-black text-gray-500 block">JK</span><span id="detail-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                    <!-- E-CARD SISWA DENGAN QR CODE DIPERBESAR (w-36 h-36) -->
+                    <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center flex flex-col items-center justify-between py-5 px-6" style="background-image: url('template.png');">
+                        <div class="w-full">
+                            <div class="h-10 w-full"></div>
+                            <div class="flex items-center gap-4 mt-1">
+                                <div id="detail-avatar-container" class="w-16 h-16 sm:w-18 sm:h-18 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-xl overflow-hidden"></div>
+                                <div class="flex-1 space-y-1 text-right pr-1">
+                                    <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NISN</span><span id="detail-nisn-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                    <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NIPD</span><span id="detail-nipd-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                    <div><span class="text-[7px] font-black text-gray-500 block">JK</span><span id="detail-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-left">
+                                <h2 id="detail-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2>
+                                <p id="detail-rombel-title" class="text-[9px] font-bold text-slate-700 mt-0.5">GRADE</p>
                             </div>
                         </div>
-                        <div class="px-5 mt-3 text-left">
-                            <h2 id="detail-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2>
-                            <p id="detail-rombel-title" class="text-[9px] font-bold text-slate-700 mt-0.5">GRADE</p>
-                        </div>
-                        <div class="mt-auto mb-6 px-6 flex flex-col items-center">
-                            <div class="bg-white/95 p-1 rounded-xl w-28 h-28 flex items-center justify-center"><img id="detail-qr-image" src="" class="w-full h-full object-contain"></div>
+                        
+                        <!-- QR CODE LEBIH BESAR -->
+                        <div class="flex flex-col items-center mt-2">
+                            <div class="bg-white/95 p-1 rounded-xl w-36 h-36 sm:w-38 sm:h-38 flex items-center justify-center shadow-md">
+                                <img id="detail-qr-image" src="" class="w-full h-full object-contain">
+                            </div>
                             <p class="text-[5px] text-gray-400 font-mono mt-0.5 w-full truncate text-center" id="detail-qr-text"></p>
                         </div>
                     </div>
@@ -221,21 +228,28 @@
                     <button id="btn-close-detail-teacher" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
                 </div>
                 <div class="p-6 space-y-6 pb-20 flex flex-col items-center">
-                    <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template-guru.png');">
-                        <div class="h-[26%] w-full"></div>
-                        <div class="px-5 flex items-center gap-4 mt-1">
-                            <div id="tch-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div>
-                            <div class="flex-1 space-y-2 text-right pr-1 pt-2">
-                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block uppercase">NUPTK</span><span id="tch-nuptk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
-                                <div><span class="text-[7px] font-black text-gray-500 block uppercase">JK</span><span id="tch-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                    <!-- E-CARD GURU DENGAN QR CODE DIPERBESAR (w-36 h-36) -->
+                    <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center flex flex-col items-center justify-between py-5 px-6" style="background-image: url('template-guru.png');">
+                        <div class="w-full">
+                            <div class="h-10 w-full"></div>
+                            <div class="flex items-center gap-4 mt-1">
+                                <div id="tch-avatar-container" class="w-16 h-16 sm:w-18 sm:h-18 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-xl overflow-hidden"></div>
+                                <div class="flex-1 space-y-2 text-right pr-1 pt-1">
+                                    <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block uppercase">NUPTK</span><span id="tch-nuptk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                    <div><span class="text-[7px] font-black text-gray-500 block uppercase">JK</span><span id="tch-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-left">
+                                <h2 id="tch-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2>
+                                <p class="text-[9px] font-bold text-slate-700 mt-0.5">TEACHER</p>
                             </div>
                         </div>
-                        <div class="px-5 mt-4 text-left">
-                            <h2 id="tch-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2>
-                            <p class="text-[9px] font-bold text-slate-700 mt-0.5">TEACHER</p>
-                        </div>
-                        <div class="mt-auto mb-6 px-6 flex flex-col items-center">
-                            <div class="bg-white/95 p-1 rounded-xl w-28 h-28 flex items-center justify-center"><img id="tch-qr-image" src="" class="w-full h-full object-contain"></div>
+
+                        <!-- QR CODE LEBIH BESAR -->
+                        <div class="flex flex-col items-center mt-2">
+                            <div class="bg-white/95 p-1 rounded-xl w-36 h-36 sm:w-38 sm:h-38 flex items-center justify-center shadow-md">
+                                <img id="tch-qr-image" src="" class="w-full h-full object-contain">
+                            </div>
                             <p class="text-[5px] text-gray-400 font-mono mt-0.5 w-full truncate text-center" id="tch-qr-text"></p>
                         </div>
                     </div>
@@ -254,13 +268,13 @@
             </div>
         </div>
 
-        <!-- MENU BAWAH (DINAMIS: TAMPILAN SCAN MENYESUAIKAN) -->
+        <!-- MENU BAWAH (DINAMIS) -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
             <nav class="bg-white/95 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-between items-center px-6 py-3">
                 <button id="nav-home" class="flex flex-col items-center gap-1 text-ncipsNavy w-12"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[7px] font-black uppercase">Beranda</span></button>
                 <button id="nav-students" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-12"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><span class="text-[7px] font-bold uppercase">Siswa</span></button>
                 
-                <!-- TOMBOL SCAN (STANDAR KETIKA TIDAK AKTIF) -->
+                <!-- TOMBOL SCAN -->
                 <button id="nav-scanner" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-12">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                     <span class="text-[7px] font-bold uppercase">Scan</span>
