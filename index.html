@@ -7,6 +7,8 @@
     <title>NCIPS Super App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- SheetJS untuk Export ke Excel (.xlsx) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
         tailwind.config = { 
@@ -141,7 +143,7 @@
             </div>
         </main>
 
-        <!-- VIEW REKAP ABSENSI (PELABUHAN 1) -->
+        <!-- VIEW REKAP ABSENSI -->
         <main id="view-attendance" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
             <div class="flex justify-between items-end mb-2">
                 <div>
@@ -169,7 +171,7 @@
                 </div>
                 <div class="flex gap-2 pt-1">
                     <button id="btn-filter-attendance" class="flex-1 bg-ncipsNavy text-white text-xs font-bold py-2.5 rounded-xl shadow-sm hover:bg-slate-800">Terapkan Filter</button>
-                    <button id="btn-export-csv" class="flex-1 bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy text-xs font-black py-2.5 rounded-xl shadow-sm hover:scale-[1.02] transition-transform">Unduh CSV</button>
+                    <button id="btn-export-excel" class="flex-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs font-black py-2.5 rounded-xl shadow-sm hover:scale-[1.02] transition-transform flex items-center justify-center gap-1">📥 Unduh Excel</button>
                 </div>
             </div>
 
@@ -296,24 +298,13 @@
             </div>
         </div>
 
-        <!-- MENU BAWAH (5 MENU: BERANDA, SISWA, SCAN, ABSEN, GURU) -->
+        <!-- MENU BAWAH (SEMUA MENU MEMILIKI EFEK ELEGAN SAAT AKTIF) -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
             <nav class="bg-white/95 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-between items-center px-5 py-3">
-                <button id="nav-home" class="flex flex-col items-center gap-1 text-ncipsNavy w-11"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[7px] font-black uppercase">Beranda</span></button>
+                <button id="nav-home" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[7px] font-bold uppercase">Beranda</span></button>
                 <button id="nav-students" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><span class="text-[7px] font-bold uppercase">Siswa</span></button>
-                
-                <!-- TOMBOL SCAN -->
-                <button id="nav-scanner" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                    <span class="text-[7px] font-bold uppercase">Scan</span>
-                </button>
-
-                <!-- TOMBOL ABSEN (REKAP) -->
-                <button id="nav-attendance" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                    <span class="text-[7px] font-bold uppercase">Absen</span>
-                </button>
-
+                <button id="nav-scanner" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg><span class="text-[7px] font-bold uppercase">Scan</span></button>
+                <button id="nav-attendance" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg><span class="text-[7px] font-bold uppercase">Absen</span></button>
                 <button id="nav-teachers" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><span class="text-[7px] font-bold uppercase">Guru</span></button>
             </nav>
         </div>
@@ -325,7 +316,7 @@
         import { loadStudents, addStudent, openAddStudentModal, closeAddStudentModal, downloadCSVTemplate, handleCSVUpload, closeDetailModal, updateStudent, deleteStudent } from './students.js';
         import { loadTeachers, addTeacher, openAddTeacherModal, closeAddTeacherModal, closeDetailTeacherModal, updateTeacher, deleteTeacher, downloadTeacherCSVTemplate, handleTeacherCSVUpload } from './teachers.js';
         import { initScannerUI, startScanner, stopScanner } from './scanner.js';
-        import { loadAttendance, exportAttendanceCSV } from './attendance.js';
+        import { loadAttendance, exportAttendanceExcel } from './attendance.js';
 
         document.getElementById('btn-logout').addEventListener('click', logout);
         initScannerUI();
@@ -352,12 +343,27 @@
         document.getElementById('btn-trigger-teacher-upload').addEventListener('click', () => document.getElementById('input-teacher-csv-file').click());
         document.getElementById('input-teacher-csv-file').addEventListener('change', handleTeacherCSVUpload);
 
-        // Event listener untuk rekap absensi
         document.getElementById('btn-reload-attendance').addEventListener('click', loadAttendance);
         document.getElementById('btn-filter-attendance').addEventListener('click', loadAttendance);
-        document.getElementById('btn-export-csv').addEventListener('click', exportAttendanceCSV);
+        document.getElementById('btn-export-excel').addEventListener('click', exportAttendanceExcel);
 
         checkSession(() => { loadStudents(); loadTeachers(); loadAttendance(); });
+
+        const navIcons = {
+            home: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>`,
+            students: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`,
+            scanner: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>`,
+            attendance: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>`,
+            teachers: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>`
+        };
+
+        const navLabels = {
+            home: "Beranda",
+            students: "Siswa",
+            scanner: "Scan",
+            attendance: "Absen",
+            teachers: "Guru"
+        };
 
         window.switchView = function(view) {
             const views = { 
@@ -383,27 +389,15 @@
                 if(k === view) {
                     views[k].classList.replace('hidden', 'block') || views[k].classList.replace('hidden', 'flex');
                     
-                    if(k === 'scanner') {
-                        btn.className = "flex flex-col items-center justify-center w-12 h-12 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-8 hover:scale-110 transition-transform border-4 border-white";
-                        btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>`;
-                    } else {
-                        btn.classList.remove('text-gray-400');
-                        btn.classList.add('text-ncipsNavy', 'scale-105');
-                        const span = btn.querySelector('span');
-                        if(span) span.classList.replace('font-bold', 'font-black');
-                    }
+                    // SEMUA MENU KETIKA AKTIF AKAN BERUBAH MENJADI TOMBOL BULAT MENGAMBANG ELEGAN
+                    btn.className = "flex flex-col items-center justify-center w-12 h-12 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-8 hover:scale-110 transition-transform border-4 border-white";
+                    btn.innerHTML = navIcons[k];
                 } else {
                     views[k].classList.replace('block', 'hidden') || views[k].classList.replace('flex', 'hidden');
                     
-                    if(k === 'scanner') {
-                        btn.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11";
-                        btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg><span class="text-[7px] font-bold uppercase">Scan</span>`;
-                    } else {
-                        btn.classList.remove('text-ncipsNavy', 'scale-105');
-                        btn.classList.add('text-gray-400');
-                        const span = btn.querySelector('span');
-                        if(span) span.classList.replace('font-black', 'font-bold');
-                    }
+                    // KETIKA TIDAK AKTIF, KEMBALI KE BENTUK STANDAR
+                    btn.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11";
+                    btn.innerHTML = `${navIcons[k]}<span class="text-[7px] font-bold uppercase">${navLabels[k]}</span>`;
                 }
             });
         };
