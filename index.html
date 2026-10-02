@@ -415,6 +415,7 @@
         import { loadTeachers, addTeacher, openAddTeacherModal, closeAddTeacherModal, closeDetailTeacherModal, updateTeacher, deleteTeacher, downloadTeacherCSVTemplate, handleTeacherCSVUpload } from './teachers.js';
         import { initScannerUI, startScanner, stopScanner } from './scanner.js';
         import { loadAttendance, exportAttendanceExcel } from './attendance.js';
+        import { initPiketForm, savePiketEntry, loadPiketToday } from './piket.js';
 
         document.getElementById('btn-logout').addEventListener('click', logout);
         initScannerUI();
