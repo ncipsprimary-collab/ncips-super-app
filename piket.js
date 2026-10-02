@@ -103,7 +103,7 @@ export async function loadPiketToday() {
             .select('*')
             .eq('date', today)
             .in('status', ['SAKIT', 'IZIN', 'ALPHA', 'TERLAMBAT'])
-            .order('time', { ascending: false });
+            .order('scan_time', { ascending: false });
 
         if (error) throw error;
 
