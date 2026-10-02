@@ -8,8 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    
-    <!-- Animasi Laser Pemindai Ditambahkan di Sini -->
     <script>
         tailwind.config = { 
             theme: { 
@@ -22,7 +20,6 @@
         }
     </script>
     <style>
-        /* Agar video dari sistem kamera rapi di dalam bingkai */
         #qr-reader video { object-fit: cover; width: 100%; height: 100%; border-radius: 1rem; }
     </style>
 </head>
@@ -56,6 +53,7 @@
             </div>
         </header>
 
+        <!-- BERANDA -->
         <main id="view-home" class="flex-1 overflow-y-auto p-6 space-y-6 pb-32 block">
             <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden">
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-gradient-to-br from-ncipsYellow/20 to-ncipsGold/5 rounded-full blur-2xl"></div>
@@ -104,34 +102,26 @@
             <div id="teacher-list-container" class="space-y-3"><div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat data...</div></div>
         </main>
 
-        <!-- VIEW SCANNER PRESENSI KEREN (DIPERBARUI) -->
+        <!-- VIEW SCANNER PRESENSI -->
         <main id="view-scanner" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
             <div class="flex justify-between items-end mb-2">
                 <div><h2 class="text-xl font-black text-ncipsNavy">Radar Presensi</h2><p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Arahkan kamera ke E-Card</p></div>
             </div>
             
             <div class="bg-white p-4 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col items-center relative">
-                
-                <!-- BINGKAI KAMERA CUSTOM BERGAYA MASA DEPAN -->
                 <div class="relative w-full max-w-sm aspect-[4/5] rounded-2xl overflow-hidden bg-slate-900 flex items-center justify-center shadow-inner border-4 border-slate-800">
-                    
-                    <!-- Area asli kamera (disembunyikan antarmuka jeleknya via style) -->
                     <div id="qr-reader" class="w-full h-full"></div>
                     
-                    <!-- Efek Overlay Laser & Sudut Target (Hanya Muncul Saat Kamera Aktif) -->
                     <div id="scanner-overlay" class="absolute inset-0 z-10 pointer-events-none hidden items-center justify-center">
                         <div class="w-[70%] aspect-square relative">
-                            <!-- Sudut-Sudut Pembidik Keren -->
                             <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-ncipsYellow rounded-tl-lg"></div>
                             <div class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-ncipsYellow rounded-tr-lg"></div>
                             <div class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-ncipsYellow rounded-bl-lg"></div>
                             <div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-ncipsYellow rounded-br-lg"></div>
-                            <!-- Garis Laser Pemindai Animasi -->
                             <div class="w-full h-0.5 bg-ncipsYellow shadow-[0_0_15px_#FFD700] absolute top-1/2 animate-laser-scan"></div>
                         </div>
                     </div>
 
-                    <!-- Tombol Perizinan Pencegah Error (Hanya diklik 1x oleh user) -->
                     <div id="scanner-start-overlay" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/90 backdrop-blur-sm p-6 text-center">
                         <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 text-ncipsYellow shadow-lg border border-ncipsYellow/20">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -143,7 +133,6 @@
 
                 <p id="scanner-status" class="mt-4 text-[10px] font-bold text-gray-400 text-center uppercase tracking-widest">Kamera Belum Aktif</p>
                 
-                <!-- Kartu Hasil Sukses -->
                 <div id="scanner-result" class="hidden mt-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 w-full p-5 rounded-2xl text-center shadow-sm">
                     <div class="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center text-white text-3xl mx-auto mb-3 shadow-md">✓</div>
                     <h3 id="result-name" class="font-black text-green-800 text-lg uppercase tracking-wide">NAMA</h3>
@@ -153,90 +142,236 @@
             </div>
         </main>
 
-        <!-- KUMPULAN MODAL (FORM SISWA & GURU TETAP SAMA) -->
-        <div id="modal-add-student" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end"><div class="bg-white rounded-t-[2.5rem] p-6 w-full h-[85vh] overflow-y-auto pb-20"><div class="flex justify-between items-center mb-6"><h3 class="text-lg font-black text-ncipsNavy">Form Siswa Baru</h3><button id="btn-close-add" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button></div><form id="form-add-student" class="space-y-4"><input type="text" id="stu-name" placeholder="Nama Lengkap" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required><div class="grid grid-cols-2 gap-3"><input type="text" id="stu-nipd" placeholder="NIPD" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="text" id="stu-nisn" placeholder="NISN" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div><div class="grid grid-cols-2 gap-3"><input type="text" id="stu-rombel" placeholder="Rombel" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><select id="stu-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><option value="AKTIF">Aktif</option></select></div><button type="submit" id="btn-save-student" class="w-full bg-ncipsNavy text-white font-bold py-4 rounded-2xl">Simpan</button></form></div></div>
-        <div id="modal-detail-student" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end"><div class="bg-gray-50 rounded-t-[2.5rem] w-full h-[90vh] overflow-y-auto flex flex-col relative"><div class="flex justify-between items-center p-6 bg-white sticky top-0 z-20 shadow-sm rounded-t-[2.5rem]"><h3 class="text-lg font-black text-ncipsNavy">E-Card Siswa</h3><button id="btn-close-detail" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button></div><div class="p-6 space-y-6 pb-20 flex flex-col items-center"><div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template.png');"><div class="h-[26%] w-full"></div><div class="px-5 flex items-center gap-4 mt-1"><div id="detail-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div><div class="flex-1 space-y-1 text-right pr-1"><div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NISN</span><span id="detail-nisn-title" class="text-[10px] font-extrabold text-slate-800">-</span></div><div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NIPD</span><span id="detail-nipd-title" class="text-[10px] font-extrabold text-slate-800">-</span></div><div><span class="text-[7px] font-black text-gray-500 block">JK</span><span id="detail-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div></div></div><div class="px-5 mt-3 text-left"><h2 id="detail-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2><p id="detail-rombel-title" class="text-[9px] font-bold text-slate-700 mt-0.5">GRADE</p></div><div class="mt-auto mb-6 px-6 flex flex-col items-center"><div class="bg-white/95 p-1 rounded-xl w-28 h-28 flex items-center justify-center"><img id="detail-qr-image" src="" class="w-full h-full object-contain"></div></div></div><div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 w-full"><form id="form-edit-student" class="space-y-4"><input type="hidden" id="edit-id"><input type="text" id="edit-name" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required><div class="grid grid-cols-3 gap-2"><input type="text" id="edit-nisn" placeholder="NISN" class="w-full p-2 bg-gray-50 rounded-xl text-xs"><input type="text" id="edit-nipd" placeholder="NIPD" class="w-full p-2 bg-gray-50 rounded-xl text-xs"><input type="text" id="edit-jk" placeholder="JK" class="w-full p-2 bg-gray-50 rounded-xl text-xs"></div><div class="grid grid-cols-2 gap-3"><input type="text" id="edit-rombel" placeholder="Rombel" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><select id="edit-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><option value="AKTIF">AKTIF</option></select></div><div class="flex gap-3"><button type="button" id="btn-delete-student" class="flex-1 bg-red-50 text-red-600 text-xs py-3 rounded-xl">Hapus</button><button type="submit" id="btn-update-student" class="flex-1 bg-blue-600 text-white text-xs py-3 rounded-xl">Simpan</button></div></form></div></div></div></div>
-        <div id="modal-add-teacher" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end"><div class="bg-white rounded-t-[2.5rem] p-6 w-full shadow-2xl h-[85vh] overflow-y-auto pb-20"><div class="flex justify-between items-center mb-6"><h3 class="text-lg font-black text-ncipsNavy">Form Guru Baru</h3><button id="btn-close-add-teacher" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button></div><form id="form-add-teacher" class="space-y-4"><input type="text" id="tch-name" placeholder="Nama Lengkap" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required><div class="grid grid-cols-2 gap-3"><input type="text" id="tch-nuptk" placeholder="NUPTK" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="text" id="tch-jk" placeholder="JK" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div><div class="grid grid-cols-2 gap-3"><input type="text" id="tch-tempat" placeholder="Tempat Lahir" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="date" id="tch-tgl" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div><select id="tch-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm font-bold"><option value="AKTIF">AKTIF</option></select><button type="submit" id="btn-save-teacher" class="w-full bg-ncipsNavy text-white font-bold py-4 rounded-2xl">Simpan</button></form></div></div>
-        <div id="modal-detail-teacher" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end"><div class="bg-gray-50 rounded-t-[2.5rem] w-full shadow-2xl h-[90vh] overflow-y-auto flex flex-col relative"><div class="flex justify-between items-center p-6 bg-white sticky top-0 z-20 shadow-sm rounded-t-[2.5rem]"><h3 class="text-lg font-black text-ncipsNavy">E-Card Guru</h3><button id="btn-close-detail-teacher" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button></div><div class="p-6 space-y-6 pb-20 flex flex-col items-center"><div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template-guru.png');"><div class="h-[26%] w-full"></div><div class="px-5 flex items-center gap-4 mt-1"><div id="tch-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div><div class="flex-1 space-y-2 text-right pr-1 pt-2"><div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block uppercase">NUPTK</span><span id="tch-nuptk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div><div><span class="text-[7px] font-black text-gray-500 block uppercase">JK</span><span id="tch-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div></div></div><div class="px-5 mt-4 text-left"><h2 id="tch-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2><p class="text-[9px] font-bold text-slate-700 mt-0.5">TEACHER</p></div><div class="mt-auto mb-6 px-6 flex flex-col items-center"><div class="bg-white/95 p-1 rounded-xl w-28 h-28 flex items-center justify-center"><img id="tch-qr-image" src="" class="w-full h-full object-contain"></div></div></div><div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 w-full"><form id="form-edit-teacher" class="space-y-4"><input type="hidden" id="edit-tch-id"><input type="text" id="edit-tch-name" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required><div class="grid grid-cols-2 gap-3"><input type="text" id="edit-tch-nuptk" placeholder="NUPTK" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="text" id="edit-tch-jk" placeholder="JK" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div><div class="grid grid-cols-2 gap-3"><input type="text" id="edit-tch-tempat" placeholder="Tempat Lahir" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="date" id="edit-tch-tgl" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div><select id="edit-tch-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm font-bold text-ncipsNavy"><option value="AKTIF">AKTIF</option><option value="NONAKTIF">NONAKTIF</option></select><div class="flex gap-3"><button type="button" id="btn-delete-teacher" class="flex-1 bg-red-50 text-red-600 text-xs py-3 rounded-xl">Hapus</button><button type="submit" id="btn-update-teacher" class="flex-1 bg-ncipsNavy text-white text-xs py-3 rounded-xl">Simpan</button></div></form></div></div></div></div>
+        <!-- ================= MODAL SISWA ================= -->
+        <div id="modal-add-student" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
+            <div class="bg-white rounded-t-[2.5rem] p-6 w-full h-[85vh] overflow-y-auto pb-20">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-black text-ncipsNavy">Form Siswa Baru</h3>
+                    <button id="btn-close-add" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
+                </div>
+                <form id="form-add-student" class="space-y-4">
+                    <input type="text" id="stu-name" placeholder="Nama Lengkap" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="stu-nipd" placeholder="NIPD" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                        <input type="text" id="stu-nisn" placeholder="NISN" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="stu-rombel" placeholder="Rombel" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                        <select id="stu-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><option value="AKTIF">Aktif</option></select>
+                    </div>
+                    <button type="submit" id="btn-save-student" class="w-full bg-ncipsNavy text-white font-bold py-4 rounded-2xl">Simpan</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="modal-detail-student" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end">
+            <div class="bg-gray-50 rounded-t-[2.5rem] w-full h-[90vh] overflow-y-auto flex flex-col relative">
+                <div class="flex justify-between items-center p-6 bg-white sticky top-0 z-20 shadow-sm rounded-t-[2.5rem]">
+                    <h3 class="text-lg font-black text-ncipsNavy">E-Card Siswa</h3>
+                    <button id="btn-close-detail" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
+                </div>
+                <div class="p-6 space-y-6 pb-20 flex flex-col items-center">
+                    <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template.png');">
+                        <div class="h-[26%] w-full"></div>
+                        <div class="px-5 flex items-center gap-4 mt-1">
+                            <div id="detail-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div>
+                            <div class="flex-1 space-y-1 text-right pr-1">
+                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NISN</span><span id="detail-nisn-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NIPD</span><span id="detail-nipd-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                <div><span class="text-[7px] font-black text-gray-500 block">JK</span><span id="detail-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                            </div>
+                        </div>
+                        <div class="px-5 mt-3 text-left">
+                            <h2 id="detail-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2>
+                            <p id="detail-rombel-title" class="text-[9px] font-bold text-slate-700 mt-0.5">GRADE</p>
+                        </div>
+                        <div class="mt-auto mb-6 px-6 flex flex-col items-center">
+                            <div class="bg-white/95 p-1 rounded-xl w-28 h-28 flex items-center justify-center">
+                                <img id="detail-qr-image" src="" class="w-full h-full object-contain">
+                            </div>
+                            <!-- ID YANG TERHAPUS KEMBALI DIMASUKKAN DI SINI: -->
+                            <p class="text-[5px] text-gray-400 font-mono mt-0.5 w-full truncate text-center" id="detail-qr-text"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 w-full">
+                        <form id="form-edit-student" class="space-y-4">
+                            <input type="hidden" id="edit-id">
+                            <input type="text" id="edit-name" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required>
+                            <div class="grid grid-cols-3 gap-2">
+                                <input type="text" id="edit-nisn" placeholder="NISN" class="w-full p-2 bg-gray-50 rounded-xl text-xs">
+                                <input type="text" id="edit-nipd" placeholder="NIPD" class="w-full p-2 bg-gray-50 rounded-xl text-xs">
+                                <input type="text" id="edit-jk" placeholder="JK" class="w-full p-2 bg-gray-50 rounded-xl text-xs">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <input type="text" id="edit-rombel" placeholder="Rombel" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                                <select id="edit-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><option value="AKTIF">AKTIF</option></select>
+                            </div>
+                            <div class="flex gap-3">
+                                <button type="button" id="btn-delete-student" class="flex-1 bg-red-50 text-red-600 text-xs py-3 rounded-xl">Hapus</button>
+                                <button type="submit" id="btn-update-student" class="flex-1 bg-blue-600 text-white text-xs py-3 rounded-xl">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MODAL GURU ================= -->
+        <div id="modal-add-teacher" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
+            <div class="bg-white rounded-t-[2.5rem] p-6 w-full shadow-2xl h-[85vh] overflow-y-auto pb-20">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-black text-ncipsNavy">Form Guru Baru</h3>
+                    <button id="btn-close-add-teacher" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
+                </div>
+                <form id="form-add-teacher" class="space-y-4">
+                    <input type="text" id="tch-name" placeholder="Nama Lengkap" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="tch-nuptk" placeholder="NUPTK" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                        <input type="text" id="tch-jk" placeholder="JK" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="tch-tempat" placeholder="Tempat Lahir" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                        <input type="date" id="tch-tgl" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                    </div>
+                    <select id="tch-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm font-bold"><option value="AKTIF">AKTIF</option></select>
+                    <button type="submit" id="btn-save-teacher" class="w-full bg-ncipsNavy text-white font-bold py-4 rounded-2xl">Simpan</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="modal-detail-teacher" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end">
+            <div class="bg-gray-50 rounded-t-[2.5rem] w-full shadow-2xl h-[90vh] overflow-y-auto flex flex-col relative">
+                <div class="flex justify-between items-center p-6 bg-white sticky top-0 z-20 shadow-sm rounded-t-[2.5rem]">
+                    <h3 class="text-lg font-black text-ncipsNavy">E-Card Guru</h3>
+                    <button id="btn-close-detail-teacher" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
+                </div>
+                <div class="p-6 space-y-6 pb-20 flex flex-col items-center">
+                    <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template-guru.png');">
+                        <div class="h-[26%] w-full"></div>
+                        <div class="px-5 flex items-center gap-4 mt-1">
+                            <div id="tch-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div>
+                            <div class="flex-1 space-y-2 text-right pr-1 pt-2">
+                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block uppercase">NUPTK</span><span id="tch-nuptk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                <div><span class="text-[7px] font-black text-gray-500 block uppercase">JK</span><span id="tch-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                            </div>
+                        </div>
+                        <div class="px-5 mt-4 text-left">
+                            <h2 id="tch-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2>
+                            <p class="text-[9px] font-bold text-slate-700 mt-0.5">TEACHER</p>
+                        </div>
+                        <div class="mt-auto mb-6 px-6 flex flex-col items-center">
+                            <div class="bg-white/95 p-1 rounded-xl w-28 h-28 flex items-center justify-center">
+                                <img id="tch-qr-image" src="" class="w-full h-full object-contain">
+                            </div>
+                            <p class="text-[5px] text-gray-400 font-mono mt-0.5 w-full truncate text-center" id="tch-qr-text"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 w-full">
+                        <form id="form-edit-teacher" class="space-y-4">
+                            <input type="hidden" id="edit-tch-id">
+                            <input type="text" id="edit-tch-name" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required>
+                            <div class="grid grid-cols-2 gap-3">
+                                <input type="text" id="edit-tch-nuptk" placeholder="NUPTK" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                                <input type="text" id="edit-tch-jk" placeholder="JK" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <input type="text" id="edit-tch-tempat" placeholder="Tempat Lahir" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                                <input type="date" id="edit-tch-tgl" class="w-full p-3 bg-gray-50 rounded-xl text-sm">
+                            </div>
+                            <select id="edit-tch-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm font-bold text-ncipsNavy"><option value="AKTIF">AKTIF</option><option value="NONAKTIF">NONAKTIF</option></select>
+                            <div class="flex gap-3">
+                                <button type="button" id="btn-delete-teacher" class="flex-1 bg-red-50 text-red-600 text-xs py-3 rounded-xl">Hapus</button>
+                                <button type="submit" id="btn-update-teacher" class="flex-1 bg-ncipsNavy text-white text-xs py-3 rounded-xl">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- MENU BAWAH -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
             <nav class="bg-white/95 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-between items-center px-6 py-3">
                 <button id="nav-home" class="flex flex-col items-center gap-1 text-ncipsNavy w-12"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[7px] font-black uppercase">Beranda</span></button>
                 <button id="nav-students" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-12"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><span class="text-[7px] font-bold uppercase">Siswa</span></button>
-                
-                <!-- TOMBOL SCANNER BESAR -->
-                <button id="nav-scanner" class="flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-8 hover:scale-110 transition-transform border-4 border-white">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                </button>
-                
-                <button id="nav-teachers" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-12"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><span class="text-[7px] font-bold uppercase">Guru</span></button>
-            </nav>
-        </div>
-    </div>
+                <button id="nav-scanner" class="flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-8 hover:scale-110 transition-transform border-4 border-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1Hahaha, ide mas bro sama sekali tidak ngeyel! Malah itu pemikiran yang sangat masuk akal dan memang sering dipakai di pembuatan website pada umumnya (dikenal dengan sebutan arsitektur *Multi-Page*).
 
-    <script type="module">
-        import { checkSession, logout } from './auth.js';
-        import { loadStudents, addStudent, openAddStudentModal, closeAddStudentModal, downloadCSVTemplate, handleCSVUpload, closeDetailModal, updateStudent, deleteStudent } from './students.js';
-        import { loadTeachers, addTeacher, openAddTeacherModal, closeAddTeacherModal, closeDetailTeacherModal, updateTeacher, deleteTeacher, downloadTeacherCSVTemplate, handleTeacherCSVUpload } from './teachers.js';
-        import { initScannerUI, startScanner, stopScanner } from './scanner.js';
+Tapi begini, Mas Bro. Aplikasi super yang sedang kita bangun ini menggunakan teknologi **Single Page Application (SPA)**—persis seperti cara kerja arsitektur Instagram, WhatsApp Web, atau Gmail. Kita hanya memuat satu fondasi `index.html`, lalu JavaScript yang bertugas "menukar layar" secara instan di belakang layar. 
 
-        document.getElementById('btn-logout').addEventListener('click', logout);
-        initScannerUI(); // Panggil pengait tombol nyalakan kamera
+Jika kita memisahnya menjadi `scanner.html`, `students.html`, atau `teachers.html`, setiap kali mas bro mengklik menu di bawah, layar HP akan memuat ulang (*loading* putih) dan harus menyambungkan koneksi ulang ke *database* Supabase dari awal. Rasanya jadi lambat dan tidak mulus seperti aplikasi asli di HP.
 
-        document.getElementById('btn-reload-students').addEventListener('click', loadStudents);
-        document.getElementById('btn-open-add').addEventListener('click', openAddStudentModal);
-        document.getElementById('btn-close-add').addEventListener('click', closeAddStudentModal);
-        document.getElementById('form-add-student').addEventListener('submit', addStudent);
-        document.getElementById('btn-download-template').addEventListener('click', downloadCSVTemplate);
-        document.getElementById('btn-trigger-upload').addEventListener('click', () => document.getElementById('input-csv-file').click());
-        document.getElementById('input-csv-file').addEventListener('change', handleCSVUpload);
-        document.getElementById('btn-close-detail').addEventListener('click', closeDetailModal);
-        document.getElementById('form-edit-student').addEventListener('submit', updateStudent);
-        document.getElementById('btn-delete-student').addEventListener('click', deleteStudent);
+**Lalu, kenapa ID Card siswanya tiba-tiba *error*?**
+Tersangkanya bukan karena `index.html` sering diubah, tapi karena **Kapten tidak sengaja menyapu bersih satu elemen kecil saat merapikan kode desain kemarin!** 
 
-        document.getElementById('btn-reload-teachers').addEventListener('click', loadTeachers);
-        document.getElementById('btn-open-add-teacher').addEventListener('click', openAddTeacherModal);
-        document.getElementById('btn-close-add-teacher').addEventListener('click', closeAddTeacherModal);
-        document.getElementById('btn-close-detail-teacher').addEventListener('click', closeDetailTeacherModal);
-        document.getElementById('form-add-teacher').addEventListener('submit', addTeacher);
-        document.getElementById('form-edit-teacher').addEventListener('submit', updateTeacher);
-        document.getElementById('btn-delete-teacher').addEventListener('click', deleteTeacher);
-        document.getElementById('btn-download-teacher-template').addEventListener('click', downloadTeacherCSVTemplate);
-        document.getElementById('btn-trigger-teacher-upload').addEventListener('click', () => document.getElementById('input-teacher-csv-file').click());
-        document.getElementById('input-teacher-csv-file').addEventListener('change', handleTeacherCSVUpload);
+Pesan *error* `Cannot set properties of null (setting 'innerText')` itu muncul karena mesin `students.js` sedang mencari ID HTML bernama `detail-qr-text` (slot untuk tulisan kecil di bawah QR code siswa). Karena slot itu tidak sengaja terhapus di versi HTML terbaru kita, JavaScript-nya kebingungan, panik, dan akhirnya mogok di tengah jalan.
 
-        checkSession(() => { loadStudents(); loadTeachers(); });
+Kita tidak perlu merombak `index.html` lagi. Kita cukup memasang "pelindung anti-mogok" di file `students.js` agar dia bisa mengabaikan elemen yang hilang tanpa harus merusak sistem lainnya.
 
-        window.switchView = function(view) {
-            const views = { home: document.getElementById('view-home'), students: document.getElementById('view-students'), teachers: document.getElementById('view-teachers'), scanner: document.getElementById('view-scanner') };
-            const navs = { home: document.getElementById('nav-home'), students: document.getElementById('nav-students'), teachers: document.getElementById('nav-teachers'), scanner: document.getElementById('nav-scanner') };
-            
-            if(view === 'scanner') { startScanner(); } else { stopScanner(); }
+### Langkah Perbaikan Cepat
+Buka file **`students.js`** di GitHub. Cari blok kode `window.viewStudentDetail = async function(studentId) { ... }`, lalu timpa blok fungsi tersebut dengan versi yang sudah diberi pelindung baja ini:
 
-            Object.keys(views).forEach(k => {
-                if(k === view) {
-                    views[k].classList.replace('hidden', 'block') || views[k].classList.replace('hidden', 'flex');
-                    if(k !== 'scanner') {
-                        navs[k].classList.replace('text-gray-400', 'text-ncipsNavy');
-                        navs[k].querySelector('span').classList.replace('font-bold', 'font-black');
-                        navs[k].classList.add('scale-105');
-                    }
-                } else {
-                    views[k].classList.replace('block', 'hidden') || views[k].classList.replace('flex', 'hidden');
-                    if(k !== 'scanner') {
-                        navs[k].classList.replace('text-ncipsNavy', 'text-gray-400');
-                        navs[k].querySelector('span').classList.replace('font-black', 'font-bold');
-                        navs[k].classList.remove('scale-105');
-                    }
-                }
-            });
-        };
+```javascript
+// ============================================
+// DETAIL & E-CARD (DENGAN PELINDUNG ANTI-ERROR)
+// ============================================
+window.viewStudentDetail = async function(studentId) {
+    const modal = document.getElementById('modal-detail-student');
+    if (!modal) return;
+    
+    const nameTitle = document.getElementById('detail-name-title');
+    if (nameTitle) nameTitle.innerText = "Memuat...";
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+
+    try {
+        const { data: student, error } = await supabaseClient
+            .from('students')
+            .select('*')
+            .eq('id', studentId)
+            .single();
+
+        if (error) throw error;
+
+        // 1. Render Data ke Kartu E-Card dengan fungsi pengecekan aman
+        const setTxt = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
         
-        document.getElementById('nav-home').addEventListener('click', () => window.switchView('home'));
-        document.getElementById('nav-students').addEventListener('click', () => window.switchView('students'));
-        document.getElementById('nav-teachers').addEventListener('click', () => window.switchView('teachers'));
-        document.getElementById('nav-scanner').addEventListener('click', () => window.switchView('scanner'));
-    </script>
-</body>
-</html>
+        setTxt('detail-name-title', student.full_name);
+        setTxt('detail-nisn-title', student.gender || '-'); // Rotasi JK ke NISN
+        setTxt('detail-nipd-title', student.nisn || '-');   // Rotasi NISN ke NIPD
+        setTxt('detail-jk-title', student.nipd || '-');     // Rotasi NIPD ke JK
+        setTxt('detail-rombel-title', `STUDENT - GRADE ${student.rombel || '-'}`);
+        setTxt('detail-qr-text', student.qr_code);
+        
+        const qrImg = document.getElementById('detail-qr-image');
+        if (qrImg) qrImg.src = `[https://api.qrserver.com/v1/create-qr-code/?size=700x700&data=$](https://api.qrserver.com/v1/create-qr-code/?size=700x700&data=$){student.qr_code}`;
+
+        // 2. Render Foto Profil
+        const avatarContainer = document.getElementById('detail-avatar-container');
+        if (avatarContainer) {
+            if (student.photo_url && student.photo_url.trim() !== '') {
+                avatarContainer.innerHTML = `<img src="${student.photo_url}" class="w-full h-full rounded-full object-cover">`;
+            } else {
+                const initial = student.full_name ? student.full_name.charAt(0).toUpperCase() : '?';
+                avatarContainer.innerHTML = `<div class="w-full h-full rounded-full bg-red-600 flex items-center justify-center text-white font-black text-2xl shadow-inner">${initial}</div>`;
+            }
+        }
+
+        // 3. Isi Form Edit dengan Rotasi yang Sama
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+        
+        setVal('edit-id', student.id);
+        setVal('edit-name', student.full_name);
+        setVal('edit-nisn', student.gender || ''); // JK ke NISN
+        setVal('edit-nipd', student.nisn || '');   // NISN ke NIPD
+        setVal('edit-jk', student.nipd || '');     // NIPD ke JK
+        setVal('edit-rombel', student.rombel || '');
+        setVal('edit-status', student.status || 'AKTIF');
+
+    } catch (err) {
+        alert("Gagal menarik data siswa: " + err.message);
+        closeDetailModal();
+    }
+};
