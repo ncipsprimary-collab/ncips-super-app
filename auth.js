@@ -1,5 +1,5 @@
 // Modul Autentikasi & Sesi Pengguna
-import { supabaseClient } from './supabase.js';
+import { supabase } from './supabase.js';
 
 const loginScreen = document.getElementById('login-screen');
 const appContent = document.getElementById('app-content');
@@ -8,7 +8,7 @@ const btnLogin = document.getElementById('btn-login');
 const errorMsg = document.getElementById('login-error');
 
 export async function checkSession(onLoggedIn) {
-    const { data: { session } } = await supabaseClient.auth.getSession();
+    const { data: { session } } = await supabase.auth.getSession();
     if (session) {
         showApp(session.user, onLoggedIn);
     }
@@ -22,7 +22,7 @@ loginForm.addEventListener('submit', async (e) => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
         if(errorMsg) {
@@ -36,7 +36,7 @@ loginForm.addEventListener('submit', async (e) => {
 });
 
 export async function logout() {
-    await supabaseClient.auth.signOut();
+    await supabase.auth.signOut();
     window.location.reload();
 }
 
@@ -51,7 +51,7 @@ async function showApp(user, callback) {
 }
 
 async function fetchUserProfile(userId, email) {
-    const { data } = await supabaseClient.from('users').select('full_name, role').eq('id', userId).single();
+    const { data } = await supabase.from('users').select('full_name, role').eq('id', userId).single();
     if (data) {
         // PERBAIKAN: Cek dulu apakah tempatnya ada di layar sebelum diisi
         const greetingEl = document.getElementById('user-greeting');
