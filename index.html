@@ -350,33 +350,7 @@
             </div>
         </div>
 
-        <!-- MENU BAWAH (SEMUA MENU MEMILIKI EFEK ELEGAN SAAT AKTIF) -->
-        <div class="fixed bottom-6 left-6 right-6 z-50">
-            <nav class="bg-white/95 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-between items-center px-6 py-3">
-                <button id="nav-home" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    <span class="text-[7px] font-bold uppercase">Beranda</span>
-                </button>
-                <button id="nav-students" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <span class="text-[7px] font-bold uppercase">Siswa</span>
-                </button>
-                <button id="nav-scanner" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                    <span class="text-[7px] font-bold uppercase">Scan</span>
-                </button>
-                <button id="nav-attendance" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                    <span class="text-[7px] font-bold uppercase">Absen</span>
-                </button>
-                <button id="nav-teachers" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    <span class="text-[7px] font-bold uppercase">Guru</span>
-                </button>
-            </nav>
-        </div>
-
-        <!-- MENU BAWAH (6 MENU UTAMA) -->
+        <!-- MENU BAWAH (6 MENU UTAMA YANG BERSIH & TERSINKRON) -->
         <div class="fixed bottom-6 left-6 right-6 z-50">
             <nav class="bg-white/95 backdrop-blur-xl border border-gray-100/50 shadow-[0_20px_40px_-15px_rgba(15,23,42,0.15)] rounded-full flex justify-between items-center px-4 py-3">
                 <button id="nav-home" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all">
@@ -446,19 +420,24 @@
         document.getElementById('btn-filter-attendance').addEventListener('click', loadAttendance);
         document.getElementById('btn-export-excel').addEventListener('click', exportAttendanceExcel);
 
-        checkSession(() => { loadStudents(); loadTeachers(); loadAttendance(); switchView('home'); });
+        document.getElementById('form-piket').addEventListener('submit', savePiketEntry);
+        document.getElementById('btn-reload-piket').addEventListener('click', loadPiketToday);
+
+        checkSession(() => { loadStudents(); loadTeachers(); loadAttendance(); loadPiketToday(); switchView('home'); });
 
         const navIcons = {
             home: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>`,
             students: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`,
+            piket: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>`,
             scanner: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>`,
-            attendance: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>`,
+            attendance: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>`,
             teachers: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>`
         };
 
         const navLabels = {
             home: "Beranda",
             students: "Siswa",
+            piket: "Piket",
             scanner: "Scan",
             attendance: "Absen",
             teachers: "Guru"
@@ -468,6 +447,7 @@
             const views = { 
                 home: document.getElementById('view-home'), 
                 students: document.getElementById('view-students'), 
+                piket: document.getElementById('view-piket'),
                 teachers: document.getElementById('view-teachers'), 
                 scanner: document.getElementById('view-scanner'),
                 attendance: document.getElementById('view-attendance') 
@@ -475,6 +455,7 @@
             const navs = { 
                 home: document.getElementById('nav-home'), 
                 students: document.getElementById('nav-students'), 
+                piket: document.getElementById('nav-piket'),
                 teachers: document.getElementById('nav-teachers'), 
                 scanner: document.getElementById('nav-scanner'),
                 attendance: document.getElementById('nav-attendance') 
@@ -482,27 +463,30 @@
             
             if(view === 'scanner') { startScanner(); } else { stopScanner(); }
             if(view === 'attendance') { loadAttendance(); }
+            if(view === 'piket') { loadPiketToday(); initPiketForm(); }
 
             Object.keys(views).forEach(k => {
                 const btn = navs[k];
+                if(!btn) return;
                 if(k === view) {
                     views[k].classList.replace('hidden', 'block') || views[k].classList.replace('hidden', 'flex');
                     
-                    // Efek aktif mengambang persis seperti menu scan
-                    btn.className = "flex flex-col items-center justify-center w-12 h-12 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-8 hover:scale-110 transition-transform border-4 border-white";
+                    // Efek aktif mengambang
+                    btn.className = "flex flex-col items-center justify-center w-10 h-10 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-6 hover:scale-110 transition-transform border-2 border-white";
                     btn.innerHTML = navIcons[k];
                 } else {
                     views[k].classList.replace('block', 'hidden') || views[k].classList.replace('flex', 'hidden');
                     
                     // Kembali ke bentuk semula saat tidak aktif
-                    btn.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-11 transition-all";
-                    btn.innerHTML = `${navIcons[k]}<span class="text-[7px] font-bold uppercase">${navLabels[k]}</span>`;
+                    btn.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all";
+                    btn.innerHTML = `${navIcons[k]}<span class="text-[6px] font-bold uppercase">${navLabels[k]}</span>`;
                 }
             });
         };
         
         document.getElementById('nav-home').addEventListener('click', () => window.switchView('home'));
         document.getElementById('nav-students').addEventListener('click', () => window.switchView('students'));
+        document.getElementById('nav-piket').addEventListener('click', () => window.switchView('piket'));
         document.getElementById('nav-teachers').addEventListener('click', () => window.switchView('teachers'));
         document.getElementById('nav-scanner').addEventListener('click', () => window.switchView('scanner'));
         document.getElementById('nav-attendance').addEventListener('click', () => window.switchView('attendance'));
