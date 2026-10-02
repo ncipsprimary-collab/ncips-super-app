@@ -16,7 +16,6 @@ export async function loadAttendance() {
             .select('*')
             .order('scan_time', { ascending: false });
 
-        // Filter berdasarkan tanggal jika dipilih
         if (dateFilter) {
             const start = new Date(dateFilter);
             start.setHours(0, 0, 0, 0);
@@ -25,13 +24,11 @@ export async function loadAttendance() {
             query = query.gte('scan_time', start.toISOString()).lte('scan_time', end.toISOString());
         }
 
-        // Filter berdasarkan tipe pengguna (SISWA / GURU)
         if (typeFilter && typeFilter !== 'ALL') {
             query = query.eq('user_type', typeFilter);
         }
 
         const { data, error } = await query;
-
         if (error) throw error;
 
         totalSpan.innerText = data.length;
@@ -72,7 +69,7 @@ export async function loadAttendance() {
     }
 }
 
-export async function exportAttendanceCSV() {
+export async function exportAttendanceExcel() {
     const dateFilter = document.getElementById('filter-date').value;
     const typeFilter = document.getElementById('filter-type').value;
 
@@ -102,26 +99,23 @@ export async function exportAttendanceCSV() {
             return;
         }
 
-        const csvData = data.map((item, idx) => ({
-            No: idx + 1,
-            Nama: item.user_name,
-            Tipe: item.user_type,
-            QR_Code: item.qr_code,
-            Waktu_Scan: item.scan_time
+        const excelData = data.map((item, idx) => ({
+            "No": idx + 1,
+            "Nama Lengkap": item.user_name,
+            "Tipe Pengguna": item.user_type,
+            "Kode QR": item.qr_code,
+            "Waktu Kehadiran": new Date(item.scan_time).toLocaleString('id-ID')
         }));
 
-        const csv = Papa.unparse(csvData);
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', `Rekap_Presensi_${dateFilter || 'Semua'}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // Menggunakan SheetJS untuk menghasilkan file .xlsx murni
+        const worksheet = XLSX.utils.json_to_sheet(excelData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Presensi");
+        
+        XLSX.writeFile(workbook, `Rekap_Presensi_${dateFilter || 'Semua'}.xlsx`);
 
     } catch (err) {
         console.error(err);
-        alert("Gagal mengunduh CSV.");
+        alert("Gagal mengunduh file Excel.");
     }
 }
