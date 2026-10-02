@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient.js';
+import { supabase } from './supabase.js';
 
 // Set default waktu saat ini pada form piket
 export function initPiketForm() {
