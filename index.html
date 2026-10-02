@@ -143,6 +143,58 @@
             </div>
         </main>
 
+        <!-- VIEW PIKET & PERIZINAN -->
+        <main id="view-piket" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
+            <div class="flex justify-between items-end mb-2">
+                <div>
+                    <h2 class="text-xl font-black text-ncipsNavy">Piket & Perizinan</h2>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Catat Sakit, Izin, Alpha & Terlambat</p>
+                </div>
+                <button id="btn-reload-piket" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-gray-100 active:bg-gray-100">↻</button>
+            </div>
+
+            <!-- FORM INPUT PIKET MANUAL -->
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 space-y-4">
+                <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider">Form Input Guru Piket</h3>
+                <form id="form-piket" class="space-y-3">
+                    <div>
+                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Cari / Pilih Siswa</label>
+                        <select id="piket-student-select" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
+                            <option value="">-- Memuat Data Siswa --</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Status Kehadiran</label>
+                            <select id="piket-status-select" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
+                                <option value="SAKIT">Sakit (S)</option>
+                                <option value="IZIN">Izin (I)</option>
+                                <option value="ALPHA">Alpha (A)</option>
+                                <option value="TERLAMBAT">Terlambat (T)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Waktu / Jam</label>
+                            <input type="time" id="piket-time" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Catatan / Keterangan</label>
+                        <input type="text" id="piket-notes" placeholder="Contoh: Ban bocor / Surat dokter terlampir" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs">
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy font-black py-3.5 rounded-xl shadow-md text-xs hover:scale-[1.01] transition-transform">Simpan Data Piket</button>
+                </form>
+            </div>
+
+            <!-- DAFTAR CATATAN PIKET HARI INI -->
+            <div class="space-y-2">
+                <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider px-1">Daftar Rekap Piket Hari Ini</h3>
+                <div id="piket-list-container" class="space-y-3">
+                    <div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat data piket...</div>
+                </div>
+            </div>
+        </main>
+
         <!-- VIEW REKAP ABSENSI -->
         <main id="view-attendance" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
             <div class="flex justify-between items-end mb-2">
