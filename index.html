@@ -164,27 +164,24 @@
                     <button id="btn-close-detail" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
                 </div>
                 <div class="p-6 space-y-6 pb-20 flex flex-col items-center">
-                    <!-- E-CARD SISWA DENGAN QR CODE DIPERBESAR (w-36 h-36) -->
-                    <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center flex flex-col items-center justify-between py-5 px-6" style="background-image: url('template.png');">
-                        <div class="w-full">
-                            <div class="h-10 w-full"></div>
-                            <div class="flex items-center gap-4 mt-1">
-                                <div id="detail-avatar-container" class="w-16 h-16 sm:w-18 sm:h-18 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-xl overflow-hidden"></div>
-                                <div class="flex-1 space-y-1 text-right pr-1">
-                                    <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NISN</span><span id="detail-nisn-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
-                                    <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NIPD</span><span id="detail-nipd-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
-                                    <div><span class="text-[7px] font-black text-gray-500 block">JK</span><span id="detail-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
-                                </div>
-                            </div>
-                            <div class="mt-2 text-left">
-                                <h2 id="detail-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2>
-                                <p id="detail-rombel-title" class="text-[9px] font-bold text-slate-700 mt-0.5">GRADE</p>
+                    
+                    <!-- E-CARD SISWA (POSISI PRESISI + QR CODE W-32) -->
+                    <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template.png');">
+                        <div class="h-[26%] w-full"></div>
+                        <div class="px-5 flex items-center gap-4 mt-1">
+                            <div id="detail-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div>
+                            <div class="flex-1 space-y-1 text-right pr-1">
+                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NISN</span><span id="detail-nisn-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NIPD</span><span id="detail-nipd-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                <div><span class="text-[7px] font-black text-gray-500 block">JK</span><span id="detail-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
                             </div>
                         </div>
-                        
-                        <!-- QR CODE LEBIH BESAR -->
-                        <div class="flex flex-col items-center mt-2">
-                            <div class="bg-white/95 p-1 rounded-xl w-36 h-36 sm:w-38 sm:h-38 flex items-center justify-center shadow-md">
+                        <div class="px-5 mt-3 text-left">
+                            <h2 id="detail-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2>
+                            <p id="detail-rombel-title" class="text-[9px] font-bold text-slate-700 mt-0.5">GRADE</p>
+                        </div>
+                        <div class="mt-auto mb-4 px-6 flex flex-col items-center absolute bottom-2 left-0 right-0">
+                            <div class="bg-white/95 p-1 rounded-xl w-32 h-32 flex items-center justify-center shadow-md">
                                 <img id="detail-qr-image" src="" class="w-full h-full object-contain">
                             </div>
                             <p class="text-[5px] text-gray-400 font-mono mt-0.5 w-full truncate text-center" id="detail-qr-text"></p>
@@ -228,26 +225,23 @@
                     <button id="btn-close-detail-teacher" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
                 </div>
                 <div class="p-6 space-y-6 pb-20 flex flex-col items-center">
-                    <!-- E-CARD GURU DENGAN QR CODE DIPERBESAR (w-36 h-36) -->
-                    <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center flex flex-col items-center justify-between py-5 px-6" style="background-image: url('template-guru.png');">
-                        <div class="w-full">
-                            <div class="h-10 w-full"></div>
-                            <div class="flex items-center gap-4 mt-1">
-                                <div id="tch-avatar-container" class="w-16 h-16 sm:w-18 sm:h-18 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-xl overflow-hidden"></div>
-                                <div class="flex-1 space-y-2 text-right pr-1 pt-1">
-                                    <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block uppercase">NUPTK</span><span id="tch-nuptk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
-                                    <div><span class="text-[7px] font-black text-gray-500 block uppercase">JK</span><span id="tch-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
-                                </div>
-                            </div>
-                            <div class="mt-3 text-left">
-                                <h2 id="tch-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2>
-                                <p class="text-[9px] font-bold text-slate-700 mt-0.5">TEACHER</p>
+                    
+                    <!-- E-CARD GURU (POSISI PRESISI + QR CODE W-32) -->
+                    <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template-guru.png');">
+                        <div class="h-[26%] w-full"></div>
+                        <div class="px-5 flex items-center gap-4 mt-1">
+                            <div id="tch-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div>
+                            <div class="flex-1 space-y-2 text-right pr-1 pt-2">
+                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block uppercase">NUPTK</span><span id="tch-nuptk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                <div><span class="text-[7px] font-black text-gray-500 block uppercase">JK</span><span id="tch-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
                             </div>
                         </div>
-
-                        <!-- QR CODE LEBIH BESAR -->
-                        <div class="flex flex-col items-center mt-2">
-                            <div class="bg-white/95 p-1 rounded-xl w-36 h-36 sm:w-38 sm:h-38 flex items-center justify-center shadow-md">
+                        <div class="px-5 mt-4 text-left">
+                            <h2 id="tch-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2>
+                            <p class="text-[9px] font-bold text-slate-700 mt-0.5">TEACHER</p>
+                        </div>
+                        <div class="mt-auto mb-4 px-6 flex flex-col items-center absolute bottom-2 left-0 right-0">
+                            <div class="bg-white/95 p-1 rounded-xl w-32 h-32 flex items-center justify-center shadow-md">
                                 <img id="tch-qr-image" src="" class="w-full h-full object-contain">
                             </div>
                             <p class="text-[5px] text-gray-400 font-mono mt-0.5 w-full truncate text-center" id="tch-qr-text"></p>
