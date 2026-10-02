@@ -1,4 +1,4 @@
-import { supabaseClient } from './supabase.js';
+import { supabase } from './supabase.js';
 
 let html5QrCode;
 let isScanning = false;
@@ -89,7 +89,7 @@ async function onScanSuccess(decodedText) {
         let userName = '';
         
         // 1. Cek ke gudang siswa
-        let { data: student } = await supabaseClient
+        let { data: student } = await supabase
             .from('students')
             .select('*')
             .eq('qr_code', decodedText)
@@ -99,7 +99,7 @@ async function onScanSuccess(decodedText) {
             userName = student.full_name;
         } else {
             // 2. Cek ke gudang guru
-            let { data: teacher } = await supabaseClient
+            let { data: teacher } = await supabase
                 .from('teachers')
                 .select('*')
                 .eq('qr_code', decodedText)
@@ -132,7 +132,7 @@ async function onScanSuccess(decodedText) {
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
 
-        const { data: existingRecords } = await supabaseClient
+        const { data: existingRecords } = await supabase
             .from('attendance')
             .select('*')
             .eq('qr_code', decodedText)
@@ -157,7 +157,7 @@ async function onScanSuccess(decodedText) {
         }
 
         // 4. Simpan ke tabel attendance (buku absen)
-        const { error: insertErr } = await supabaseClient.from('attendance').insert([{
+        const { error: insertErr } = await supabase.from('attendance').insert([{
             qr_code: decodedText,
             user_type: userType,
             user_name: userName
