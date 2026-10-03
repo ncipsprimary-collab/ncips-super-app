@@ -142,6 +142,32 @@ export async function loadPiketToday() {
     }
 }
 
+// Fungsi untuk memuat siswa ke dalam dropdown Kedisiplinan
+export async function loadStudentsForViolation() {
+  const violationSelect = document.getElementById('violationStudent');
+  if (!violationSelect) return;
+
+  const { data, error } = await supabase
+    .from('students')
+    .select('id, name, rombel')
+    .eq('status', 'AKTIF')
+    .order('name', { ascending: true });
+
+  if (error) {
+    console.error('Gagal memuat daftar siswa:', error);
+    return;
+  }
+
+  // Kosongkan opsi sebelumnya lalu isi dengan data baru
+  violationSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>';
+  data.forEach(student => {
+    const option = document.createElement('option');
+    option.value = student.id;
+    option.textContent = `${student.name} (${student.rombel})`;
+    violationSelect.appendChild(option);
+  });
+}
+
 // Fungsi Simpan Pelanggaran Manual (Modul Piket)
 export async function recordManualViolation(event) {
   event.preventDefault();
