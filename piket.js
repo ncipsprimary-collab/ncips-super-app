@@ -141,3 +141,34 @@ export async function loadPiketToday() {
         container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-red-400 text-xs">Gagal memuat data piket.</div>`;
     }
 }
+
+// Fungsi Simpan Pelanggaran Manual (Modul Piket)
+export async function recordManualViolation(event) {
+  event.preventDefault();
+
+  const studentId = document.getElementById('violationStudent').value;
+  const violationType = document.getElementById('violationType').value;
+  const actionTaken = document.getElementById('violationAction').value;
+  const officerName = localStorage.getItem('user_name') || 'Guru Piket'; 
+
+  const { error } = await supabase.from('student_violations').insert([{
+    student_id: studentId,
+    violation_type: violationType,
+    action_taken: actionTaken,
+    recorded_by: officerName,
+    date: new Date().toISOString().split('T')[0]
+  }]);
+
+  if (error) {
+    alert('Gagal menyimpan pelanggaran: ' + error.message);
+  } else {
+    alert('✅ Pelanggaran dan tindak lanjut berhasil dicatat!');
+    document.getElementById('violationForm').reset();
+  }
+}
+
+// Pasang Event Listener ke Form Pelanggaran
+const violationForm = document.getElementById('violationForm');
+if (violationForm) {
+  violationForm.addEventListener('submit', recordManualViolation);
+}
