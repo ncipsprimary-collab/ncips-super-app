@@ -10,6 +10,7 @@ export function initPiketForm() {
     
     loadPiketStudentsDropdown();
     loadPiketToday();
+    loadStudentsForViolation(); // Fungsi ini ditambahkan di sini agar otomatis jalan
 }
 
 // Memuat daftar siswa ke dropdown select
@@ -131,7 +132,7 @@ export async function loadPiketToday() {
                     <p class="text-[10px] text-gray-500 font-bold">Rombel: ${item.rombel || '-'} • <span class="text-gray-400 italic">${item.notes || 'Tanpa catatan'}</span></p>
                 </div>
                 <div class="text-right">
-                    <span class="text-[10px] font-mono font-bold bg-gray-50 px-2.5 py-1 rounded-xl text-slate-700 border border-gray-100">${item.time}</span>
+                    <span class="text-[10px] font-mono font-bold bg-gray-50 px-2.5 py-1 rounded-xl text-slate-700 border border-gray-100">${item.scan_time || '-'}</span>
                 </div>
             `;
             container.appendChild(card);
