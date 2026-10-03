@@ -1,6 +1,20 @@
 import { supabase } from './supabase.js';
 
 export async function loadAdminSettings() {
+  // 1. Cek Otoritas Role dari sesi login
+  const userRole = localStorage.getItem('user_role');
+  const adminContainer = document.getElementById('admin-settings-container');
+
+  // Jika bukan ADMIN, sembunyikan form dan hentikan proses
+  if (userRole !== 'ADMIN') {
+    if (adminContainer) adminContainer.style.display = 'none';
+    return; 
+  } else {
+    // Jika ADMIN, pastikan form terlihat
+    if (adminContainer) adminContainer.style.display = 'block';
+  }
+
+  // 2. Load data dari Supabase jika dia benar-benar ADMIN
   const { data, error } = await supabase.from('system_settings').select('*').eq('id', 1).single();
   if (data) {
     document.getElementById('setEntryTime').value = data.entry_time || '07:00';
@@ -8,6 +22,8 @@ export async function loadAdminSettings() {
     document.getElementById('setTolerance').value = data.late_tolerance_minutes || 15;
   }
 }
+
+// ... (Biarkan fungsi saveAdminSettings dan event listener di bawahnya tetap sama)
 
 export async function saveAdminSettings(event) {
   event.preventDefault();
