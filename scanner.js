@@ -104,27 +104,32 @@ async function onScanSuccess(decodedText) {
     try {
         let userType = 'SISWA';
         let userName = '';
+        let userId = null;
+        let userRombel = '-';
         
-        // 1. Cek ke gudang siswa
+        // 1. Cek ke gudang siswa (Perbaikan: memanggil kolom 'name' sesuai database piket)
         let { data: student } = await supabase
             .from('students')
             .select('*')
-            .eq('qr_code', decodedText) // CEK CATATAN DI BAWAH
+            .eq('qr_code', decodedText)
             .maybeSingle();
         
         if (student) {
-            userName = student.name; // Diubah dari full_name menjadi name
+            userName = student.name; // Diperbaiki jadi name
+            userId = student.id;
+            userRombel = student.rombel || '-';
         } else {
             // 2. Cek ke gudang guru
             let { data: teacher } = await supabase
                 .from('teachers')
                 .select('*')
-                .eq('qr_code', decodedText) // CEK CATATAN DI BAWAH
+                .eq('qr_code', decodedText)
                 .maybeSingle();
                 
             if (teacher) {
                 userType = 'GURU';
-                userName = teacher.name; // Diubah dari full_name menjadi name
+                userName = teacher.name; // Diperbaiki jadi name
+                userId = teacher.id;
             }
         }
 
@@ -145,18 +150,19 @@ async function onScanSuccess(decodedText) {
             return;
         }
 
-        // 3. LOGIKA ANTI-DOUBLE SCAN
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const timeStr = now.toTimeString().split(' ')[0]; // format HH:MM:SS
 
+        // 3. LOGIKA ANTI-DOUBLE SCAN (Disesuaikan dengan format tabel attendance piket)
         const { data: existingRecords } = await supabase
             .from('attendance')
             .select('*')
-            .eq('qr_code', decodedText)
-            .gte('scan_time', todayStart.toISOString());
+            .eq('student_id', userId)
+            .eq('date', todayStr);
 
         if (existingRecords && existingRecords.length > 0) {
-            const scanTimeFormatted = new Date(existingRecords[0].scan_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            const scanTimeFormatted = existingRecords[0].scan_time;
             if (statusText) statusText.innerText = "⚠️ SUDAH ABSEN HARI INI!";
             if (resultBox) {
                 resultBox.classList.remove('hidden');
@@ -173,7 +179,6 @@ async function onScanSuccess(decodedText) {
         }
 
         // 4. PENILAIAN KETERLAMBATAN
-        const now = new Date();
         let currentStatus = 'HADIR';
         
         // Tarik data konfigurasi jam dari Supabase
@@ -187,16 +192,22 @@ async function onScanSuccess(decodedText) {
             currentStatus = determineAttendanceStatus(now, settings.entry_time, settings.late_tolerance_minutes);
         }
 
-        // 5. Simpan ke tabel attendance dengan status terhitung
+        // 5. Simpan ke tabel attendance (Kolom disamakan persis dengan piket.js)
         const { error: insertErr } = await supabase.from('attendance').insert([{
-            qr_code: decodedText,
-            user_type: userType,
-            user_name: userName,
-            status: currentStatus, // Menambahkan status Hadir / Terlambat
-            scan_time: now.toISOString() // Mencatat waktu presisi server/lokal
+            student_id: userId,
+            name: userName,
+            rombel: userRombel,
+            type: userType,
+            status: currentStatus, 
+            date: todayStr,
+            scan_time: timeStr,
+            notes: 'Hadir via Scanner'
         }]);
 
-        if (insertErr) throw insertErr;
+        if (insertErr) {
+            console.error("Gagal insert database:", insertErr);
+            throw insertErr;
+        }
 
         // 6. UI Hasil Presensi (Berbeda untuk Hadir dan Terlambat)
         if (statusText) {
@@ -216,7 +227,7 @@ async function onScanSuccess(decodedText) {
             }
             if (resultName) resultName.innerText = userName;
             if (resultType) resultType.innerText = `${userType} - ${currentStatus}`;
-            if (resultTime) resultTime.innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            if (resultTime) resultTime.innerText = timeStr;
         }
 
         setTimeout(() => {
