@@ -604,22 +604,28 @@
             if(view === 'attendance') { loadAttendance(); }
             if(view === 'piket') { loadPiketToday(); initPiketForm(); }
 
-            // Menampilkan/menyembunyikan layar
+            // Perbaikan logika tampilan view menggunakan remove/add class yang aman untuk flex & block
             Object.keys(views).forEach(k => {
-                if(!views[k]) return;
+                const el = views[k];
+                if(!el) return;
                 if(k === view) {
-                    views[k].classList.replace('hidden', 'block') || views[k].classList.replace('hidden', 'flex');
+                    el.classList.remove('hidden');
+                    if(k === 'home') {
+                        el.classList.add('block');
+                    } else {
+                        el.classList.add('flex');
+                    }
                 } else {
-                    views[k].classList.replace('block', 'hidden') || views[k].classList.replace('flex', 'hidden');
+                    el.classList.remove('block', 'flex');
+                    el.classList.add('hidden');
                 }
             });
 
-            // Memberikan efek menu aktif (hanya pada 5 tombol)
+            // Pengaturan menu navigasi aktif di bawah
             Object.keys(navs).forEach(k => {
                 const btn = navs[k];
                 if(!btn) return;
                 
-                // Jika membuka piket/absen dari home, menu home tetap menyala
                 if(k === view || (view === 'piket' && k === 'home') || (view === 'attendance' && k === 'home')) {
                     btn.className = "flex flex-col items-center justify-center w-10 h-10 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-6 hover:scale-110 transition-transform border-2 border-white";
                     btn.innerHTML = navIcons[k];
