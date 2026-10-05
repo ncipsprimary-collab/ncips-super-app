@@ -47,9 +47,8 @@
             <div><h1 class="text-xl font-black text-ncipsYellow leading-none tracking-wide">NCIPS</h1></div>
             <div class="flex items-center gap-3">
                 <span id="user-role-badge" class="bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy px-4 py-1.5 rounded-full text-[10px] font-black uppercase">...</span>
-                <button id="btn-logout" class="text-white/60 hover:text-white p-2 bg-white/10 rounded-full">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                </button>
+                <!-- Tombol logout di header disembunyikan (dipindah ke Profil) namun elemennya tetap ada agar fungsi js tidak error -->
+                <button id="btn-logout" class="hidden"></button> 
             </div>
         </header>
 
@@ -59,6 +58,23 @@
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-gradient-to-br from-ncipsYellow/20 to-ncipsGold/5 rounded-full blur-2xl"></div>
                 <h2 id="user-greeting" class="text-2xl font-black text-ncipsNavy relative z-10">Memuat...</h2>
             </div>
+
+            <!-- JALAN PINTAS KE MENU PIKET & ABSEN -->
+            <div class="grid grid-cols-2 gap-4 mt-2">
+                <button onclick="window.switchView('piket')" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 active:scale-95 transition-all">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shadow-inner">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    </div>
+                    <span class="text-[10px] font-black text-ncipsNavy uppercase tracking-wider">Guru Piket</span>
+                </button>
+                <button onclick="window.switchView('attendance')" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 active:scale-95 transition-all">
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center shadow-inner">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <span class="text-[10px] font-black text-ncipsNavy uppercase tracking-wider">Rekap Absen</span>
+                </button>
+            </div>
+
             <!-- ADMIN SYSTEM SETTINGS (Di dalam Beranda) -->
             <div id="admin-settings-container" class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 border-t-4 border-t-yellow-400 mt-4">
                 <h3 class="text-sm font-black text-ncipsNavy mb-3">⚙️ Konfigurasi Sistem YPKR</h3>
@@ -283,7 +299,33 @@
             </div>
         </main>
 
-        <!-- MODAL SISWA -->
+        <!-- VIEW PROFIL (MENU BARU) -->
+        <main id="view-profile" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
+            <div class="flex justify-between items-end mb-4">
+                <div>
+                    <h2 class="text-xl font-black text-ncipsNavy">Profil Akun</h2>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Pengaturan Pengguna</p>
+                </div>
+            </div>
+            
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col items-center space-y-4 text-center mt-4">
+                <div class="w-20 h-20 bg-gradient-to-tr from-ncipsNavy to-slate-800 rounded-full border-4 border-ncipsYellow flex items-center justify-center text-white font-black text-3xl shadow-lg">
+                    👤
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-ncipsNavy uppercase">Administrator</h3>
+                    <p class="text-xs text-gray-500 font-bold">Yayasan Pendidikan Kristo Regi</p>
+                </div>
+                
+                <div class="w-full pt-4 border-t border-gray-100 mt-2">
+                    <button onclick="document.getElementById('btn-logout').click()" class="w-full bg-red-50 text-red-600 font-bold py-3.5 rounded-xl text-xs hover:bg-red-100 transition-colors">
+                        🚪 Keluar (Logout)
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- MODALS (SISWA & GURU) TETAP SAMA -->
         <div id="modal-add-student" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
             <div class="bg-white rounded-t-[2.5rem] p-6 w-full h-[85vh] overflow-y-auto pb-20">
                 <div class="flex justify-between items-center mb-6">
@@ -341,7 +383,6 @@
             </div>
         </div>
 
-        <!-- MODAL GURU -->
         <div id="modal-add-teacher" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
             <div class="bg-white rounded-t-[2.5rem] p-6 w-full shadow-2xl h-[85vh] overflow-y-auto pb-20">
                 <div class="flex justify-between items-center mb-6">
@@ -400,17 +441,14 @@
             </div>
         </div>
 
-        <!-- MENU BAWAH (6 MENU UTAMA YANG BERSIH & TERSINKRON) -->
-        <!-- MENU BAWAH (6 MENU UTAMA YANG BERSIH & TERSINKRON) -->
+        <!-- MENU BAWAH (5 MENU UTAMA) -->
         <div class="fixed bottom-0 left-0 right-0 z-50 flex justify-center">
             <nav class="w-full max-w-md bg-white border-t border-gray-200 flex justify-around items-end pt-2 pb-4 text-[10px] font-bold text-gray-400 shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
-                <!-- Struktur button dikosongkan karena Icon SVG dan teks akan disuntikkan otomatis oleh JavaScript -->
                 <button id="nav-home" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all"></button>
                 <button id="nav-students" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all"></button>
-                <button id="nav-piket" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all"></button>
                 <button id="nav-scanner" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all"></button>
-                <button id="nav-attendance" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all"></button>
                 <button id="nav-teachers" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all"></button>
+                <button id="nav-profile" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all"></button>
             </nav>
         </div>
         
@@ -463,19 +501,17 @@
         const navIcons = {
             home: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>`,
             students: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`,
-            piket: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>`,
             scanner: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>`,
-            attendance: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>`,
-            teachers: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>`
+            teachers: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>`,
+            profile: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>`
         };
 
         const navLabels = {
             home: "Beranda",
             students: "Siswa",
-            piket: "Piket",
             scanner: "Scan",
-            attendance: "Absen",
-            teachers: "Guru"
+            teachers: "Guru",
+            profile: "Profil"
         };
 
         window.switchView = function(view) {
@@ -485,46 +521,54 @@
                 piket: document.getElementById('view-piket'),
                 teachers: document.getElementById('view-teachers'), 
                 scanner: document.getElementById('view-scanner'),
-                attendance: document.getElementById('view-attendance') 
+                attendance: document.getElementById('view-attendance'),
+                profile: document.getElementById('view-profile')
             };
+            
             const navs = { 
                 home: document.getElementById('nav-home'), 
                 students: document.getElementById('nav-students'), 
-                piket: document.getElementById('nav-piket'),
                 teachers: document.getElementById('nav-teachers'), 
                 scanner: document.getElementById('nav-scanner'),
-                attendance: document.getElementById('nav-attendance') 
+                profile: document.getElementById('nav-profile') 
             };
             
             if(view === 'scanner') { startScanner(); } else { stopScanner(); }
             if(view === 'attendance') { loadAttendance(); }
             if(view === 'piket') { loadPiketToday(); initPiketForm(); }
 
+            // Menampilkan/menyembunyikan layar
             Object.keys(views).forEach(k => {
-                const btn = navs[k];
-                if(!btn) return;
+                if(!views[k]) return;
                 if(k === view) {
                     views[k].classList.replace('hidden', 'block') || views[k].classList.replace('hidden', 'flex');
-                    
-                    // Efek aktif mengambang
+                } else {
+                    views[k].classList.replace('block', 'hidden') || views[k].classList.replace('flex', 'hidden');
+                }
+            });
+
+            // Memberikan efek menu aktif (hanya pada 5 tombol)
+            Object.keys(navs).forEach(k => {
+                const btn = navs[k];
+                if(!btn) return;
+                
+                // Jika membuka piket/absen dari home, menu home tetap menyala
+                if(k === view || (view === 'piket' && k === 'home') || (view === 'attendance' && k === 'home')) {
                     btn.className = "flex flex-col items-center justify-center w-10 h-10 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-6 hover:scale-110 transition-transform border-2 border-white";
                     btn.innerHTML = navIcons[k];
                 } else {
-                    views[k].classList.replace('block', 'hidden') || views[k].classList.replace('flex', 'hidden');
-                    
-                    // Kembali ke bentuk semula saat tidak aktif
                     btn.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all";
                     btn.innerHTML = `${navIcons[k]}<span class="text-[6px] font-bold uppercase">${navLabels[k]}</span>`;
                 }
             });
         };
         
+        // Pemasangan Event Listener untuk 5 Navigasi Utama
         document.getElementById('nav-home').addEventListener('click', () => window.switchView('home'));
         document.getElementById('nav-students').addEventListener('click', () => window.switchView('students'));
-        document.getElementById('nav-piket').addEventListener('click', () => window.switchView('piket'));
         document.getElementById('nav-teachers').addEventListener('click', () => window.switchView('teachers'));
         document.getElementById('nav-scanner').addEventListener('click', () => window.switchView('scanner'));
-        document.getElementById('nav-attendance').addEventListener('click', () => window.switchView('attendance'));
+        document.getElementById('nav-profile').addEventListener('click', () => window.switchView('profile'));
     </script>
 </body>
 </html>
