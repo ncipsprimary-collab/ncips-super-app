@@ -104,10 +104,8 @@ async function onScanSuccess(decodedText) {
     try {
         let userType = 'SISWA';
         let userName = '';
-        let userId = null;
-        let userRombel = '-';
         
-        // 1. Cek ke gudang siswa (Perbaikan: memanggil kolom 'name' sesuai database piket)
+        // 1. Cek ke gudang siswa
         let { data: student } = await supabase
             .from('students')
             .select('*')
@@ -115,9 +113,7 @@ async function onScanSuccess(decodedText) {
             .maybeSingle();
         
         if (student) {
-            userName = student.name; // Diperbaiki jadi name
-            userId = student.id;
-            userRombel = student.rombel || '-';
+            userName = student.name; // Ambil kolom 'name' dari tabel students
         } else {
             // 2. Cek ke gudang guru
             let { data: teacher } = await supabase
@@ -128,12 +124,10 @@ async function onScanSuccess(decodedText) {
                 
             if (teacher) {
                 userType = 'GURU';
-                userName = teacher.name; // Diperbaiki jadi name
-                userId = teacher.id;
+                userName = teacher.name; // Ambil kolom 'name' dari tabel teachers
             }
         }
 
-        // Jika QR Code tidak terdaftar
         if (!userName) {
             if (statusText) statusText.innerText = "❌ QR CODE TIDAK DIKENAL!";
             if (resultBox) {
@@ -152,13 +146,13 @@ async function onScanSuccess(decodedText) {
 
         const now = new Date();
         const todayStr = now.toISOString().split('T')[0];
-        const timeStr = now.toTimeString().split(' ')[0]; // format HH:MM:SS
+        const timeStr = now.toTimeString().split(' ')[0]; 
 
-        // 3. LOGIKA ANTI-DOUBLE SCAN (Disesuaikan dengan format tabel attendance piket)
+        // 3. LOGIKA ANTI-DOUBLE SCAN
         const { data: existingRecords } = await supabase
             .from('attendance')
             .select('*')
-            .eq('student_id', userId)
+            .eq('qr_code', decodedText)
             .eq('date', todayStr);
 
         if (existingRecords && existingRecords.length > 0) {
@@ -180,8 +174,6 @@ async function onScanSuccess(decodedText) {
 
         // 4. PENILAIAN KETERLAMBATAN
         let currentStatus = 'HADIR';
-        
-        // Tarik data konfigurasi jam dari Supabase
         const { data: settings } = await supabase
             .from('system_settings')
             .select('entry_time, late_tolerance_minutes')
@@ -192,16 +184,14 @@ async function onScanSuccess(decodedText) {
             currentStatus = determineAttendanceStatus(now, settings.entry_time, settings.late_tolerance_minutes);
         }
 
-        // 5. Simpan ke tabel attendance (Kolom disamakan persis dengan piket.js)
+        // 5. SIMPAN KE DATABASE (Tepat sesuai kolom di tabel attendance milikmu)
         const { error: insertErr } = await supabase.from('attendance').insert([{
-            student_id: userId,
-            name: userName,
-            rombel: userRombel,
-            type: userType,
+            qr_code: decodedText,
+            user_type: userType,
+            user_name: userName,
             status: currentStatus, 
             date: todayStr,
-            scan_time: timeStr,
-            notes: 'Hadir via Scanner'
+            scan_time: now.toISOString() 
         }]);
 
         if (insertErr) {
@@ -209,7 +199,7 @@ async function onScanSuccess(decodedText) {
             throw insertErr;
         }
 
-        // 6. UI Hasil Presensi (Berbeda untuk Hadir dan Terlambat)
+        // 6. UI Hasil Presensi
         if (statusText) {
             statusText.innerText = currentStatus === 'TERLAMBAT' ? "⚠️ PRESENSI BERHASIL (TERLAMBAT)" : "✅ PRESENSI BERHASIL!";
         }
