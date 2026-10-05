@@ -109,22 +109,22 @@ async function onScanSuccess(decodedText) {
         let { data: student } = await supabase
             .from('students')
             .select('*')
-            .eq('qr_code', decodedText)
+            .eq('qr_code', decodedText) // CEK CATATAN DI BAWAH
             .maybeSingle();
         
         if (student) {
-            userName = student.full_name;
+            userName = student.name; // Diubah dari full_name menjadi name
         } else {
             // 2. Cek ke gudang guru
             let { data: teacher } = await supabase
                 .from('teachers')
                 .select('*')
-                .eq('qr_code', decodedText)
+                .eq('qr_code', decodedText) // CEK CATATAN DI BAWAH
                 .maybeSingle();
                 
             if (teacher) {
                 userType = 'GURU';
-                userName = teacher.full_name;
+                userName = teacher.name; // Diubah dari full_name menjadi name
             }
         }
 
