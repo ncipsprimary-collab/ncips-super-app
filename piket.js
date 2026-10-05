@@ -169,8 +169,8 @@ export async function loadStudentsForViolation() {
   });
 }
 
-// Fungsi Simpan Pelanggaran Manual (Modul Piket)
-export async function recordManualViolation(event) {
+// Fungsi Simpan Pelanggaran Manual (Modul Piket) - DIREVISI MENJADI saveViolationEntry
+export async function saveViolationEntry(event) {
   event.preventDefault();
 
   const studentId = document.getElementById('violationStudent').value;
@@ -197,5 +197,5 @@ export async function recordManualViolation(event) {
 // Pasang Event Listener ke Form Pelanggaran
 const violationForm = document.getElementById('violationForm');
 if (violationForm) {
-  violationForm.addEventListener('submit', recordManualViolation);
+  violationForm.addEventListener('submit', saveViolationEntry);
 }
