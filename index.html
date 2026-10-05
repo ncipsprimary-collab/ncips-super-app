@@ -527,76 +527,8 @@
         
     </div>
 
-    <!-- PENGHUBUNG LOGIKA & SKRIP PENGATURAN -->
-    <script type="module" src="admin.js"></script>
-    <script type="module">
-        import { checkSession, logout } from './auth.js';
-        import { loadStudents, addStudent, openAddStudentModal, closeAddStudentModal, downloadCSVTemplate, handleCSVUpload, closeDetailModal, updateStudent, deleteStudent } from './students.js';
-        import { loadTeachers, addTeacher, openAddTeacherModal, closeAddTeacherModal, closeDetailTeacherModal, updateTeacher, deleteTeacher, downloadTeacherCSVTemplate, handleTeacherCSVUpload } from './teachers.js';
-        import { initScannerUI, startScanner, stopScanner } from './scanner.js';
-        import { loadAttendance, exportAttendanceExcel } from './attendance.js';
-        import { initPiketForm, savePiketEntry, loadPiketToday } from './piket.js';
-
-        document.getElementById('btn-logout').addEventListener('click', logout);
-        initScannerUI();
-
-        document.getElementById('btn-reload-students').addEventListener('click', loadStudents);
-        document.getElementById('btn-open-add').addEventListener('click', openAddStudentModal);
-        document.getElementById('btn-close-add').addEventListener('click', closeAddStudentModal);
-        document.getElementById('form-add-student').addEventListener('submit', addStudent);
-        document.getElementById('btn-download-template').addEventListener('click', downloadCSVTemplate);
-        document.getElementById('btn-trigger-upload').addEventListener('click', () => document.getElementById('input-csv-file').click());
-        document.getElementById('input-csv-file').addEventListener('change', handleCSVUpload);
-        document.getElementById('btn-close-detail').addEventListener('click', closeDetailModal);
-        document.getElementById('form-edit-student').addEventListener('submit', updateStudent);
-        document.getElementById('btn-delete-student').addEventListener('click', deleteStudent);
-
-        document.getElementById('btn-reload-teachers').addEventListener('click', loadTeachers);
-        document.getElementById('btn-open-add-teacher').addEventListener('click', openAddTeacherModal);
-        document.getElementById('btn-close-add-teacher').addEventListener('click', closeAddTeacherModal);
-        document.getElementById('btn-close-detail-teacher').addEventListener('click', closeDetailTeacherModal);
-        document.getElementById('form-add-teacher').addEventListener('submit', addTeacher);
-        document.getElementById('form-edit-teacher').addEventListener('submit', updateTeacher);
-        document.getElementById('btn-delete-teacher').addEventListener('click', deleteTeacher);
-        document.getElementById('btn-download-teacher-template').addEventListener('click', downloadTeacherCSVTemplate);
-        document.getElementById('btn-trigger-teacher-upload').addEventListener('click', () => document.getElementById('input-teacher-csv-file').click());
-        document.getElementById('input-teacher-csv-file').addEventListener('change', handleTeacherCSVUpload);
-
-        document.getElementById('btn-reload-attendance').addEventListener('click', loadAttendance);
-        document.getElementById('btn-filter-attendance').addEventListener('click', loadAttendance);
-        document.getElementById('btn-export-excel').addEventListener('click', exportAttendanceExcel);
-
-        document.getElementById('form-piket').addEventListener('submit', savePiketEntry);
-        document.getElementById('btn-reload-piket').addEventListener('click', loadPiketToday);
-
-        // Pengaturan Jam Kerja Sistem (Guru & Siswa) via LocalStorage
-        function loadSettingsToForm() {
-            document.getElementById('setStudentEntry').value = localStorage.getItem('ncips_student_entry') || '07:00';
-            document.getElementById('setStudentExit').value = localStorage.getItem('ncips_student_exit') || '13:00';
-            document.getElementById('setTeacherEntry').value = localStorage.getItem('ncips_teacher_entry') || '06:45';
-            document.getElementById('setTeacherExit').value = localStorage.getItem('ncips_teacher_exit') || '15:00';
-            document.getElementById('setTolerance').value = localStorage.getItem('ncips_tolerance') || '15';
-        }
-
-        document.getElementById('adminSettingsForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            localStorage.setItem('ncips_student_entry', document.getElementById('setStudentEntry').value);
-            localStorage.setItem('ncips_student_exit', document.getElementById('setStudentExit').value);
-            localStorage.setItem('ncips_teacher_entry', document.getElementById('setTeacherEntry').value);
-            localStorage.setItem('ncips_teacher_exit', document.getElementById('setTeacherExit').value);
-            localStorage.setItem('ncips_tolerance', document.getElementById('setTolerance').value);
-            alert('Sukses! Pengaturan jam masuk & pulang untuk Siswa dan Guru berhasil disimpan.');
-        });
-
-        checkSession(() => { 
-            loadStudents(); 
-            loadTeachers(); 
-            loadAttendance(); 
-            loadPiketToday(); 
-            loadSettingsToForm();
-            switchView('home'); 
-        });
-
+    <!-- 1. SCRIPT KHUSUS UI & PENGATURAN LOKAL (Tidak akan terblokir oleh error Module) -->
+    <script>
         const navIcons = {
             home: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>`,
             students: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`,
@@ -605,47 +537,32 @@
             profile: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>`
         };
 
-        const navLabels = {
-            home: "Beranda",
-            students: "Siswa",
-            scanner: "Scan",
-            teachers: "Guru",
-            profile: "Profil"
-        };
+        const navLabels = { home: "Beranda", students: "Siswa", scanner: "Scan", teachers: "Guru", profile: "Profil" };
 
+        // Definisikan fungsi switchView di ruang lingkup global window agar tombol HTML bisa memanggilnya
         window.switchView = function(view) {
             const views = { 
-                home: document.getElementById('view-home'), 
-                students: document.getElementById('view-students'), 
-                piket: document.getElementById('view-piket'),
-                teachers: document.getElementById('view-teachers'), 
-                scanner: document.getElementById('view-scanner'),
-                attendance: document.getElementById('view-attendance'),
+                home: document.getElementById('view-home'), students: document.getElementById('view-students'), 
+                piket: document.getElementById('view-piket'), teachers: document.getElementById('view-teachers'), 
+                scanner: document.getElementById('view-scanner'), attendance: document.getElementById('view-attendance'),
                 profile: document.getElementById('view-profile')
             };
             
             const navs = { 
-                home: document.getElementById('nav-home'), 
-                students: document.getElementById('nav-students'), 
-                teachers: document.getElementById('nav-teachers'), 
-                scanner: document.getElementById('nav-scanner'),
+                home: document.getElementById('nav-home'), students: document.getElementById('nav-students'), 
+                teachers: document.getElementById('nav-teachers'), scanner: document.getElementById('nav-scanner'),
                 profile: document.getElementById('nav-profile') 
             };
-            
-            if(view === 'scanner') { startScanner(); } else { stopScanner(); }
-            if(view === 'attendance') { loadAttendance(); }
-            if(view === 'piket') { loadPiketToday(); initPiketForm(); }
+
+            // Panggil trigger kustom jika view tertentu dibuka (ditangkap nanti oleh script module)
+            window.dispatchEvent(new CustomEvent('viewChanged', { detail: view }));
 
             Object.keys(views).forEach(k => {
                 const el = views[k];
                 if(!el) return;
                 if(k === view) {
                     el.classList.remove('hidden');
-                    if(k === 'home') {
-                        el.classList.add('block');
-                    } else {
-                        el.classList.add('flex');
-                    }
+                    el.classList.add(k === 'home' ? 'block' : 'flex');
                 } else {
                     el.classList.remove('block', 'flex');
                     el.classList.add('hidden');
@@ -665,12 +582,102 @@
                 }
             });
         };
-        
-        document.getElementById('nav-home').addEventListener('click', () => window.switchView('home'));
-        document.getElementById('nav-students').addEventListener('click', () => window.switchView('students'));
-        document.getElementById('nav-teachers').addEventListener('click', () => window.switchView('teachers'));
-        document.getElementById('nav-scanner').addEventListener('click', () => window.switchView('scanner'));
-        document.getElementById('nav-profile').addEventListener('click', () => window.switchView('profile'));
+
+        // Tunggu sampai HTML selesai dimuat untuk memasang Event Listener UI dasar
+        document.addEventListener("DOMContentLoaded", () => {
+            // Pasang tombol navigasi bawah
+            ['home', 'students', 'teachers', 'scanner', 'profile'].forEach(id => {
+                const btn = document.getElementById(`nav-${id}`);
+                if(btn) btn.addEventListener('click', () => window.switchView(id));
+            });
+
+            // Jalankan navigasi ke home di awal
+            window.switchView('home');
+
+            // --- LOGIKA PENGATURAN JAM SISTEM (Lokal) ---
+            const formSettings = document.getElementById('adminSettingsForm');
+            if(formSettings) {
+                // Load data
+                document.getElementById('setStudentEntry').value = localStorage.getItem('ncips_student_entry') || '07:00';
+                document.getElementById('setStudentExit').value = localStorage.getItem('ncips_student_exit') || '13:00';
+                document.getElementById('setTeacherEntry').value = localStorage.getItem('ncips_teacher_entry') || '06:45';
+                document.getElementById('setTeacherExit').value = localStorage.getItem('ncips_teacher_exit') || '15:00';
+                document.getElementById('setTolerance').value = localStorage.getItem('ncips_tolerance') || '15';
+
+                // Save data
+                formSettings.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    localStorage.setItem('ncips_student_entry', document.getElementById('setStudentEntry').value);
+                    localStorage.setItem('ncips_student_exit', document.getElementById('setStudentExit').value);
+                    localStorage.setItem('ncips_teacher_entry', document.getElementById('setTeacherEntry').value);
+                    localStorage.setItem('ncips_teacher_exit', document.getElementById('setTeacherExit').value);
+                    localStorage.setItem('ncips_tolerance', document.getElementById('setTolerance').value);
+                    alert('Sukses! Pengaturan jam masuk & pulang berhasil disimpan.');
+                });
+            }
+        });
+    </script>
+
+    <!-- 2. SCRIPT KHUSUS LOGIKA DATA (Modul Eksternal) -->
+    <script type="module" src="admin.js"></script>
+    <script type="module">
+        import { checkSession, logout } from './auth.js';
+        import { loadStudents, addStudent, openAddStudentModal, closeAddStudentModal, downloadCSVTemplate, handleCSVUpload, closeDetailModal, updateStudent, deleteStudent } from './students.js';
+        import { loadTeachers, addTeacher, openAddTeacherModal, closeAddTeacherModal, closeDetailTeacherModal, updateTeacher, deleteTeacher, downloadTeacherCSVTemplate, handleTeacherCSVUpload } from './teachers.js';
+        import { initScannerUI, startScanner, stopScanner } from './scanner.js';
+        import { loadAttendance, exportAttendanceExcel } from './attendance.js';
+        import { initPiketForm, savePiketEntry, loadPiketToday } from './piket.js';
+
+        // Tangkap event perubahan layar dari Script UI
+        window.addEventListener('viewChanged', (e) => {
+            const view = e.detail;
+            if(view === 'scanner') { startScanner(); } else { stopScanner(); }
+            if(view === 'attendance') { loadAttendance(); }
+            if(view === 'piket') { loadPiketToday(); initPiketForm(); }
+        });
+
+        document.getElementById('btn-logout')?.addEventListener('click', logout);
+        initScannerUI();
+
+        // Modul Siswa
+        document.getElementById('btn-reload-students')?.addEventListener('click', loadStudents);
+        document.getElementById('btn-open-add')?.addEventListener('click', openAddStudentModal);
+        document.getElementById('btn-close-add')?.addEventListener('click', closeAddStudentModal);
+        document.getElementById('form-add-student')?.addEventListener('submit', addStudent);
+        document.getElementById('btn-download-template')?.addEventListener('click', downloadCSVTemplate);
+        document.getElementById('btn-trigger-upload')?.addEventListener('click', () => document.getElementById('input-csv-file').click());
+        document.getElementById('input-csv-file')?.addEventListener('change', handleCSVUpload);
+        document.getElementById('btn-close-detail')?.addEventListener('click', closeDetailModal);
+        document.getElementById('form-edit-student')?.addEventListener('submit', updateStudent);
+        document.getElementById('btn-delete-student')?.addEventListener('click', deleteStudent);
+
+        // Modul Guru
+        document.getElementById('btn-reload-teachers')?.addEventListener('click', loadTeachers);
+        document.getElementById('btn-open-add-teacher')?.addEventListener('click', openAddTeacherModal);
+        document.getElementById('btn-close-add-teacher')?.addEventListener('click', closeAddTeacherModal);
+        document.getElementById('btn-close-detail-teacher')?.addEventListener('click', closeDetailTeacherModal);
+        document.getElementById('form-add-teacher')?.addEventListener('submit', addTeacher);
+        document.getElementById('form-edit-teacher')?.addEventListener('submit', updateTeacher);
+        document.getElementById('btn-delete-teacher')?.addEventListener('click', deleteTeacher);
+        document.getElementById('btn-download-teacher-template')?.addEventListener('click', downloadTeacherCSVTemplate);
+        document.getElementById('btn-trigger-teacher-upload')?.addEventListener('click', () => document.getElementById('input-teacher-csv-file').click());
+        document.getElementById('input-teacher-csv-file')?.addEventListener('change', handleTeacherCSVUpload);
+
+        // Modul Presensi & Piket
+        document.getElementById('btn-reload-attendance')?.addEventListener('click', loadAttendance);
+        document.getElementById('btn-filter-attendance')?.addEventListener('click', loadAttendance);
+        document.getElementById('btn-export-excel')?.addEventListener('click', exportAttendanceExcel);
+        document.getElementById('form-piket')?.addEventListener('submit', savePiketEntry);
+        document.getElementById('btn-reload-piket')?.addEventListener('click', loadPiketToday);
+
+        // Jalankan sesi awal
+        checkSession(() => { 
+            loadStudents(); 
+            loadTeachers(); 
+            loadAttendance(); 
+            loadPiketToday(); 
+        });
     </script>
 </body>
+</html>
 </html>
