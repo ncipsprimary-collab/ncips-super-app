@@ -1,211 +1,252 @@
 import { supabase } from './supabase.js';
 
-// Set default waktu saat ini pada form piket
-export function initPiketForm() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const timeInput = document.getElementById('piket-time');
-    if (timeInput) timeInput.value = `${hours}:${minutes}`;
-    
-    loadPiketStudentsDropdown();
-    loadPiketToday();
-    loadStudentsForViolation();
+let html5QrCode;
+let isScanning = false;
+
+export function initScannerUI() {
+    const btnStart = document.getElementById('btn-start-camera');
+    if (btnStart) {
+        btnStart.addEventListener('click', startScanningProcess);
+    }
 }
 
-// Memuat daftar siswa ke dropdown select
-export async function loadPiketStudentsDropdown() {
-    const select = document.getElementById('piket-student-select');
-    if (!select) return;
+export function startScanner() {
+    const resultBox = document.getElementById('scanner-result');
+    const startOverlay = document.getElementById('scanner-start-overlay');
+    const scannerOverlay = document.getElementById('scanner-overlay');
+    const statusText = document.getElementById('scanner-status');
+
+    if (resultBox) resultBox.classList.add('hidden');
+    if (startOverlay) startOverlay.classList.remove('hidden');
+    if (scannerOverlay) scannerOverlay.classList.replace('flex', 'hidden');
+    if (statusText) statusText.innerText = "SIAP DIGUNAKAN";
+}
+
+async function startScanningProcess() {
+    const startOverlay = document.getElementById('scanner-start-overlay');
+    const scannerOverlay = document.getElementById('scanner-overlay');
+    const statusText = document.getElementById('scanner-status');
+    
+    if (startOverlay) startOverlay.classList.add('hidden');
+    if (statusText) statusText.innerText = "MEMINTA IZIN KAMERA...";
+
+    if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("qr-reader"); 
+    }
 
     try {
-        const { data, error } = await supabase
+        await html5QrCode.start(
+            { facingMode: "environment" }, 
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            onScanSuccess,
+            onScanFailure
+        );
+        isScanning = true;
+        if (scannerOverlay) scannerOverlay.classList.replace('hidden', 'flex');
+        if (statusText) statusText.innerText = "ARAHKAN KAMERA KE QR CODE E-CARD";
+    } catch (err) {
+        console.error("Kesalahan Kamera:", err);
+        if (startOverlay) startOverlay.classList.remove('hidden');
+        if (statusText) statusText.innerText = "GAGAL MENGAKSES KAMERA!";
+        alert("Peringatan: Gagal mengakses kamera. Mohon pastikan browser Anda memiliki izin kamera.");
+    }
+}
+
+export function stopScanner() {
+    if (html5QrCode && isScanning) {
+        html5QrCode.stop().then(() => {
+            isScanning = false;
+            const scannerOverlay = document.getElementById('scanner-overlay');
+            if (scannerOverlay) scannerOverlay.classList.replace('flex', 'hidden');
+        }).catch(err => console.log(err));
+    }
+}
+
+// LOGIKA KALKULATOR KETERLAMBATAN
+function determineAttendanceStatus(currentTime, entryTimeStr, toleranceMinutes) {
+    if (!entryTimeStr) return 'HADIR'; 
+    const currH = currentTime.getHours();
+    const currM = currentTime.getMinutes();
+    const [entryH, entryM] = entryTimeStr.split(':').map(Number);
+    
+    const currentTotalMinutes = (currH * 60) + currM;
+    const entryTotalMinutes = (entryH * 60) + entryM;
+    const limitTotalMinutes = entryTotalMinutes + Number(toleranceMinutes || 0);
+    
+    if (currentTotalMinutes > limitTotalMinutes) {
+        return 'TERLAMBAT';
+    }
+    return 'HADIR';
+}
+
+async function onScanSuccess(decodedText) {
+    if (!isScanning) return;
+    
+    isScanning = false;
+    try {
+        await html5QrCode.pause();
+    } catch (e) {
+        console.log(e);
+    }
+    
+    const scannerOverlay = document.getElementById('scanner-overlay');
+    if (scannerOverlay) scannerOverlay.classList.replace('flex', 'hidden');
+    
+    const statusText = document.getElementById('scanner-status');
+    const resultBox = document.getElementById('scanner-result');
+    const resultIcon = document.getElementById('result-icon');
+    const resultName = document.getElementById('result-name');
+    const resultType = document.getElementById('result-type');
+    const resultTime = document.getElementById('result-time');
+    
+    if (statusText) statusText.innerText = "⏳ MEMPROSES DATA...";
+
+    try {
+        let userType = 'SISWA';
+        let userName = '';
+        
+        // 1. Cek ke gudang siswa
+        let { data: student } = await supabase
             .from('students')
-            .select('id, name, qr_code, rombel')
-            .eq('status', 'AKTIF')
-            .order('name', { ascending: true });
-
-        if (error) throw error;
-
-        select.innerHTML = '<option value="">-- Pilih Siswa --</option>';
-        data.forEach(stu => {
-            const opt = document.createElement('option');
-            opt.value = stu.id;
-            opt.textContent = `${stu.name} (${stu.rombel || '-'})`;
-            opt.dataset.name = stu.name;
-            opt.dataset.qr = stu.qr_code || 'MANUAL';
-            select.appendChild(opt);
-        });
-    } catch (err) {
-        console.error('Gagal memuat siswa:', err.message);
-    }
-}
-
-// Menyimpan entri piket manual ke tabel attendance (Disesuaikan dengan 7 kolom databasemu)
-export async function savePiketEntry(e) {
-    e.preventDefault();
-    const select = document.getElementById('piket-student-select');
-    const selectedOpt = select.options[select.selectedIndex];
-    
-    if (!select.value) {
-        alert('Silakan pilih siswa terlebih dahulu!');
-        return;
-    }
-
-    const studentName = selectedOpt.dataset.name;
-    const qrCode = selectedOpt.dataset.qr;
-    const status = document.getElementById('piket-status-select').value;
-    const time = document.getElementById('piket-time').value;
-    const today = new Date().toISOString().split('T')[0];
-
-    try {
-        const { error } = await supabase
-            .from('attendance')
-            .insert([{
-                qr_code: qrCode,
-                user_type: 'SISWA',
-                user_name: studentName,
-                status: status, // SAKIT, IZIN, ALPHA, TERLAMBAT
-                date: today,
-                scan_time: time + ':00'
-            }]);
-
-        if (error) throw error;
-
-        alert(`Berhasil mencatat ${status} untuk ${studentName}!`);
-        document.getElementById('form-piket').reset();
-        initPiketForm(); 
-    } catch (err) {
-        console.error('Gagal menyimpan:', err.message);
-        alert('Terjadi kesalahan saat menyimpan data piket.');
-    }
-}
-
-// Memuat daftar catatan piket hari ini (Disesuaikan dengan 7 kolom databasemu)
-export async function loadPiketToday() {
-    const container = document.getElementById('piket-list-container');
-    if (!container) return;
-
-    container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat rekap piket...</div>`;
-    const today = new Date().toISOString().split('T')[0];
-
-    try {
-        const { data, error } = await supabase
-            .from('attendance')
             .select('*')
-            .eq('date', today)
-            .in('status', ['SAKIT', 'IZIN', 'ALPHA', 'TERLAMBAT'])
-            .order('scan_time', { ascending: false });
+            .eq('qr_code', decodedText)
+            .maybeSingle();
+        
+        if (student) {
+            userName = student.name;
+        } else {
+            // 2. Cek ke gudang guru
+            let { data: teacher } = await supabase
+                .from('teachers')
+                .select('*')
+                .eq('qr_code', decodedText)
+                .maybeSingle();
+                
+            if (teacher) {
+                userType = 'GURU';
+                userName = teacher.name;
+            }
+        }
 
-        if (error) throw error;
-
-        if (!data || data.length === 0) {
-            container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Belum ada catatan absen khusus hari ini.</div>`;
+        if (!userName) {
+            if (statusText) statusText.innerText = "❌ QR CODE TIDAK DIKENAL!";
+            if (resultBox) {
+                resultBox.classList.remove('hidden');
+                if (resultIcon) { resultIcon.className = "w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md"; resultIcon.innerText = "✕"; }
+                if (resultName) resultName.innerText = "TIDAK DIKENAL";
+                if (resultType) resultType.innerText = "GAGAL";
+                if (resultTime) resultTime.innerText = "QR Code invalid";
+            }
+            setTimeout(() => {
+                if (resultBox) resultBox.classList.add('hidden');
+                resumeScanning();
+            }, 3000);
             return;
         }
 
-        container.innerHTML = '';
-        data.forEach(item => {
-            let badgeColor = 'bg-amber-100 text-amber-700 border-amber-200';
-            if (item.status === 'SAKIT') badgeColor = 'bg-blue-100 text-blue-700 border-blue-200';
-            if (item.status === 'IZIN') badgeColor = 'bg-purple-100 text-purple-700 border-purple-200';
-            if (item.status === 'ALPHA') badgeColor = 'bg-red-100 text-red-700 border-red-200';
-            if (item.status === 'TERLAMBAT') badgeColor = 'bg-orange-100 text-orange-700 border-orange-200';
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const timeStr = now.toTimeString().split(' ')[0]; 
 
-            // Bersihkan format waktu jika berupa timestamp panjang
-            let timeDisplay = item.scan_time;
-            if (timeDisplay && timeDisplay.includes('T')) {
-                timeDisplay = new Date(timeDisplay).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        // 3. LOGIKA ANTI-DOUBLE SCAN
+        const { data: existingRecords } = await supabase
+            .from('attendance')
+            .select('*')
+            .eq('qr_code', decodedText)
+            .eq('date', todayStr);
+
+        if (existingRecords && existingRecords.length > 0) {
+            const scanTimeFormatted = existingRecords[0].scan_time;
+            if (statusText) statusText.innerText = "⚠️ SUDAH ABSEN HARI INI!";
+            if (resultBox) {
+                resultBox.classList.remove('hidden');
+                if (resultIcon) { resultIcon.className = "w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md"; resultIcon.innerText = "⚡"; }
+                if (resultName) resultName.innerText = userName;
+                if (resultType) resultType.innerText = `${userType} (DOUBLE SCAN)`;
+                if (resultTime) resultTime.innerText = `Absen Pukul: ${scanTimeFormatted}`;
             }
+            setTimeout(() => {
+                if (resultBox) resultBox.classList.add('hidden');
+                resumeScanning();
+            }, 3500);
+            return;
+        }
 
-            const card = document.createElement('div');
-            card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center";
-            card.innerHTML = `
-                <div class="space-y-1">
-                    <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black border uppercase ${badgeColor}">${item.status}</span>
-                        <h4 class="text-xs font-black text-ncipsNavy">${item.user_name || 'Tidak Diketahui'}</h4>
-                    </div>
-                    <p class="text-[10px] text-gray-500 font-bold">Tipe: ${item.user_type || 'SISWA'}</p>
-                </div>
-                <div class="text-right">
-                    <span class="text-[10px] font-mono font-bold bg-gray-50 px-2.5 py-1 rounded-xl text-slate-700 border border-gray-100">${timeDisplay || '-'}</span>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    } catch (err) {
-        console.error('Gagal memuat rekap:', err.message);
-        container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-red-400 text-xs">Gagal memuat data.</div>`;
-    }
-}
-
-// Fungsi dropdown Pelanggaran
-export async function loadStudentsForViolation() {
-  const violationSelect = document.getElementById('violationStudent');
-  if (!violationSelect) return;
-
-  const { data, error } = await supabase
-    .from('students')
-    .select('id, name, rombel')
-    .eq('status', 'AKTIF')
-    .order('name', { ascending: true });
-
-  if (error) {
-    console.error('Gagal memuat daftar siswa:', error);
-    return;
-  }
-
-  violationSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>';
-  data.forEach(student => {
-    const option = document.createElement('option');
-    option.value = student.id;
-    option.textContent = `${student.name} (${student.rombel})`;
-    violationSelect.appendChild(option);
-  });
-}
-
-// Fungsi Simpan Pelanggaran (Sanksi/Tindak Lanjut)
-export async function recordManualViolation(event) {
-  event.preventDefault();
-  const studentId = document.getElementById('violationStudent').value;
-  const violationType = document.getElementById('violationType').value;
-  const actionTaken = document.getElementById('violationAction').value;
-  const officerName = localStorage.getItem('user_name') || 'Guru Piket'; 
-
-  const { error } = await supabase.from('student_violations').insert([{
-    student_id: studentId,
-    violation_type: violationType,
-    action_taken: actionTaken,
-    recorded_by: officerName,
-    date: new Date().toISOString().split('T')[0]
-  }]);
-
-  if (error) {
-    alert('Gagal menyimpan pelanggaran: ' + error.message);
-  } else {
-    alert('✅ Pelanggaran dan tindak lanjut berhasil dicatat!');
-    document.getElementById('violationForm').reset();
-  }
-}
-
-// Pasang Listener Form
-const violationForm = document.getElementById('violationForm');
-if (violationForm) {
-  violationForm.addEventListener('submit', recordManualViolation);
-}
-
-export function initScannerUI() {
-    const btnStartCamera = document.getElementById('btn-start-camera');
-    const startOverlay = document.getElementById('scanner-start-overlay');
-    
-    if (btnStartCamera) {
-        btnStartCamera.addEventListener('click', () => {
-            // Sembunyikan layar instruksi "Nyalakan Kamera"
-            if (startOverlay) startOverlay.classList.add('hidden');
+        // 4. PENILAIAN KETERLAMBATAN
+        let currentStatus = 'HADIR';
+        const { data: settings } = await supabase
+            .from('system_settings')
+            .select('entry_time, late_tolerance_minutes')
+            .eq('id', 1)
+            .single();
             
-            // Panggil fungsi utama untuk menyalakan scanner
-            startScanner();
-        });
+        if (settings && settings.entry_time) {
+            currentStatus = determineAttendanceStatus(now, settings.entry_time, settings.late_tolerance_minutes);
+        }
+
+        // 5. SIMPAN KE DATABASE
+        const { error: insertErr } = await supabase.from('attendance').insert([{
+            qr_code: decodedText,
+            user_type: userType,
+            user_name: userName,
+            status: currentStatus, 
+            date: todayStr,
+            scan_time: now.toISOString() 
+        }]);
+
+        if (insertErr) {
+            console.error("Gagal insert database:", insertErr);
+            throw insertErr;
+        }
+
+        // 6. UI Hasil Presensi
+        if (statusText) {
+            statusText.innerText = currentStatus === 'TERLAMBAT' ? "⚠️ PRESENSI BERHASIL (TERLAMBAT)" : "✅ PRESENSI BERHASIL!";
+        }
+        
+        if (resultBox) {
+            resultBox.classList.remove('hidden');
+            if (resultIcon) { 
+                if (currentStatus === 'TERLAMBAT') {
+                    resultIcon.className = "w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md"; 
+                    resultIcon.innerText = "!"; 
+                } else {
+                    resultIcon.className = "w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md"; 
+                    resultIcon.innerText = "✓"; 
+                }
+            }
+            if (resultName) resultName.innerText = userName;
+            if (resultType) resultType.innerText = `${userType} - ${currentStatus}`;
+            if (resultTime) resultTime.innerText = timeStr;
+        }
+
+        setTimeout(() => {
+            if (resultBox) resultBox.classList.add('hidden');
+            resumeScanning();
+        }, 3000);
+
+    } catch (err) {
+        console.error("Detail Error:", err);
+        if (statusText) statusText.innerText = `⚠️ Gagal: ${err.message || "Server Error"}`;
+        setTimeout(resumeScanning, 4000);
     }
+}
+
+function resumeScanning() {
+    if (html5QrCode) {
+        try {
+            html5QrCode.resume();
+            isScanning = true;
+            const scannerOverlay = document.getElementById('scanner-overlay');
+            const statusText = document.getElementById('scanner-status');
+            if (scannerOverlay) scannerOverlay.classList.replace('hidden', 'flex');
+            if (statusText) statusText.innerText = "ARAHKAN KAMERA KE QR CODE E-CARD";
+        } catch (e) {
+            console.log(e);
+        }
+    }
+}
+
+function onScanFailure(error) {
+    // Abaikan frame kecil saat mencari QR
 }
