@@ -194,3 +194,18 @@ const violationForm = document.getElementById('violationForm');
 if (violationForm) {
   violationForm.addEventListener('submit', recordManualViolation);
 }
+
+export function initScannerUI() {
+    const btnStartCamera = document.getElementById('btn-start-camera');
+    const startOverlay = document.getElementById('scanner-start-overlay');
+    
+    if (btnStartCamera) {
+        btnStartCamera.addEventListener('click', () => {
+            // Sembunyikan layar instruksi "Nyalakan Kamera"
+            if (startOverlay) startOverlay.classList.add('hidden');
+            
+            // Panggil fungsi utama untuk menyalakan scanner
+            startScanner();
+        });
+    }
+}
