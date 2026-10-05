@@ -13,14 +13,16 @@ export async function loadSystemSettings() {
         if (!data) return;
 
         // Masukkan nilai ke dalam form HTML jika elemennya ada
-        if (document.getElementById('setting-entry-time')) {
-            document.getElementById('setting-entry-time').value = data.entry_time || '';
+        const entryTimeInput = document.getElementById('setting-entry-time');
+        if (entryTimeInput) {
+            entryTimeInput.value = data.entry_time || '';
             document.getElementById('setting-exit-time').value = data.exit_time || '';
             document.getElementById('setting-tolerance').value = data.late_tolerance_minutes || 0;
             document.getElementById('setting-default-point').value = data.default_violation_point || 0;
             
             // Simpan ID baris setting ke form agar mudah saat di-update
-            document.getElementById('form-system-settings').dataset.id = data.id;
+            const form = document.getElementById('form-system-settings');
+            if (form) form.dataset.id = data.id;
         }
     } catch (err) {
         console.error('Gagal memuat system settings:', err.message);
@@ -31,6 +33,7 @@ export async function loadSystemSettings() {
 export async function saveSystemSettings(event) {
     event.preventDefault();
     const form = document.getElementById('form-system-settings');
+    if (!form) return;
     const settingId = form.dataset.id;
 
     const entry_time = document.getElementById('setting-entry-time').value;
@@ -55,12 +58,14 @@ export async function saveSystemSettings(event) {
         alert('✅ Pengaturan sistem berhasil diperbarui!');
     } catch (err) {
         console.error('Gagal menyimpan pengaturan:', err.message);
-        alert('Terjadi kesalahan saat menyimpan pengaturan.');
+        alert('Terjadi kesalahan saat menyimpan pengaturan: ' + err.message);
     }
 }
 
-// Pasang Event Listener saat form disubmit
-const settingsForm = document.getElementById('form-system-settings');
-if (settingsForm) {
-    settingsForm.addEventListener('submit', saveSystemSettings);
-}
+// Pasang Event Listener saat dokumen selesai dimuat
+document.addEventListener('DOMContentLoaded', () => {
+    const settingsForm = document.getElementById('form-system-settings');
+    if (settingsForm) {
+        settingsForm.addEventListener('submit', saveSystemSettings);
+    }
+});
