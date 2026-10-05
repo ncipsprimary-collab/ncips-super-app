@@ -1,57 +1,83 @@
-/**
- * NCIPS Super App - System Settings Module
- * Mengelola konfigurasi jam sekolah, toleransi keterlambatan, dan poin pelanggaran via Supabase.
- */
+import { supabase } from './supabase.js';
 
-// Fungsi untuk mengambil pengaturan sistem dari Supabase
-async function loadSystemSettings() {
+// Ambil data pengaturan sistem dari database
+export async function loadSystemSettings() {
     try {
-        // Memastikan klien Supabase tersedia secara global
-        if (typeof window.supabaseClient === 'undefined') {
-            console.warn('Klien Supabase belum terinisialisasi.');
-            return null;
-        }
-
-        const { data, error } = await window.supabaseClient
+        const { data, error } = await supabase
             .from('system_settings')
             .select('*')
             .limit(1)
             .single();
 
-        if (error) {
-            console.error('Gagal mengambil pengaturan sistem:', error.message);
-            return null;
-        }
+        if (error) throw error;
+        if (!data) return;
 
-        return data;
+        // Masukkan nilai ke dalam form HTML jika elemennya ada
+        const entryTimeInput = document.getElementById('setting-entry-time');
+        if (entryTimeInput) {
+            entryTimeInput.value = data.entry_time || '';
+            
+            const exitTimeInput = document.getElementById('setting-exit-time');
+            if (exitTimeInput) exitTimeInput.value = data.exit_time || '';
+
+            const toleranceInput = document.getElementById('setting-tolerance');
+            if (toleranceInput) toleranceInput.value = data.late_tolerance_minutes || 0;
+
+            const defaultPointInput = document.getElementById('setting-default-point');
+            if (defaultPointInput) defaultPointInput.value = data.default_violation_point || 0;
+            
+            // Simpan ID baris setting ke form agar mudah saat di-update
+            const form = document.getElementById('form-system-settings');
+            if (form) form.dataset.id = data.id;
+        }
     } catch (err) {
-        console.error('Terjadi kesalahan pada loadSystemSettings:', err);
-        return null;
+        console.error('Gagal memuat system settings:', err.message);
     }
 }
 
-// Fungsi untuk menyimpan pengaturan sistem ke Supabase
-async function saveSystemSettings(settingsData) {
+// Simpan perubahan pengaturan sistem
+export async function saveSystemSettings(event) {
+    event.preventDefault();
+    const form = document.getElementById('form-system-settings');
+    if (!form) return;
+    const settingId = form.dataset.id;
+    if (!settingId) return;
+
+    const entryTimeInput = document.getElementById('setting-entry-time');
+    const exitTimeInput = document.getElementById('setting-exit-time');
+    const toleranceInput = document.getElementById('setting-tolerance');
+    const defaultPointInput = document.getElementById('setting-default-point');
+
+    const entry_time = entryTimeInput ? entryTimeInput.value : '';
+    const exit_time = exitTimeInput ? exitTimeInput.value : '';
+    const late_tolerance_minutes = toleranceInput ? parseInt(toleranceInput.value) || 0 : 0;
+    const default_violation_point = defaultPointInput ? parseInt(defaultPointInput.value) || 0 : 0;
+
     try {
-        if (typeof window.supabaseClient === 'undefined') {
-            alert('Klien Supabase belum terhubung!');
-            return false;
-        }
-
-        const { error } = await window.supabaseClient
+        const { error } = await supabase
             .from('system_settings')
-            .upsert([settingsData]);
+            .update({
+                entry_time: entry_time,
+                exit_time: exit_time,
+                late_tolerance_minutes: late_tolerance_minutes,
+                default_violation_point: default_violation_point,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', settingId);
 
-        if (error) {
-            console.error('Gagal menyimpan pengaturan:', error.message);
-            alert('Gagal menyimpan pengaturan: ' + error.message);
-            return false;
-        }
+        if (error) throw error;
 
-        alert('Pengaturan sistem berhasil diperbarui!');
-        return true;
+        alert('✅ Pengaturan sistem berhasil diperbarui!');
     } catch (err) {
-        console.error('Terjadi kesalahan pada saveSystemSettings:', err);
-        return false;
+        console.error('Gagal menyimpan pengaturan:', err.message);
+        alert('Terjadi kesalahan saat menyimpan pengaturan: ' + err.message);
     }
 }
+
+// Pasang Event Listener saat dokumen selesai dimuat
+document.addEventListener('DOMContentLoaded', () => {
+    const settingsForm = document.getElementById('form-system-settings');
+    if (settingsForm) {
+        settingsForm.addEventListener('submit', saveSystemSettings);
+    }
+});
