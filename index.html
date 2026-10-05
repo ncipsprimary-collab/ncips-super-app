@@ -52,118 +52,118 @@
             </div>
         </header>
 
-        <!-- BERANDA UTAMA (ELEGANT & MONOCHROMATIC) -->
-        <main id="view-home" class="flex-1 overflow-y-auto p-6 space-y-6 pb-32 block">
-            
-            <!-- HEADER SAPAAN -->
-            <div class="bg-ncipsNavy text-white p-6 rounded-[2rem] shadow-lg relative overflow-hidden border border-slate-800">
-                <div class="absolute -right-6 -top-6 w-32 h-32 bg-ncipsYellow/10 rounded-full blur-2xl"></div>
-                <h2 id="user-greeting" class="text-xl font-black text-ncipsYellow relative z-10">Memuat...</h2>
-                <p class="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-widest">Pusat Kendali Administrasi YPKR</p>
-            </div>
+        <!-- BERANDA UTAMA (1 TEMA MONOKROM & SETTING LENGKAP) -->
+<main id="view-home" class="flex-1 overflow-y-auto p-6 space-y-6 pb-32 block">
+    
+    <!-- HEADER SAPAAN -->
+    <div class="bg-ncipsNavy text-white p-6 rounded-[2rem] shadow-lg relative overflow-hidden border border-slate-800">
+        <div class="absolute -right-6 -top-6 w-32 h-32 bg-ncipsYellow/10 rounded-full blur-2xl"></div>
+        <h2 id="user-greeting" class="text-xl font-black text-ncipsYellow relative z-10">Memuat...</h2>
+        <p class="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-widest">Pusat Kendali Administrasi YPKR</p>
+    </div>
 
-            <!-- KARTU INFO RINGKAS (SATU TEMA) -->
+    <!-- KARTU INFO RINGKAS -->
+    <div class="grid grid-cols-2 gap-3">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+            <span class="text-[9px] font-extrabold text-gray-400 uppercase tracking-widest block">Status Presensi</span>
+            <div class="flex items-center gap-2 mt-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-sm font-black text-ncipsNavy">Sistem Aktif</span>
+            </div>
+        </div>
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+            <span class="text-[9px] font-extrabold text-gray-400 uppercase tracking-widest block">Aturan Jam Masuk</span>
+            <span class="text-xs font-black text-ncipsNavy mt-2 block">Toleransi Aktif</span>
+        </div>
+    </div>
+
+    <!-- PAPAN PENGUMUMAN -->
+    <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-100 space-y-2">
+        <div class="flex justify-between items-center">
+            <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider flex items-center gap-1.5">
+                📢 Papan Pengumuman
+            </h3>
+            <span class="text-[9px] bg-gray-100 text-ncipsNavy font-extrabold px-2 py-0.5 rounded-full">Info</span>
+        </div>
+        <div class="p-3.5 bg-gray-50 rounded-2xl border border-gray-100 space-y-1">
+            <h4 class="text-xs font-black text-ncipsNavy">Penguatan Kedisiplinan & Presensi E-Card</h4>
+            <p class="text-[10px] text-gray-500 leading-relaxed font-medium">Seluruh siswa dan guru wajib melakukan pemindaian E-Card di gerbang masuk sebelum batas toleransi berakhir.</p>
+        </div>
+    </div>
+
+    <!-- GRID MODUL UTAMA (1 WARNA / MONOKROM) -->
+    <div class="space-y-2">
+        <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider px-1">Modul Operasional & Akademik</h3>
+        <div class="grid grid-cols-4 gap-2.5">
+            <!-- Guru Piket -->
+            <button onclick="window.switchView('piket')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
+                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📋</div>
+                <span class="text-[9px] font-black text-ncipsNavy text-center">Piket</span>
+            </button>
+            <!-- Rekap Absen -->
+            <button onclick="window.switchView('attendance')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
+                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📊</div>
+                <span class="text-[9px] font-black text-ncipsNavy text-center">Absensi</span>
+            </button>
+            <!-- Jadwal -->
+            <button onclick="alert('Modul Jadwal Pelajaran sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
+                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📅</div>
+                <span class="text-[9px] font-black text-ncipsNavy text-center">Jadwal</span>
+            </button>
+            <!-- Uang Sekolah / SPP -->
+            <button onclick="alert('Modul Keuangan & SPP sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
+                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">💳</div>
+                <span class="text-[9px] font-black text-ncipsNavy text-center">SPP</span>
+            </button>
+            <!-- Supervisi -->
+            <button onclick="alert('Modul Supervisi Guru sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
+                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">🔍</div>
+                <span class="text-[9px] font-black text-ncipsNavy text-center">Supervisi</span>
+            </button>
+            <!-- Asesmen -->
+            <button onclick="alert('Modul Asesmen / Ujian sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
+                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📝</div>
+                <span class="text-[9px] font-black text-ncipsNavy text-center">Asesmen</span>
+            </button>
+            <!-- Tugas / Assignment -->
+            <button onclick="alert('Modul Tugas siswa sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
+                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📚</div>
+                <span class="text-[9px] font-black text-ncipsNavy text-center">Tugas</span>
+            </button>
+            <!-- Rapor Digital -->
+            <button onclick="alert('Modul Rapor Digital sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
+                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">🎓</div>
+                <span class="text-[9px] font-black text-ncipsNavy text-center">Rapor</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- KONFIGURASI SISTEM (SYSTEM SETTINGS) -->
+    <div id="admin-settings-container" class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 border-l-4 border-l-ncipsYellow block">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider">⚙️ Pengaturan Jam & Sistem Sekolah</h3>
+            <span class="text-[9px] font-bold text-gray-400">Admin Control</span>
+        </div>
+        <form id="adminSettingsForm" class="space-y-3">
             <div class="grid grid-cols-2 gap-3">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
-                    <span class="text-[9px] font-extrabold text-gray-400 uppercase tracking-widest block">Status Presensi</span>
-                    <div class="flex items-center gap-2 mt-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span class="text-sm font-black text-ncipsNavy">Sistem Aktif</span>
-                    </div>
+                <div>
+                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jam Masuk</label>
+                    <input type="time" id="setEntryTime" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
-                    <span class="text-[9px] font-extrabold text-gray-400 uppercase tracking-widest block">Aturan Jam Masuk</span>
-                    <span class="text-xs font-black text-ncipsNavy mt-2 block">Toleransi Aktif</span>
+                <div>
+                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jam Pulang</label>
+                    <input type="time" id="setExitTime" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
                 </div>
             </div>
-
-            <!-- PAPAN PENGUMUMAN -->
-            <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-100 space-y-2">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider flex items-center gap-1.5">
-                        📢 Papan Pengumuman
-                    </h3>
-                    <span class="text-[9px] bg-gray-100 text-ncipsNavy font-extrabold px-2 py-0.5 rounded-full">Info</span>
-                </div>
-                <div class="p-3.5 bg-gray-50 rounded-2xl border border-gray-100 space-y-1">
-                    <h4 class="text-xs font-black text-ncipsNavy">Penguatan Kedisiplinan & Presensi E-Card</h4>
-                    <p class="text-[10px] text-gray-500 leading-relaxed font-medium">Seluruh siswa dan guru wajib melakukan pemindaian E-Card di gerbang masuk sebelum batas toleransi berakhir.</p>
-                </div>
+            <div>
+                <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Toleransi Keterlambatan (Menit)</label>
+                <input type="number" id="setTolerance" min="0" max="60" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
             </div>
+            <button type="submit" class="w-full bg-ncipsNavy text-ncipsYellow font-bold py-3 rounded-xl text-xs hover:bg-slate-800 transition-colors shadow-sm">Simpan Parameter Jam</button>
+        </form>
+    </div>
 
-            <!-- GRID MODUL UTAMA & MASA DEPAN -->
-            <div class="space-y-2">
-                <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider px-1">Modul Operasional & Akademik</h3>
-                <div class="grid grid-cols-4 gap-2.5">
-                    <!-- Guru Piket -->
-                    <button onclick="window.switchView('piket')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                        <div class="w-10 h-10 bg-gray-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner">📋</div>
-                        <span class="text-[9px] font-black text-ncipsNavy text-center">Piket</span>
-                    </button>
-                    <!-- Rekap Absen -->
-                    <button onclick="window.switchView('attendance')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                        <div class="w-10 h-10 bg-gray-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner">📊</div>
-                        <span class="text-[9px] font-black text-ncipsNavy text-center">Absensi</span>
-                    </button>
-                    <!-- Jadwal -->
-                    <button onclick="alert('Modul Jadwal Pelajaran sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                        <div class="w-10 h-10 bg-gray-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner">📅</div>
-                        <span class="text-[9px] font-black text-ncipsNavy text-center">Jadwal</span>
-                    </button>
-                    <!-- Uang Sekolah / SPP -->
-                    <button onclick="alert('Modul Keuangan & SPP sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                        <div class="w-10 h-10 bg-gray-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner">💳</div>
-                        <span class="text-[9px] font-black text-ncipsNavy text-center">SPP</span>
-                    </button>
-                    <!-- Supervisi -->
-                    <button onclick="alert('Modul Supervisi Guru sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                        <div class="w-10 h-10 bg-gray-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner">🔍</div>
-                        <span class="text-[9px] font-black text-ncipsNavy text-center">Supervisi</span>
-                    </button>
-                    <!-- Asesmen -->
-                    <button onclick="alert('Modul Asesmen / Ujian sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                        <div class="w-10 h-10 bg-gray-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner">📝</div>
-                        <span class="text-[9px] font-black text-ncipsNavy text-center">Asesmen</span>
-                    </button>
-                    <!-- Tugas / Assignment -->
-                    <button onclick="alert('Modul Tugas siswa sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                        <div class="w-10 h-10 bg-gray-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner">📚</div>
-                        <span class="text-[9px] font-black text-ncipsNavy text-center">Tugas</span>
-                    </button>
-                    <!-- Rapor Digital -->
-                    <button onclick="alert('Modul Rapor Digital sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                        <div class="w-10 h-10 bg-gray-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner">🎓</div>
-                        <span class="text-[9px] font-black text-ncipsNavy text-center">Rapor</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- KONFIGURASI SISTEM (SYSTEM SETTINGS) -->
-            <div id="admin-settings-container" class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 border-l-4 border-l-ncipsYellow">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider">⚙️ Pengaturan Jam & Sistem Sekolah</h3>
-                    <span class="text-[9px] font-bold text-gray-400">Admin Control</span>
-                </div>
-                <form id="adminSettingsForm" class="space-y-3">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jam Masuk</label>
-                            <input type="time" id="setEntryTime" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
-                        </div>
-                        <div>
-                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jam Pulang</label>
-                            <input type="time" id="setExitTime" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Toleransi Keterlambatan (Menit)</label>
-                        <input type="number" id="setTolerance" min="0" max="60" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
-                    </div>
-                    <button type="submit" class="w-full bg-ncipsNavy text-ncipsYellow font-bold py-3 rounded-xl text-xs hover:bg-slate-800 transition-colors shadow-sm">Simpan Parameter Jam</button>
-                </form>
-            </div>
-
-        </main>
+</main>
 
         <!-- VIEW SISWA -->
         <main id="view-students" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
