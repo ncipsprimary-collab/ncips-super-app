@@ -1,71 +1,57 @@
-import { supabase } from './supabase.js';
+/**
+ * NCIPS Super App - System Settings Module
+ * Mengelola konfigurasi jam sekolah, toleransi keterlambatan, dan poin pelanggaran via Supabase.
+ */
 
-// Ambil data pengaturan sistem dari database
-export async function loadSystemSettings() {
+// Fungsi untuk mengambil pengaturan sistem dari Supabase
+async function loadSystemSettings() {
     try {
-        const { data, error } = await supabase
+        // Memastikan klien Supabase tersedia secara global
+        if (typeof window.supabaseClient === 'undefined') {
+            console.warn('Klien Supabase belum terinisialisasi.');
+            return null;
+        }
+
+        const { data, error } = await window.supabaseClient
             .from('system_settings')
             .select('*')
             .limit(1)
             .single();
 
-        if (error) throw error;
-        if (!data) return;
-
-        // Masukkan nilai ke dalam form HTML jika elemennya ada
-        const entryTimeInput = document.getElementById('setting-entry-time');
-        if (entryTimeInput) {
-            entryTimeInput.value = data.entry_time || '';
-            document.getElementById('setting-exit-time').value = data.exit_time || '';
-            document.getElementById('setting-tolerance').value = data.late_tolerance_minutes || 0;
-            document.getElementById('setting-default-point').value = data.default_violation_point || 0;
-            
-            // Simpan ID baris setting ke form agar mudah saat di-update
-            const form = document.getElementById('form-system-settings');
-            if (form) form.dataset.id = data.id;
+        if (error) {
+            console.error('Gagal mengambil pengaturan sistem:', error.message);
+            return null;
         }
+
+        return data;
     } catch (err) {
-        console.error('Gagal memuat system settings:', err.message);
+        console.error('Terjadi kesalahan pada loadSystemSettings:', err);
+        return null;
     }
 }
 
-// Simpan perubahan pengaturan sistem
-export async function saveSystemSettings(event) {
-    event.preventDefault();
-    const form = document.getElementById('form-system-settings');
-    if (!form) return;
-    const settingId = form.dataset.id;
-
-    const entry_time = document.getElementById('setting-entry-time').value;
-    const exit_time = document.getElementById('setting-exit-time').value;
-    const late_tolerance_minutes = parseInt(document.getElementById('setting-tolerance').value) || 0;
-    const default_violation_point = parseInt(document.getElementById('setting-default-point').value) || 0;
-
+// Fungsi untuk menyimpan pengaturan sistem ke Supabase
+async function saveSystemSettings(settingsData) {
     try {
-        const { error } = await supabase
+        if (typeof window.supabaseClient === 'undefined') {
+            alert('Klien Supabase belum terhubung!');
+            return false;
+        }
+
+        const { error } = await window.supabaseClient
             .from('system_settings')
-            .update({
-                entry_time: entry_time,
-                exit_time: exit_time,
-                late_tolerance_minutes: late_tolerance_minutes,
-                default_violation_point: default_violation_point,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', settingId);
+            .upsert([settingsData]);
 
-        if (error) throw error;
+        if (error) {
+            console.error('Gagal menyimpan pengaturan:', error.message);
+            alert('Gagal menyimpan pengaturan: ' + error.message);
+            return false;
+        }
 
-        alert('✅ Pengaturan sistem berhasil diperbarui!');
+        alert('Pengaturan sistem berhasil diperbarui!');
+        return true;
     } catch (err) {
-        console.error('Gagal menyimpan pengaturan:', err.message);
-        alert('Terjadi kesalahan saat menyimpan pengaturan: ' + err.message);
+        console.error('Terjadi kesalahan pada saveSystemSettings:', err);
+        return false;
     }
 }
-
-// Pasang Event Listener saat dokumen selesai dimuat
-document.addEventListener('DOMContentLoaded', () => {
-    const settingsForm = document.getElementById('form-system-settings');
-    if (settingsForm) {
-        settingsForm.addEventListener('submit', saveSystemSettings);
-    }
-});
