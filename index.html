@@ -47,172 +47,184 @@
             <div><h1 class="text-xl font-black text-ncipsYellow leading-none tracking-wide">NCIPS</h1></div>
             <div class="flex items-center gap-3">
                 <span id="user-role-badge" class="bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy px-4 py-1.5 rounded-full text-[10px] font-black uppercase">...</span>
-                <!-- Tombol logout di header disembunyikan (dipindah ke Profil) namun elemennya tetap ada agar fungsi js tidak error -->
                 <button id="btn-logout" class="hidden"></button> 
             </div>
         </header>
 
-        <!-- BERANDA UTAMA (1 TEMA MONOKROM & SETTING LENGKAP) -->
-<main id="view-home" class="flex-1 overflow-y-auto p-6 space-y-6 pb-32 block">
-    
-    <!-- HEADER SAPAAN -->
-    <div class="bg-ncipsNavy text-white p-6 rounded-[2rem] shadow-lg relative overflow-hidden border border-slate-800">
-        <div class="absolute -right-6 -top-6 w-32 h-32 bg-ncipsYellow/10 rounded-full blur-2xl"></div>
-        <h2 id="user-greeting" class="text-xl font-black text-ncipsYellow relative z-10">Memuat...</h2>
-        <p class="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-widest">Pusat Kendali Administrasi YPKR</p>
-    </div>
-
-    <!-- KARTU INFO RINGKAS -->
-    <div class="grid grid-cols-2 gap-3">
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
-            <span class="text-[9px] font-extrabold text-gray-400 uppercase tracking-widest block">Status Presensi</span>
-            <div class="flex items-center gap-2 mt-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="text-sm font-black text-ncipsNavy">Sistem Aktif</span>
+        <!-- BERANDA UTAMA (MONOKROM & SETTING LENGKAP GURU & SISWA) -->
+        <main id="view-home" class="flex-1 overflow-y-auto p-6 space-y-6 pb-32 block">
+            
+            <!-- HEADER SAPAAN -->
+            <div class="bg-ncipsNavy text-white p-6 rounded-[2rem] shadow-lg relative overflow-hidden border border-slate-800">
+                <div class="absolute -right-6 -top-6 w-32 h-32 bg-ncipsYellow/10 rounded-full blur-2xl"></div>
+                <h2 id="user-greeting" class="text-xl font-black text-ncipsYellow relative z-10">Memuat...</h2>
+                <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-widest">Pusat Kendali Administrasi YPKR</p>
             </div>
-        </div>
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
-            <span class="text-[9px] font-extrabold text-gray-400 uppercase tracking-widest block">Aturan Jam Masuk</span>
-            <span class="text-xs font-black text-ncipsNavy mt-2 block">Toleransi Aktif</span>
-        </div>
-    </div>
 
-    <!-- PAPAN PENGUMUMAN -->
-    <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-100 space-y-2">
-        <div class="flex justify-between items-center">
-            <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider flex items-center gap-1.5">
-                📢 Papan Pengumuman
-            </h3>
-            <span class="text-[9px] bg-gray-100 text-ncipsNavy font-extrabold px-2 py-0.5 rounded-full">Info</span>
-        </div>
-        <div class="p-3.5 bg-gray-50 rounded-2xl border border-gray-100 space-y-1">
-            <h4 class="text-xs font-black text-ncipsNavy">Penguatan Kedisiplinan & Presensi E-Card</h4>
-            <p class="text-[10px] text-gray-500 leading-relaxed font-medium">Seluruh siswa dan guru wajib melakukan pemindaian E-Card di gerbang masuk sebelum batas toleransi berakhir.</p>
-        </div>
-    </div>
-
-    <!-- GRID MODUL UTAMA (1 WARNA / MONOKROM) -->
-    <div class="space-y-2">
-        <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider px-1">Modul Operasional & Akademik</h3>
-        <div class="grid grid-cols-4 gap-2.5">
-            <!-- Guru Piket -->
-            <button onclick="window.switchView('piket')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📋</div>
-                <span class="text-[9px] font-black text-ncipsNavy text-center">Piket</span>
-            </button>
-            <!-- Rekap Absen -->
-            <button onclick="window.switchView('attendance')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📊</div>
-                <span class="text-[9px] font-black text-ncipsNavy text-center">Absensi</span>
-            </button>
-            <!-- Jadwal -->
-            <button onclick="alert('Modul Jadwal Pelajaran sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📅</div>
-                <span class="text-[9px] font-black text-ncipsNavy text-center">Jadwal</span>
-            </button>
-            <!-- Uang Sekolah / SPP -->
-            <button onclick="alert('Modul Keuangan & SPP sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">💳</div>
-                <span class="text-[9px] font-black text-ncipsNavy text-center">SPP</span>
-            </button>
-            <!-- Supervisi -->
-            <button onclick="alert('Modul Supervisi Guru sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">🔍</div>
-                <span class="text-[9px] font-black text-ncipsNavy text-center">Supervisi</span>
-            </button>
-            <!-- Asesmen -->
-            <button onclick="alert('Modul Asesmen / Ujian sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📝</div>
-                <span class="text-[9px] font-black text-ncipsNavy text-center">Asesmen</span>
-            </button>
-            <!-- Tugas / Assignment -->
-            <button onclick="alert('Modul Tugas siswa sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📚</div>
-                <span class="text-[9px] font-black text-ncipsNavy text-center">Tugas</span>
-            </button>
-            <!-- Rapor Digital -->
-            <button onclick="alert('Modul Rapor Digital sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
-                <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">🎓</div>
-                <span class="text-[9px] font-black text-ncipsNavy text-center">Rapor</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- KONFIGURASI SISTEM (SYSTEM SETTINGS) -->
-    <div id="admin-settings-container" class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 border-l-4 border-l-ncipsYellow block">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider">⚙️ Pengaturan Jam & Sistem Sekolah</h3>
-            <span class="text-[9px] font-bold text-gray-400">Admin Control</span>
-        </div>
-        <form id="adminSettingsForm" class="space-y-3">
+            <!-- KARTU INFO RINGKAS -->
             <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jam Masuk</label>
-                    <input type="time" id="setEntryTime" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest block">Status Presensi</span>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-slate-800 animate-pulse"></span>
+                        <span class="text-sm font-black text-ncipsNavy">Sistem Aktif</span>
+                    </div>
                 </div>
-                <div>
-                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jam Pulang</label>
-                    <input type="time" id="setExitTime" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest block">Aturan Jam Masuk</span>
+                    <span class="text-xs font-black text-ncipsNavy mt-2 block">Toleransi Aktif</span>
                 </div>
             </div>
-            <div>
-                <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Toleransi Keterlambatan (Menit)</label>
-                <input type="number" id="setTolerance" min="0" max="60" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
-            </div>
-            <button type="submit" class="w-full bg-ncipsNavy text-ncipsYellow font-bold py-3 rounded-xl text-xs hover:bg-slate-800 transition-colors shadow-sm">Simpan Parameter Jam</button>
-        </form>
-    </div>
 
-</main>
+            <!-- PAPAN PENGUMUMAN -->
+            <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100 space-y-2">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider flex items-center gap-1.5">
+                        📢 Papan Pengumuman
+                    </h3>
+                    <span class="text-[9px] bg-slate-100 text-ncipsNavy font-extrabold px-2 py-0.5 rounded-full">Info</span>
+                </div>
+                <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                    <h4 class="text-xs font-black text-ncipsNavy">Penguatan Kedisiplinan & Presensi E-Card</h4>
+                    <p class="text-[10px] text-slate-500 leading-relaxed font-medium">Seluruh siswa dan guru wajib melakukan pemindaian E-Card di gerbang masuk sebelum batas toleransi berakhir.</p>
+                </div>
+            </div>
+
+            <!-- GRID MODUL UTAMA (MONOKROM) -->
+            <div class="space-y-2">
+                <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider px-1">Modul Operasional & Akademik</h3>
+                <div class="grid grid-cols-4 gap-2.5">
+                    <button onclick="window.switchView('piket')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-1.5 hover:bg-slate-50 active:scale-95 transition-all">
+                        <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📋</div>
+                        <span class="text-[9px] font-black text-ncipsNavy text-center">Piket</span>
+                    </button>
+                    <button onclick="window.switchView('attendance')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-1.5 hover:bg-slate-50 active:scale-95 transition-all">
+                        <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📊</div>
+                        <span class="text-[9px] font-black text-ncipsNavy text-center">Absensi</span>
+                    </button>
+                    <button onclick="alert('Modul Jadwal Pelajaran sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-1.5 hover:bg-slate-50 active:scale-95 transition-all">
+                        <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📅</div>
+                        <span class="text-[9px] font-black text-ncipsNavy text-center">Jadwal</span>
+                    </button>
+                    <button onclick="alert('Modul Keuangan & SPP sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-1.5 hover:bg-slate-50 active:scale-95 transition-all">
+                        <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">💳</div>
+                        <span class="text-[9px] font-black text-ncipsNavy text-center">SPP</span>
+                    </button>
+                    <button onclick="alert('Modul Supervisi Guru sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-1.5 hover:bg-slate-50 active:scale-95 transition-all">
+                        <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">🔍</div>
+                        <span class="text-[9px] font-black text-ncipsNavy text-center">Supervisi</span>
+                    </button>
+                    <button onclick="alert('Modul Asesmen / Ujian sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-1.5 hover:bg-slate-50 active:scale-95 transition-all">
+                        <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📝</div>
+                        <span class="text-[9px] font-black text-ncipsNavy text-center">Asesmen</span>
+                    </button>
+                    <button onclick="alert('Modul Tugas siswa sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-1.5 hover:bg-slate-50 active:scale-95 transition-all">
+                        <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">📚</div>
+                        <span class="text-[9px] font-black text-ncipsNavy text-center">Tugas</span>
+                    </button>
+                    <button onclick="alert('Modul Rapor Digital sedang dalam tahap perencanaan!')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-1.5 hover:bg-slate-50 active:scale-95 transition-all">
+                        <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">🎓</div>
+                        <span class="text-[9px] font-black text-ncipsNavy text-center">Rapor</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- KONFIGURASI SISTEM (PENGATURAN JAM GURU & SISWA) -->
+            <div id="admin-settings-container" class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 border-l-4 border-l-ncipsYellow space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider">⚙️ Pengaturan Jam Kerja & Sekolah</h3>
+                    <span class="text-[9px] font-bold text-slate-400">Admin Control</span>
+                </div>
+                <form id="adminSettingsForm" class="space-y-4">
+                    <!-- Jam Operasional Siswa -->
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
+                        <h4 class="text-[10px] font-black text-ncipsNavy uppercase tracking-wider">📅 Jam Operasional Siswa</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Jam Masuk Siswa</label>
+                                <input type="time" id="setStudentEntry" required class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Jam Pulang Siswa</label>
+                                <input type="time" id="setStudentExit" required class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Jam Operasional Guru -->
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
+                        <h4 class="text-[10px] font-black text-ncipsNavy uppercase tracking-wider">👨‍🏫 Jam Operasional Guru</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Jam Masuk Guru</label>
+                                <input type="time" id="setTeacherEntry" required class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Jam Pulang Guru</label>
+                                <input type="time" id="setTeacherExit" required class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Toleransi Keterlambatan Global (Menit)</label>
+                        <input type="number" id="setTolerance" min="0" max="60" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
+                    </div>
+
+                    <button type="submit" class="w-full bg-ncipsNavy text-ncipsYellow font-bold py-3 rounded-xl text-xs hover:bg-slate-800 transition-colors shadow-sm">Simpan Parameter Jam Sekolah</button>
+                </form>
+            </div>
+
+        </main>
 
         <!-- VIEW SISWA -->
         <main id="view-students" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
             <div class="flex justify-between items-end mb-2">
-                <div><h2 class="text-xl font-black text-ncipsNavy">Data Siswa</h2><p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Total: <span id="total-students">0</span> Siswa</p></div>
+                <div><h2 class="text-xl font-black text-ncipsNavy">Data Siswa</h2><p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Total: <span id="total-students">0</span> Siswa</p></div>
                 <div class="flex gap-2">
-                    <button id="btn-reload-students" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-gray-100 active:bg-gray-100">↻</button>
+                    <button id="btn-reload-students" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-slate-100 active:bg-slate-100">↻</button>
                     <button id="btn-open-add" class="bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy px-4 py-2 rounded-full text-xs font-black shadow-lg shadow-ncipsYellow/20 hover:scale-105 transition-transform">+ Tambah</button>
                 </div>
             </div>
-            <div class="bg-blue-50 border border-blue-100 rounded-[1.5rem] p-4 flex flex-col gap-3">
+            <div class="bg-slate-50 border border-slate-200 rounded-[1.5rem] p-4 flex flex-col gap-3">
                 <div class="flex justify-between gap-2">
-                    <button id="btn-download-template" class="flex-1 bg-white text-blue-700 text-xs font-bold py-2 rounded-xl border border-blue-200 shadow-sm hover:bg-blue-100">Unduh Template</button>
-                    <button id="btn-trigger-upload" class="flex-1 bg-blue-600 text-white text-xs font-bold py-2 rounded-xl shadow-sm hover:bg-blue-700">Upload CSV</button>
+                    <button id="btn-download-template" class="flex-1 bg-white text-slate-700 text-xs font-bold py-2 rounded-xl border border-slate-200 shadow-sm hover:bg-slate-100">Unduh Template</button>
+                    <button id="btn-trigger-upload" class="flex-1 bg-slate-800 text-white text-xs font-bold py-2 rounded-xl shadow-sm hover:bg-slate-900">Upload CSV</button>
                     <input type="file" id="input-csv-file" accept=".csv" class="hidden">
                 </div>
                 <p id="upload-status" class="text-xs text-center font-bold hidden"></p>
             </div>
-            <div id="student-list-container" class="space-y-3"><div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat data...</div></div>
+            <div id="student-list-container" class="space-y-3"><div class="bg-white p-6 rounded-[2rem] text-center text-slate-400 text-xs">Memuat data...</div></div>
         </main>
 
         <!-- VIEW GURU -->
         <main id="view-teachers" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
             <div class="flex justify-between items-end mb-2">
-                <div><h2 class="text-xl font-black text-ncipsNavy">Data Guru</h2><p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Total: <span id="total-teachers">0</span> Guru</p></div>
+                <div><h2 class="text-xl font-black text-ncipsNavy">Data Guru</h2><p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Total: <span id="total-teachers">0</span> Guru</p></div>
                 <div class="flex gap-2">
-                    <button id="btn-reload-teachers" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-gray-100 active:bg-gray-100">↻</button>
+                    <button id="btn-reload-teachers" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-slate-100 active:bg-slate-100">↻</button>
                     <button id="btn-open-add-teacher" class="bg-gradient-to-r from-ncipsNavy to-slate-800 text-white px-4 py-2 rounded-full text-xs font-black shadow-lg hover:scale-105 transition-transform">+ Tambah</button>
                 </div>
             </div>
-            <div class="bg-amber-50 border border-amber-100 rounded-[1.5rem] p-4 flex flex-col gap-3">
-                <p class="text-[9px] text-amber-800 font-bold uppercase tracking-wider text-center">Fitur Input Massal Guru</p>
+            <div class="bg-slate-50 border border-slate-200 rounded-[1.5rem] p-4 flex flex-col gap-3">
+                <p class="text-[9px] text-slate-600 font-bold uppercase tracking-wider text-center">Fitur Input Massal Guru</p>
                 <div class="flex justify-between gap-2">
-                    <button id="btn-download-teacher-template" class="flex-1 bg-white text-amber-700 text-xs font-bold py-2 rounded-xl border border-amber-200 shadow-sm hover:bg-amber-100">Unduh Template</button>
-                    <button id="btn-trigger-teacher-upload" class="flex-1 bg-amber-600 text-white text-xs font-bold py-2 rounded-xl shadow-sm hover:bg-amber-700">Upload CSV</button>
+                    <button id="btn-download-teacher-template" class="flex-1 bg-white text-slate-700 text-xs font-bold py-2 rounded-xl border border-slate-200 shadow-sm hover:bg-slate-100">Unduh Template</button>
+                    <button id="btn-trigger-teacher-upload" class="flex-1 bg-slate-800 text-white text-xs font-bold py-2 rounded-xl shadow-sm hover:bg-slate-900">Upload CSV</button>
                     <input type="file" id="input-teacher-csv-file" accept=".csv" class="hidden">
                 </div>
                 <p id="upload-teacher-status" class="text-xs text-center font-bold hidden"></p>
             </div>
-            <div id="teacher-list-container" class="space-y-3"><div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat data...</div></div>
+            <div id="teacher-list-container" class="space-y-3"><div class="bg-white p-6 rounded-[2rem] text-center text-slate-400 text-xs">Memuat data...</div></div>
         </main>
 
         <!-- VIEW SCANNER PRESENSI -->
         <main id="view-scanner" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
             <div class="flex justify-between items-end mb-2">
-                <div><h2 class="text-xl font-black text-ncipsNavy">Radar Presensi</h2><p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Arahkan kamera ke E-Card</p></div>
+                <div><h2 class="text-xl font-black text-ncipsNavy">Radar Presensi</h2><p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Arahkan kamera ke E-Card</p></div>
             </div>
             
-            <div class="bg-white p-4 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col items-center relative">
+            <div class="bg-white p-4 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-center relative">
                 <div class="relative w-full max-w-sm aspect-[4/5] rounded-2xl overflow-hidden bg-slate-900 flex items-center justify-center shadow-inner border-4 border-slate-800">
                     <div id="qr-reader" class="w-full h-full"></div>
                     
@@ -226,12 +238,12 @@
                         </div>
                     </div>
 
-                    <!-- POPUP HASIL DI TENGAH KAMERA -->
-                    <div id="scanner-result" class="absolute inset-x-6 top-1/2 -translate-y-1/2 z-30 hidden bg-white/95 backdrop-blur-md border border-gray-200 p-5 rounded-2xl text-center shadow-2xl">
-                        <div id="result-icon" class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md">✓</div>
+                    <!-- POPUP HASIL DI TENGAH KAMERA (MONOKROM) -->
+                    <div id="scanner-result" class="absolute inset-x-6 top-1/2 -translate-y-1/2 z-30 hidden bg-white/95 backdrop-blur-md border border-slate-200 p-5 rounded-2xl text-center shadow-2xl">
+                        <div id="result-icon" class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-ncipsYellow text-2xl mx-auto mb-2 shadow-md">✓</div>
                         <h3 id="result-name" class="font-black text-slate-800 text-base uppercase tracking-wide truncate">NAMA</h3>
-                        <p id="result-type" class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">STATUS</p>
-                        <p id="result-time" class="text-xs text-slate-700 font-bold mt-2 bg-gray-100 inline-block px-3 py-1 rounded-full">07:15:00</p>
+                        <p id="result-type" class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">STATUS</p>
+                        <p id="result-time" class="text-xs text-slate-700 font-bold mt-2 bg-slate-100 inline-block px-3 py-1 rounded-full">07:15:00</p>
                     </div>
 
                     <div id="scanner-start-overlay" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/90 backdrop-blur-sm p-6 text-center">
@@ -243,7 +255,7 @@
                     </div>
                 </div>
 
-                <p id="scanner-status" class="mt-4 text-[10px] font-bold text-gray-400 text-center uppercase tracking-widest">Kamera Belum Aktif</p>
+                <p id="scanner-status" class="mt-4 text-[10px] font-bold text-slate-400 text-center uppercase tracking-widest">Kamera Belum Aktif</p>
             </div>
         </main>
 
@@ -252,25 +264,24 @@
             <div class="flex justify-between items-end mb-2">
                 <div>
                     <h2 class="text-xl font-black text-ncipsNavy">Piket & Perizinan</h2>
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Catat Sakit, Izin, Alpha & Terlambat</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Catat Sakit, Izin, Alpha & Terlambat</p>
                 </div>
-                <button id="btn-reload-piket" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-gray-100 active:bg-gray-100">↻</button>
+                <button id="btn-reload-piket" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-slate-100 active:bg-slate-100">↻</button>
             </div>
 
-            <!-- FORM INPUT PIKET MANUAL -->
-            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 space-y-4">
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 space-y-4">
                 <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider">Form Input Guru Piket</h3>
                 <form id="form-piket" class="space-y-3">
                     <div>
-                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Cari / Pilih Siswa</label>
-                        <select id="piket-student-select" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Cari / Pilih Siswa</label>
+                        <select id="piket-student-select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
                             <option value="">-- Memuat Data Siswa --</option>
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Status Kehadiran</label>
-                            <select id="piket-status-select" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
+                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status Kehadiran</label>
+                            <select id="piket-status-select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
                                 <option value="SAKIT">Sakit (S)</option>
                                 <option value="IZIN">Izin (I)</option>
                                 <option value="ALPHA">Alpha (A)</option>
@@ -278,52 +289,49 @@
                             </select>
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Waktu / Jam</label>
-                            <input type="time" id="piket-time" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
+                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Waktu / Jam</label>
+                            <input type="time" id="piket-time" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
                         </div>
                     </div>
                     <div>
-                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Catatan / Keterangan</label>
-                        <input type="text" id="piket-notes" placeholder="Contoh: Ban bocor / Surat dokter terlampir" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Catatan / Keterangan</label>
+                        <input type="text" id="piket-notes" placeholder="Contoh: Ban bocor / Surat dokter terlampir" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs">
                     </div>
                     <button type="submit" class="w-full bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy font-black py-3.5 rounded-xl shadow-md text-xs hover:scale-[1.01] transition-transform">Simpan Data Piket</button>
                 </form>
             </div>
 
-            <!-- MODUL KEDISIPLINAN MANUAL (Guru Piket) -->
-            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 border-t-4 border-t-blue-900 mt-4">
+            <!-- MODUL KEDISIPLINAN MANUAL -->
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 border-t-4 border-t-ncipsNavy mt-4">
                 <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider mb-3">📝 Catat Pelanggaran Kedisiplinan</h3>
                 <form id="violationForm" class="space-y-3">
                     <div>
-                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Nama Siswa</label>
-                        <select id="violationStudent" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Nama Siswa</label>
+                        <select id="violationStudent" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy">
                             <option value="">-- Pilih Siswa --</option>
                         </select>
                     </div>
-                    <div class="grid grid-cols-1 gap-3">
-                        <div>
-                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jenis Pelanggaran</label>
-                            <select id="violationType" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy">
-                                <option value="Atribut Tidak Lengkap">Atribut Tidak Lengkap</option>
-                                <option value="Tidak Ikut Upacara">Tidak Ikut Upacara</option>
-                                <option value="Rambut / Kerapian">Rambut / Kerapian</option>
-                                <option value="Lainnya">Lainnya...</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Tindak Lanjut / Sanksi</label>
-                            <input type="text" id="violationAction" required placeholder="Contoh: Pembinaan Wali Kelas" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy">
-                        </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Jenis Pelanggaran</label>
+                        <select id="violationType" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy">
+                            <option value="Atribut Tidak Lengkap">Atribut Tidak Lengkap</option>
+                            <option value="Tidak Ikut Upacara">Tidak Ikut Upacara</option>
+                            <option value="Rambut / Kerapian">Rambut / Kerapian</option>
+                            <option value="Lainnya">Lainnya...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Tindak Lanjut / Sanksi</label>
+                        <input type="text" id="violationAction" required placeholder="Contoh: Pembinaan Wali Kelas" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy">
                     </div>
                     <button type="submit" class="w-full bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy font-black py-3.5 rounded-xl shadow-md text-xs mt-2">Simpan Catatan Pelanggaran</button>
                 </form>
             </div>
 
-            <!-- DAFTAR CATATAN PIKET HARI INI -->
             <div class="space-y-2">
                 <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider px-1">Daftar Rekap Piket Hari Ini</h3>
                 <div id="piket-list-container" class="space-y-3">
-                    <div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat data piket...</div>
+                    <div class="bg-white p-6 rounded-[2rem] text-center text-slate-400 text-xs">Memuat data piket...</div>
                 </div>
             </div>
         </main>
@@ -333,21 +341,20 @@
             <div class="flex justify-between items-end mb-2">
                 <div>
                     <h2 class="text-xl font-black text-ncipsNavy">Rekap Presensi</h2>
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Total Hadir: <span id="total-attendance">0</span> Data</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Total Hadir: <span id="total-attendance">0</span> Data</p>
                 </div>
-                <button id="btn-reload-attendance" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-gray-100 active:bg-gray-100">↻</button>
+                <button id="btn-reload-attendance" class="bg-white text-ncipsNavy w-10 h-10 rounded-full font-black shadow flex items-center justify-center border border-slate-100 active:bg-slate-100">↻</button>
             </div>
 
-            <!-- FILTER & EXPORT BAR -->
-            <div class="bg-white border border-gray-100 rounded-[1.5rem] p-4 flex flex-col gap-3 shadow-sm">
+            <div class="bg-white border border-slate-100 rounded-[1.5rem] p-4 flex flex-col gap-3 shadow-sm">
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Pilih Tanggal</label>
-                        <input type="date" id="filter-date" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Pilih Tanggal</label>
+                        <input type="date" id="filter-date" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy">
                     </div>
                     <div>
-                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Tipe Pengguna</label>
-                        <select id="filter-type" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Tipe Pengguna</label>
+                        <select id="filter-type" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-ncipsNavy">
                             <option value="ALL">Semua (Siswa & Guru)</option>
                             <option value="SISWA">Siswa Saja</option>
                             <option value="GURU">Guru Saja</option>
@@ -356,94 +363,93 @@
                 </div>
                 <div class="flex gap-2 pt-1">
                     <button id="btn-filter-attendance" class="flex-1 bg-ncipsNavy text-white text-xs font-bold py-2.5 rounded-xl shadow-sm hover:bg-slate-800">Terapkan Filter</button>
-                    <button id="btn-export-excel" class="flex-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs font-black py-2.5 rounded-xl shadow-sm hover:scale-[1.02] transition-transform flex items-center justify-center gap-1">📥 Unduh Excel</button>
+                    <button id="btn-export-excel" class="flex-1 bg-slate-800 text-ncipsYellow text-xs font-black py-2.5 rounded-xl shadow-sm hover:bg-slate-900 transition-transform flex items-center justify-center gap-1">📥 Unduh Excel</button>
                 </div>
             </div>
 
-            <!-- DAFTAR KEHADIRAN -->
             <div id="attendance-list-container" class="space-y-3">
-                <div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat data presensi...</div>
+                <div class="bg-white p-6 rounded-[2rem] text-center text-slate-400 text-xs">Memuat data presensi...</div>
             </div>
         </main>
 
-        <!-- VIEW PROFIL (MENU BARU) -->
+        <!-- VIEW PROFIL -->
         <main id="view-profile" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
             <div class="flex justify-between items-end mb-4">
                 <div>
                     <h2 class="text-xl font-black text-ncipsNavy">Profil Akun</h2>
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Pengaturan Pengguna</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Pengaturan Pengguna</p>
                 </div>
             </div>
             
-            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col items-center space-y-4 text-center mt-4">
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-center space-y-4 text-center mt-4">
                 <div class="w-20 h-20 bg-gradient-to-tr from-ncipsNavy to-slate-800 rounded-full border-4 border-ncipsYellow flex items-center justify-center text-white font-black text-3xl shadow-lg">
                     👤
                 </div>
                 <div>
                     <h3 class="text-lg font-black text-ncipsNavy uppercase">Administrator</h3>
-                    <p class="text-xs text-gray-500 font-bold">Yayasan Pendidikan Kristo Regi</p>
+                    <p class="text-xs text-slate-500 font-bold">Yayasan Pendidikan Kristo Regi</p>
                 </div>
                 
-                <div class="w-full pt-4 border-t border-gray-100 mt-2">
-                    <button onclick="document.getElementById('btn-logout').click()" class="w-full bg-red-50 text-red-600 font-bold py-3.5 rounded-xl text-xs hover:bg-red-100 transition-colors">
+                <div class="w-full pt-4 border-t border-slate-100 mt-2">
+                    <button onclick="document.getElementById('btn-logout').click()" class="w-full bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl text-xs hover:bg-slate-200 transition-colors">
                         🚪 Keluar (Logout)
                     </button>
                 </div>
             </div>
         </main>
 
-        <!-- MODALS (SISWA & GURU) TETAP SAMA -->
+        <!-- MODALS (SISWA & GURU) -->
         <div id="modal-add-student" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
             <div class="bg-white rounded-t-[2.5rem] p-6 w-full h-[85vh] overflow-y-auto pb-20">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-black text-ncipsNavy">Form Siswa Baru</h3>
-                    <button id="btn-close-add" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
+                    <button id="btn-close-add" class="w-8 h-8 bg-slate-100 rounded-full font-bold">✕</button>
                 </div>
                 <form id="form-add-student" class="space-y-4">
-                    <input type="text" id="stu-name" placeholder="Nama Lengkap" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required>
-                    <div class="grid grid-cols-2 gap-3"><input type="text" id="stu-nipd" placeholder="NIPD" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="text" id="stu-nisn" placeholder="NISN" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div>
-                    <div class="grid grid-cols-2 gap-3"><input type="text" id="stu-rombel" placeholder="Rombel" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><select id="stu-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><option value="AKTIF">Aktif</option></select></div>
+                    <input type="text" id="stu-name" placeholder="Nama Lengkap" class="w-full p-3 bg-slate-50 rounded-xl text-sm" required>
+                    <div class="grid grid-cols-2 gap-3"><input type="text" id="stu-nipd" placeholder="NIPD" class="w-full p-3 bg-slate-50 rounded-xl text-sm"><input type="text" id="stu-nisn" placeholder="NISN" class="w-full p-3 bg-slate-50 rounded-xl text-sm"></div>
+                    <div class="grid grid-cols-2 gap-3"><input type="text" id="stu-rombel" placeholder="Rombel" class="w-full p-3 bg-slate-50 rounded-xl text-sm"><select id="stu-status" class="w-full p-3 bg-slate-50 rounded-xl text-sm"><option value="AKTIF">Aktif</option></select></div>
                     <button type="submit" id="btn-save-student" class="w-full bg-ncipsNavy text-white font-bold py-4 rounded-2xl">Simpan</button>
                 </form>
             </div>
         </div>
 
         <div id="modal-detail-student" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end">
-            <div class="bg-gray-50 rounded-t-[2.5rem] w-full h-[90vh] overflow-y-auto flex flex-col relative">
+            <div class="bg-slate-50 rounded-t-[2.5rem] w-full h-[90vh] overflow-y-auto flex flex-col relative">
                 <div class="flex justify-between items-center p-6 bg-white sticky top-0 z-20 shadow-sm rounded-t-[2.5rem]">
                     <h3 class="text-lg font-black text-ncipsNavy">E-Card Siswa</h3>
-                    <button id="btn-close-detail" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
+                    <button id="btn-close-detail" class="w-8 h-8 bg-slate-100 rounded-full font-bold">✕</button>
                 </div>
                 <div class="p-6 space-y-6 pb-20 flex flex-col items-center">
                     <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template.png');">
                         <div class="h-[26%] w-full"></div>
                         <div class="px-5 flex items-center gap-4 mt-1">
-                            <div id="detail-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div>
+                            <div id="detail-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-slate-800 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div>
                             <div class="flex-1 space-y-1 text-right pr-1">
-                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NISN</span><span id="detail-nisn-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
-                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block">NIPD</span><span id="detail-nipd-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
-                                <div><span class="text-[7px] font-black text-gray-500 block">JK</span><span id="detail-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                <div class="border-b border-slate-200/80 pb-0.5"><span class="text-[7px] font-black text-slate-500 block">NISN</span><span id="detail-nisn-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                <div class="border-b border-slate-200/80 pb-0.5"><span class="text-[7px] font-black text-slate-500 block">NIPD</span><span id="detail-nipd-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                <div><span class="text-[7px] font-black text-slate-500 block">JK</span><span id="detail-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
                             </div>
                         </div>
                         <div class="px-5 mt-3 text-left">
-                            <h2 id="detail-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2>
+                            <h2 id="detail-name-title" class="text-sm font-black text-ncipsNavy truncate">NAMA</h2>
                             <p id="detail-rombel-title" class="text-[9px] font-bold text-slate-700 mt-0.5">GRADE</p>
                         </div>
                         <div class="mt-auto mb-4 px-6 flex flex-col items-center absolute bottom-2 left-0 right-0">
                             <div class="bg-white/95 p-1 rounded-xl w-32 h-32 flex items-center justify-center shadow-md">
                                 <img id="detail-qr-image" src="" class="w-full h-full object-contain">
                             </div>
-                            <p class="text-[5px] text-gray-400 font-mono mt-0.5 w-full truncate text-center" id="detail-qr-text"></p>
+                            <p class="text-[5px] text-slate-400 font-mono mt-0.5 w-full truncate text-center" id="detail-qr-text"></p>
                         </div>
                     </div>
                     
-                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 w-full">
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 w-full">
                         <form id="form-edit-student" class="space-y-4">
                             <input type="hidden" id="edit-id">
-                            <input type="text" id="edit-name" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required>
-                            <div class="grid grid-cols-3 gap-2"><input type="text" id="edit-nisn" placeholder="NISN" class="w-full p-2 bg-gray-50 rounded-xl text-xs"><input type="text" id="edit-nipd" placeholder="NIPD" class="w-full p-2 bg-gray-50 rounded-xl text-xs"><input type="text" id="edit-jk" placeholder="JK" class="w-full p-2 bg-gray-50 rounded-xl text-xs"></div>
-                            <div class="grid grid-cols-2 gap-3"><input type="text" id="edit-rombel" placeholder="Rombel" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><select id="edit-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><option value="AKTIF">AKTIF</option></select></div>
-                            <div class="flex gap-3"><button type="button" id="btn-delete-student" class="flex-1 bg-red-50 text-red-600 text-xs py-3 rounded-xl">Hapus</button><button type="submit" id="btn-update-student" class="flex-1 bg-blue-600 text-white text-xs py-3 rounded-xl">Simpan</button></div>
+                            <input type="text" id="edit-name" class="w-full p-3 bg-slate-50 rounded-xl text-sm" required>
+                            <div class="grid grid-cols-3 gap-2"><input type="text" id="edit-nisn" placeholder="NISN" class="w-full p-2 bg-slate-50 rounded-xl text-xs"><input type="text" id="edit-nipd" placeholder="NIPD" class="w-full p-2 bg-slate-50 rounded-xl text-xs"><input type="text" id="edit-jk" placeholder="JK" class="w-full p-2 bg-slate-50 rounded-xl text-xs"></div>
+                            <div class="grid grid-cols-2 gap-3"><input type="text" id="edit-rombel" placeholder="Rombel" class="w-full p-3 bg-slate-50 rounded-xl text-sm"><select id="edit-status" class="w-full p-3 bg-slate-50 rounded-xl text-sm"><option value="AKTIF">AKTIF</option></select></div>
+                            <div class="flex gap-3"><button type="button" id="btn-delete-student" class="flex-1 bg-slate-100 text-slate-700 text-xs py-3 rounded-xl font-bold">Hapus</button><button type="submit" id="btn-update-student" class="flex-1 bg-ncipsNavy text-white text-xs py-3 rounded-xl font-bold">Simpan</button></div>
                         </form>
                     </div>
                 </div>
@@ -454,74 +460,74 @@
             <div class="bg-white rounded-t-[2.5rem] p-6 w-full shadow-2xl h-[85vh] overflow-y-auto pb-20">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-black text-ncipsNavy">Form Guru Baru</h3>
-                    <button id="btn-close-add-teacher" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
+                    <button id="btn-close-add-teacher" class="w-8 h-8 bg-slate-100 rounded-full font-bold">✕</button>
                 </div>
                 <form id="form-add-teacher" class="space-y-4">
-                    <input type="text" id="tch-name" placeholder="Nama Lengkap" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required>
-                    <div class="grid grid-cols-2 gap-3"><input type="text" id="tch-nuptk" placeholder="NUPTK" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="text" id="tch-jk" placeholder="JK" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div>
-                    <div class="grid grid-cols-2 gap-3"><input type="text" id="tch-tempat" placeholder="Tempat Lahir" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="date" id="tch-tgl" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div>
-                    <select id="tch-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm font-bold"><option value="AKTIF">AKTIF</option></select>
+                    <input type="text" id="tch-name" placeholder="Nama Lengkap" class="w-full p-3 bg-slate-50 rounded-xl text-sm" required>
+                    <div class="grid grid-cols-2 gap-3"><input type="text" id="tch-nuptk" placeholder="NUPTK" class="w-full p-3 bg-slate-50 rounded-xl text-sm"><input type="text" id="tch-jk" placeholder="JK" class="w-full p-3 bg-slate-50 rounded-xl text-sm"></div>
+                    <div class="grid grid-cols-2 gap-3"><input type="text" id="tch-tempat" placeholder="Tempat Lahir" class="w-full p-3 bg-slate-50 rounded-xl text-sm"><input type="date" id="tch-tgl" class="w-full p-3 bg-slate-50 rounded-xl text-sm"></div>
+                    <select id="tch-status" class="w-full p-3 bg-slate-50 rounded-xl text-sm font-bold"><option value="AKTIF">AKTIF</option></select>
                     <button type="submit" id="btn-save-teacher" class="w-full bg-ncipsNavy text-white font-bold py-4 rounded-2xl">Simpan</button>
                 </form>
             </div>
         </div>
 
         <div id="modal-detail-teacher" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end">
-            <div class="bg-gray-50 rounded-t-[2.5rem] w-full shadow-2xl h-[90vh] overflow-y-auto flex flex-col relative">
+            <div class="bg-slate-50 rounded-t-[2.5rem] w-full shadow-2xl h-[90vh] overflow-y-auto flex flex-col relative">
                 <div class="flex justify-between items-center p-6 bg-white sticky top-0 z-20 shadow-sm rounded-t-[2.5rem]">
                     <h3 class="text-lg font-black text-ncipsNavy">E-Card Guru</h3>
-                    <button id="btn-close-detail-teacher" class="w-8 h-8 bg-gray-100 rounded-full font-bold">✕</button>
+                    <button id="btn-close-detail-teacher" class="w-8 h-8 bg-slate-100 rounded-full font-bold">✕</button>
                 </div>
                 <div class="p-6 space-y-6 pb-20 flex flex-col items-center">
                     <div class="relative w-[280px] sm:w-[310px] aspect-[54/86] rounded-2xl shadow-2xl overflow-hidden bg-cover bg-center" style="background-image: url('template-guru.png');">
                         <div class="h-[26%] w-full"></div>
                         <div class="px-5 flex items-center gap-4 mt-1">
-                            <div id="tch-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-red-600 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div>
+                            <div id="tch-avatar-container" class="w-20 h-20 rounded-full border-4 border-amber-400 bg-slate-800 flex items-center justify-center text-white font-black text-2xl overflow-hidden"></div>
                             <div class="flex-1 space-y-2 text-right pr-1 pt-2">
-                                <div class="border-b border-gray-200/80 pb-0.5"><span class="text-[7px] font-black text-gray-500 block uppercase">NUPTK</span><span id="tch-nuptk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
-                                <div><span class="text-[7px] font-black text-gray-500 block uppercase">JK</span><span id="tch-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                <div class="border-b border-slate-200/80 pb-0.5"><span class="text-[7px] font-black text-slate-500 block uppercase">NUPTK</span><span id="tch-nuptk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
+                                <div><span class="text-[7px] font-black text-slate-500 block uppercase">JK</span><span id="tch-jk-title" class="text-[10px] font-extrabold text-slate-800">-</span></div>
                             </div>
                         </div>
                         <div class="px-5 mt-4 text-left">
-                            <h2 id="tch-name-title" class="text-sm font-black text-orange-600 truncate">NAMA</h2>
+                            <h2 id="tch-name-title" class="text-sm font-black text-ncipsNavy truncate">NAMA</h2>
                             <p class="text-[9px] font-bold text-slate-700 mt-0.5">TEACHER</p>
                         </div>
                         <div class="mt-auto mb-4 px-6 flex flex-col items-center absolute bottom-2 left-0 right-0">
                             <div class="bg-white/95 p-1 rounded-xl w-32 h-32 flex items-center justify-center shadow-md">
                                 <img id="tch-qr-image" src="" class="w-full h-full object-contain">
                             </div>
-                            <p class="text-[5px] text-gray-400 font-mono mt-0.5 w-full truncate text-center" id="tch-qr-text"></p>
+                            <p class="text-[5px] text-slate-400 font-mono mt-0.5 w-full truncate text-center" id="tch-qr-text"></p>
                         </div>
                     </div>
                     
-                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 w-full">
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 w-full">
                         <form id="form-edit-teacher" class="space-y-4">
                             <input type="hidden" id="edit-tch-id">
-                            <input type="text" id="edit-tch-name" class="w-full p-3 bg-gray-50 rounded-xl text-sm" required>
-                            <div class="grid grid-cols-2 gap-3"><input type="text" id="edit-tch-nuptk" placeholder="NUPTK" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="text" id="edit-tch-jk" placeholder="JK" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div>
-                            <div class="grid grid-cols-2 gap-3"><input type="text" id="edit-tch-tempat" placeholder="Tempat Lahir" class="w-full p-3 bg-gray-50 rounded-xl text-sm"><input type="date" id="edit-tch-tgl" class="w-full p-3 bg-gray-50 rounded-xl text-sm"></div>
-                            <select id="edit-tch-status" class="w-full p-3 bg-gray-50 rounded-xl text-sm font-bold text-ncipsNavy"><option value="AKTIF">AKTIF</option><option value="NONAKTIF">NONAKTIF</option></select>
-                            <div class="flex gap-3"><button type="button" id="btn-delete-teacher" class="flex-1 bg-red-50 text-red-600 text-xs py-3 rounded-xl">Hapus</button><button type="submit" id="btn-update-teacher" class="flex-1 bg-ncipsNavy text-white text-xs py-3 rounded-xl">Simpan</button></div>
+                            <input type="text" id="edit-tch-name" class="w-full p-3 bg-slate-50 rounded-xl text-sm" required>
+                            <div class="grid grid-cols-2 gap-3"><input type="text" id="edit-tch-nuptk" placeholder="NUPTK" class="w-full p-3 bg-slate-50 rounded-xl text-sm"><input type="text" id="edit-tch-jk" placeholder="JK" class="w-full p-3 bg-slate-50 rounded-xl text-sm"></div>
+                            <div class="grid grid-cols-2 gap-3"><input type="text" id="edit-tch-tempat" placeholder="Tempat Lahir" class="w-full p-3 bg-slate-50 rounded-xl text-sm"><input type="date" id="edit-tch-tgl" class="w-full p-3 bg-slate-50 rounded-xl text-sm"></div>
+                            <select id="edit-tch-status" class="w-full p-3 bg-slate-50 rounded-xl text-sm font-bold text-ncipsNavy"><option value="AKTIF">AKTIF</option><option value="NONAKTIF">NONAKTIF</option></select>
+                            <div class="flex gap-3"><button type="button" id="btn-delete-teacher" class="flex-1 bg-slate-100 text-slate-700 text-xs py-3 rounded-xl font-bold">Hapus</button><button type="submit" id="btn-update-teacher" class="flex-1 bg-ncipsNavy text-white text-xs py-3 rounded-xl font-bold">Simpan</button></div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- MENU BAWAH (5 MENU UTAMA) -->
+        <!-- MENU NAVIGASI BAWAH -->
         <div class="fixed bottom-0 left-0 right-0 z-50 flex justify-center">
-            <nav class="w-full max-w-md bg-white border-t border-gray-200 flex justify-around items-end pt-2 pb-4 text-[10px] font-bold text-gray-400 shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
-                <button id="nav-home" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all"></button>
-                <button id="nav-students" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all"></button>
-                <button id="nav-scanner" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all"></button>
-                <button id="nav-teachers" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all"></button>
-                <button id="nav-profile" class="flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all"></button>
+            <nav class="w-full max-w-md bg-white border-t border-slate-200 flex justify-around items-end pt-2 pb-4 text-[10px] font-bold text-slate-400 shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
+                <button id="nav-home" class="flex flex-col items-center gap-1 text-slate-400 hover:text-ncipsNavy w-10 transition-all"></button>
+                <button id="nav-students" class="flex flex-col items-center gap-1 text-slate-400 hover:text-ncipsNavy w-10 transition-all"></button>
+                <button id="nav-scanner" class="flex flex-col items-center gap-1 text-slate-400 hover:text-ncipsNavy w-10 transition-all"></button>
+                <button id="nav-teachers" class="flex flex-col items-center gap-1 text-slate-400 hover:text-ncipsNavy w-10 transition-all"></button>
+                <button id="nav-profile" class="flex flex-col items-center gap-1 text-slate-400 hover:text-ncipsNavy w-10 transition-all"></button>
             </nav>
         </div>
         
     </div>
 
-    <!-- PENGHUBUNG LOGIKA -->
+    <!-- PENGHUBUNG LOGIKA & SKRIP PENGATURAN -->
     <script type="module" src="admin.js"></script>
     <script type="module">
         import { checkSession, logout } from './auth.js';
@@ -563,7 +569,33 @@
         document.getElementById('form-piket').addEventListener('submit', savePiketEntry);
         document.getElementById('btn-reload-piket').addEventListener('click', loadPiketToday);
 
-        checkSession(() => { loadStudents(); loadTeachers(); loadAttendance(); loadPiketToday(); switchView('home'); });
+        // Pengaturan Jam Kerja Sistem (Guru & Siswa) via LocalStorage
+        function loadSettingsToForm() {
+            document.getElementById('setStudentEntry').value = localStorage.getItem('ncips_student_entry') || '07:00';
+            document.getElementById('setStudentExit').value = localStorage.getItem('ncips_student_exit') || '13:00';
+            document.getElementById('setTeacherEntry').value = localStorage.getItem('ncips_teacher_entry') || '06:45';
+            document.getElementById('setTeacherExit').value = localStorage.getItem('ncips_teacher_exit') || '15:00';
+            document.getElementById('setTolerance').value = localStorage.getItem('ncips_tolerance') || '15';
+        }
+
+        document.getElementById('adminSettingsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            localStorage.setItem('ncips_student_entry', document.getElementById('setStudentEntry').value);
+            localStorage.setItem('ncips_student_exit', document.getElementById('setStudentExit').value);
+            localStorage.setItem('ncips_teacher_entry', document.getElementById('setTeacherEntry').value);
+            localStorage.setItem('ncips_teacher_exit', document.getElementById('setTeacherExit').value);
+            localStorage.setItem('ncips_tolerance', document.getElementById('setTolerance').value);
+            alert('Sukses! Pengaturan jam masuk & pulang untuk Siswa dan Guru berhasil disimpan.');
+        });
+
+        checkSession(() => { 
+            loadStudents(); 
+            loadTeachers(); 
+            loadAttendance(); 
+            loadPiketToday(); 
+            loadSettingsToForm();
+            switchView('home'); 
+        });
 
         const navIcons = {
             home: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>`,
@@ -604,7 +636,6 @@
             if(view === 'attendance') { loadAttendance(); }
             if(view === 'piket') { loadPiketToday(); initPiketForm(); }
 
-            // Perbaikan logika tampilan view menggunakan remove/add class yang aman untuk flex & block
             Object.keys(views).forEach(k => {
                 const el = views[k];
                 if(!el) return;
@@ -621,7 +652,6 @@
                 }
             });
 
-            // Pengaturan menu navigasi aktif di bawah
             Object.keys(navs).forEach(k => {
                 const btn = navs[k];
                 if(!btn) return;
@@ -630,13 +660,12 @@
                     btn.className = "flex flex-col items-center justify-center w-10 h-10 bg-gradient-to-tr from-ncipsNavy to-slate-700 text-ncipsYellow rounded-full shadow-lg shadow-ncipsNavy/30 -mt-6 hover:scale-110 transition-transform border-2 border-white";
                     btn.innerHTML = navIcons[k];
                 } else {
-                    btn.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-ncipsNavy w-10 transition-all";
+                    btn.className = "flex flex-col items-center gap-1 text-slate-400 hover:text-ncipsNavy w-10 transition-all";
                     btn.innerHTML = `${navIcons[k]}<span class="text-[6px] font-bold uppercase">${navLabels[k]}</span>`;
                 }
             });
         };
         
-        // Pemasangan Event Listener untuk 5 Navigasi Utama
         document.getElementById('nav-home').addEventListener('click', () => window.switchView('home'));
         document.getElementById('nav-students').addEventListener('click', () => window.switchView('students'));
         document.getElementById('nav-teachers').addEventListener('click', () => window.switchView('teachers'));
