@@ -62,6 +62,23 @@ export function stopScanner() {
     }
 }
 
+// LOGIKA KALKULATOR KETERLAMBATAN
+function determineAttendanceStatus(currentTime, entryTimeStr, toleranceMinutes) {
+    if (!entryTimeStr) return 'HADIR'; 
+    const currH = currentTime.getHours();
+    const currM = currentTime.getMinutes();
+    const [entryH, entryM] = entryTimeStr.split(':').map(Number);
+    
+    const currentTotalMinutes = (currH * 60) + currM;
+    const entryTotalMinutes = (entryH * 60) + entryM;
+    const limitTotalMinutes = entryTotalMinutes + Number(toleranceMinutes || 0);
+    
+    if (currentTotalMinutes > limitTotalMinutes) {
+        return 'TERLAMBAT';
+    }
+    return 'HADIR';
+}
+
 async function onScanSuccess(decodedText) {
     if (!isScanning) return;
     
@@ -128,7 +145,7 @@ async function onScanSuccess(decodedText) {
             return;
         }
 
-        // 3. LOGIKA ANTI-DOUBLE SCAN (CEK ABSEN HARI INI)
+        // 3. LOGIKA ANTI-DOUBLE SCAN
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
 
@@ -139,7 +156,6 @@ async function onScanSuccess(decodedText) {
             .gte('scan_time', todayStart.toISOString());
 
         if (existingRecords && existingRecords.length > 0) {
-            // Sudah absen hari ini
             const scanTimeFormatted = new Date(existingRecords[0].scan_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
             if (statusText) statusText.innerText = "⚠️ SUDAH ABSEN HARI INI!";
             if (resultBox) {
@@ -156,24 +172,51 @@ async function onScanSuccess(decodedText) {
             return;
         }
 
-        // 4. Simpan ke tabel attendance (buku absen)
+        // 4. PENILAIAN KETERLAMBATAN
+        const now = new Date();
+        let currentStatus = 'HADIR';
+        
+        // Tarik data konfigurasi jam dari Supabase
+        const { data: settings } = await supabase
+            .from('system_settings')
+            .select('entry_time, late_tolerance_minutes')
+            .eq('id', 1)
+            .single();
+            
+        if (settings && settings.entry_time) {
+            currentStatus = determineAttendanceStatus(now, settings.entry_time, settings.late_tolerance_minutes);
+        }
+
+        // 5. Simpan ke tabel attendance dengan status terhitung
         const { error: insertErr } = await supabase.from('attendance').insert([{
             qr_code: decodedText,
             user_type: userType,
-            user_name: userName
+            user_name: userName,
+            status: currentStatus, // Menambahkan status Hadir / Terlambat
+            scan_time: now.toISOString() // Mencatat waktu presisi server/lokal
         }]);
 
         if (insertErr) throw insertErr;
 
-        // Berhasil Absen Baru
-        if (statusText) statusText.innerText = "✅ PRESENSI BERHASIL!";
+        // 6. UI Hasil Presensi (Berbeda untuk Hadir dan Terlambat)
+        if (statusText) {
+            statusText.innerText = currentStatus === 'TERLAMBAT' ? "⚠️ PRESENSI BERHASIL (TERLAMBAT)" : "✅ PRESENSI BERHASIL!";
+        }
+        
         if (resultBox) {
             resultBox.classList.remove('hidden');
-            if (resultIcon) { resultIcon.className = "w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md"; resultIcon.innerText = "✓"; }
+            if (resultIcon) { 
+                if (currentStatus === 'TERLAMBAT') {
+                    resultIcon.className = "w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md"; 
+                    resultIcon.innerText = "!"; 
+                } else {
+                    resultIcon.className = "w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-2 shadow-md"; 
+                    resultIcon.innerText = "✓"; 
+                }
+            }
             if (resultName) resultName.innerText = userName;
-            if (resultType) resultType.innerText = userType;
-            const now = new Date();
-            if (resultTime) resultTime.innerText = now.toLocaleTimeString('id-ID');
+            if (resultType) resultType.innerText = `${userType} - ${currentStatus}`;
+            if (resultTime) resultTime.innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
         }
 
         setTimeout(() => {
