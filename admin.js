@@ -1,50 +1,68 @@
 import { supabase } from './supabase.js';
 
-export async function loadAdminSettings() {
-  // 1. Cek Otoritas Role dari sesi login
-  const userRole = localStorage.getItem('user_role');
-  const adminContainer = document.getElementById('admin-settings-container');
+// Ambil data pengaturan sistem dari database
+export async function loadSystemSettings() {
+    try {
+        const { data, error } = await supabase
+            .from('system_settings')
+            .select('*')
+            .limit(1)
+            .single();
 
-  // Jika bukan ADMIN, sembunyikan form dan hentikan proses
-  if (userRole !== 'ADMIN') {
-    if (adminContainer) adminContainer.style.display = 'none';
-    return; 
-  } else {
-    // Jika ADMIN, pastikan form terlihat
-    if (adminContainer) adminContainer.style.display = 'block';
-  }
+        if (error) throw error;
+        if (!data) return;
 
-  // 2. Load data dari Supabase jika dia benar-benar ADMIN
-  const { data, error } = await supabase.from('system_settings').select('*').eq('id', 1).single();
-  if (data) {
-    document.getElementById('setEntryTime').value = data.entry_time || '07:00';
-    document.getElementById('setExitTime').value = data.exit_time || '13:00';
-    document.getElementById('setTolerance').value = data.late_tolerance_minutes || 15;
-  }
+        const entryTimeInput = document.getElementById('setting-entry-time');
+        if (entryTimeInput) {
+            entryTimeInput.value = data.entry_time || '';
+            document.getElementById('setting-exit-time').value = data.exit_time || '';
+            document.getElementById('setting-tolerance').value = data.late_tolerance_minutes || 0;
+            document.getElementById('setting-default-point').value = data.default_violation_point || 0;
+            
+            const form = document.getElementById('form-system-settings');
+            if (form) form.dataset.id = data.id;
+        }
+    } catch (err) {
+        console.error('Gagal memuat system settings:', err.message);
+    }
 }
 
-// ... (Biarkan fungsi saveAdminSettings dan event listener di bawahnya tetap sama)
+// Simpan perubahan pengaturan sistem
+export async function saveSystemSettings(event) {
+    event.preventDefault();
+    const form = document.getElementById('form-system-settings');
+    if (!form) return;
+    const settingId = form.dataset.id;
 
-export async function saveAdminSettings(event) {
-  event.preventDefault();
-  const entryTime = document.getElementById('setEntryTime').value;
-  const exitTime = document.getElementById('setExitTime').value;
-  const tolerance = parseInt(document.getElementById('setTolerance').value);
+    const entry_time = document.getElementById('setting-entry-time').value;
+    const exit_time = document.getElementById('setting-exit-time').value;
+    const late_tolerance_minutes = parseInt(document.getElementById('setting-tolerance').value) || 0;
+    const default_violation_point = parseInt(document.getElementById('setting-default-point').value) || 0;
 
-  const { error } = await supabase
-    .from('system_settings')
-    .update({ entry_time: entryTime, exit_time: exitTime, late_tolerance_minutes: tolerance, updated_at: new Date() })
-    .eq('id', 1);
+    try {
+        const { error } = await supabase
+            .from('system_settings')
+            .update({
+                entry_time: entry_time,
+                exit_time: exit_time,
+                late_tolerance_minutes: late_tolerance_minutes,
+                default_violation_point: default_violation_point,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', settingId);
 
-  if (error) alert('Gagal menyimpan: ' + error.message);
-  else alert('✅ Parameter Sistem YPKR berhasil diperbarui!');
+        if (error) throw error;
+        alert('✅ Pengaturan sistem berhasil diperbarui!');
+    } catch (err) {
+        console.error('Gagal menyimpan pengaturan:', err.message);
+        alert('Terjadi kesalahan saat menyimpan pengaturan: ' + err.message);
+    }
 }
 
+// Pasang event listener otomatis saat halaman siap
 document.addEventListener('DOMContentLoaded', () => {
-  const adminForm = document.getElementById('adminSettingsForm');
-  if (adminForm) {
-    adminForm.addEventListener('submit', saveAdminSettings);
-    // Panggil loadAdminSettings saat view admin dibuka (bisa disesuaikan dengan fungsi switchView kamu)
-    loadAdminSettings(); 
-  }
+    const settingsForm = document.getElementById('form-system-settings');
+    if (settingsForm) {
+        settingsForm.addEventListener('submit', saveSystemSettings);
+    }
 });
