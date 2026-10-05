@@ -597,25 +597,32 @@
             // --- LOGIKA PENGATURAN JAM SISTEM (Lokal) ---
             const formSettings = document.getElementById('adminSettingsForm');
             if(formSettings) {
-                // Load data
-                document.getElementById('setStudentEntry').value = localStorage.getItem('ncips_student_entry') || '07:00';
-                document.getElementById('setStudentExit').value = localStorage.getItem('ncips_student_exit') || '13:00';
-                document.getElementById('setTeacherEntry').value = localStorage.getItem('ncips_teacher_entry') || '06:45';
-                document.getElementById('setTeacherExit').value = localStorage.getItem('ncips_teacher_exit') || '15:00';
-                document.getElementById('setTolerance').value = localStorage.getItem('ncips_tolerance') || '15';
+                try {
+                    // Coba ambil data, jika diblokir browser, tidak akan membuat error
+                    document.getElementById('setStudentEntry').value = localStorage.getItem('ncips_student_entry') || '07:00';
+                    document.getElementById('setStudentExit').value = localStorage.getItem('ncips_student_exit') || '13:00';
+                    document.getElementById('setTeacherEntry').value = localStorage.getItem('ncips_teacher_entry') || '06:45';
+                    document.getElementById('setTeacherExit').value = localStorage.getItem('ncips_teacher_exit') || '15:00';
+                    document.getElementById('setTolerance').value = localStorage.getItem('ncips_tolerance') || '15';
+                } catch (e) {
+                    console.warn("Akses penyimpanan diblokir oleh browser. Menggunakan pengaturan default.");
+                }
 
-                // Save data
+                // Save data dengan pelindung error
                 formSettings.addEventListener('submit', (e) => {
                     e.preventDefault();
-                    localStorage.setItem('ncips_student_entry', document.getElementById('setStudentEntry').value);
-                    localStorage.setItem('ncips_student_exit', document.getElementById('setStudentExit').value);
-                    localStorage.setItem('ncips_teacher_entry', document.getElementById('setTeacherEntry').value);
-                    localStorage.setItem('ncips_teacher_exit', document.getElementById('setTeacherExit').value);
-                    localStorage.setItem('ncips_tolerance', document.getElementById('setTolerance').value);
-                    alert('Sukses! Pengaturan jam masuk & pulang berhasil disimpan.');
+                    try {
+                        localStorage.setItem('ncips_student_entry', document.getElementById('setStudentEntry').value);
+                        localStorage.setItem('ncips_student_exit', document.getElementById('setStudentExit').value);
+                        localStorage.setItem('ncips_teacher_entry', document.getElementById('setTeacherEntry').value);
+                        localStorage.setItem('ncips_teacher_exit', document.getElementById('setTeacherExit').value);
+                        localStorage.setItem('ncips_tolerance', document.getElementById('setTolerance').value);
+                        alert('Sukses! Pengaturan jam masuk & pulang berhasil disimpan.');
+                    } catch (e) {
+                        alert('Gagal menyimpan! Browser Anda memblokir penyimpanan data (Tracking Prevention aktif).');
+                    }
                 });
             }
-        });
     </script>
 
     <!-- 2. SCRIPT KHUSUS LOGIKA DATA (Modul Eksternal) -->
