@@ -134,39 +134,49 @@
                         <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">🎓</div>
                         <span class="text-[9px] font-black text-ncipsNavy text-center">Rapor</span>
                     </button>
+                    <!-- Setting Sekolah -->
+                    <button onclick="window.switchView('setting')" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all">
+                        <div class="w-10 h-10 bg-slate-100 text-ncipsNavy rounded-xl flex items-center justify-center text-base shadow-inner font-bold">⚙️</div>
+                        <span class="text-[9px] font-black text-ncipsNavy text-center">Setting</span>
+                    </button>
                 </div>
-            </div>
-
-            <!-- PENGATURAN SISTEM / JAM SEKOLAH -->
-            <div id="admin-settings-container" class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 border-l-4 border-l-ncipsYellow block">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider">⚙️ Pengaturan Jam & Sistem Sekolah</h3>
-                    <span class="text-[9px] font-bold text-gray-400">Admin Control</span>
-                </div>
-                <form id="form-system-settings" class="space-y-3">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jam Masuk</label>
-                            <input type="time" id="setting-entry-time" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
-                        </div>
-                        <div>
-                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jam Pulang</label>
-                            <input type="time" id="setting-exit-time" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Toleransi Keterlambatan (Menit)</label>
-                        <input type="number" id="setting-tolerance" min="0" max="60" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
-                    </div>
-                    <div>
-                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Poin Pelanggaran Default</label>
-                        <input type="number" id="setting-default-point" min="0" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
-                    </div>
-                    <button type="submit" class="w-full bg-ncipsNavy text-ncipsYellow font-bold py-3 rounded-xl text-xs hover:bg-slate-800 transition-colors shadow-sm">Simpan Parameter Jam</button>
-                </form>
             </div>
 
         </main>
+
+        <!-- VIEW SETTING SEKOLAH -->
+        <main id="view-setting" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
+            <div class="flex justify-between items-end mb-4">
+                <div>
+                    <h2 class="text-xl font-black text-ncipsNavy">Setting Sekolah</h2>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Pengaturan Jam & Sistem</p>
+                </div>
+            </div>
+    
+            <div id="admin-settings-container" class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 border-l-4 border-l-ncipsYellow block">
+            <form id="form-system-settings" class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jam Masuk</label>
+                    <input type="time" id="setting-entry-time" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
+                </div>
+                <div>
+                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jam Pulang</label>
+                    <input type="time" id="setting-exit-time" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
+                </div>
+            </div>
+            <div>
+                <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Toleransi Keterlambatan (Menit)</label>
+                <input type="number" id="setting-tolerance" min="0" max="60" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
+            </div>
+            <div>
+                <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Poin Pelanggaran Default</label>
+                <input type="number" id="setting-default-point" min="0" required class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy focus:outline-none focus:border-ncipsNavy">
+            </div>
+            <button type="submit" class="w-full bg-ncipsNavy text-ncipsYellow font-bold py-3 rounded-xl text-xs hover:bg-slate-800 transition-colors shadow-sm">Simpan Parameter Jam</button>
+        </form>
+    </div>
+</main>
 
         <!-- VIEW SISWA -->
         <main id="view-students" class="flex-1 overflow-y-auto p-6 pb-32 hidden flex-col space-y-4">
@@ -606,16 +616,17 @@
             profile: "Profil"
         };
 
-        window.switchView = function(view) {
-            const views = { 
-                home: document.getElementById('view-home'), 
-                students: document.getElementById('view-students'), 
-                piket: document.getElementById('view-piket'),
-                teachers: document.getElementById('view-teachers'), 
-                scanner: document.getElementById('view-scanner'),
-                attendance: document.getElementById('view-attendance'),
-                profile: document.getElementById('view-profile')
-            };
+    window.switchView = function(view) {
+    const views = { 
+        home: document.getElementById('view-home'), 
+        students: document.getElementById('view-students'), 
+        piket: document.getElementById('view-piket'),
+        teachers: document.getElementById('view-teachers'), 
+        scanner: document.getElementById('view-scanner'),
+        attendance: document.getElementById('view-attendance'),
+        profile: document.getElementById('view-profile'),
+        setting: document.getElementById('view-setting') // <-- INI BARIS YANG BARU DITAMBAHKAN
+    };
             
             const navs = { 
                 home: document.getElementById('nav-home'), 
