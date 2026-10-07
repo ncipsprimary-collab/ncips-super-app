@@ -399,6 +399,39 @@
             </div>
         </div>
 
+        <!-- MODAL PELANGGARAN & TINDAK LANJUT SISWA -->
+        <div id="modal-violation" class="absolute inset-0 bg-ncipsNavy/80 backdrop-blur-sm z-[100] hidden flex-col justify-end">
+            <div class="bg-white rounded-t-[2.5rem] p-6 w-full h-[85vh] overflow-y-auto pb-20">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-black text-ncipsNavy">Form Tindak Lanjut Pelanggaran</h3>
+                    <button id="btn-close-violation" class="w-8 h-8 bg-gray-100 rounded-full font-bold flex items-center justify-center">✕</button>
+                </div>
+                <form id="violationForm" class="space-y-4">
+                    <div>
+                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Cari / Pilih Siswa</label>
+                        <select id="violationStudent" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
+                            <option value="">-- Memuat Data Siswa --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jenis Pelanggaran</label>
+                        <select id="violationType" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
+                            <option value="">-- Pilih Jenis Pelanggaran --</option>
+                            <option value="Terlambat">Terlambat Masuk Sekolah</option>
+                            <option value="Atribut Tidak Lengkap">Atribut Seragam Tidak Lengkap</option>
+                            <option value="Aturan Rambut/Estetika">Pelanggaran Estetika / Rambut</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Catatan / Tindak Lanjut</label>
+                        <textarea id="violationNotes" rows="3" placeholder="Masukkan keterangan tambahan..." class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-rose-700 text-white font-black py-4 rounded-2xl shadow-lg text-xs">Simpan Data Pelanggaran</button>
+                </form>
+            </div>
+        </div>
+
         <!-- MODAL DETAIL SISWA -->
         <div id="modal-detail-student" class="absolute inset-0 bg-ncipsNavy/90 backdrop-blur-md z-[110] hidden flex-col justify-end">
             <div class="bg-gray-50 rounded-t-[2.5rem] w-full h-[90vh] overflow-y-auto flex flex-col relative">
@@ -567,6 +600,25 @@
             violationFormEl.addEventListener('submit', saveViolationEntry);
         }
         addEvent('btn-reload-piket', 'click', loadPiketToday);
+
+        // Pengontrol Modal Pelanggaran Siswa
+        const modalViolation = document.getElementById('modal-violation');
+        const btnOpenViolation = document.getElementById('btn-open-violation');
+        const btnCloseViolation = document.getElementById('btn-close-violation');
+
+        if (btnOpenViolation && modalViolation) {
+            btnOpenViolation.addEventListener('click', () => {
+                modalViolation.classList.remove('hidden');
+                modalViolation.classList.add('flex');
+            });
+        }
+
+        if (btnCloseViolation && modalViolation) {
+            btnCloseViolation.addEventListener('click', () => {
+                modalViolation.classList.add('hidden');
+                modalViolation.classList.remove('flex');
+            });
+        }
 
         // Panggil loadSystemSettings saat sesi berhasil dicek
         checkSession(() => { 
