@@ -114,7 +114,7 @@ export async function loadPiketToday() {
 
         // 2. Ambil data dari tabel Disipline menggunakan filter rentang created_at
         const { data: disiplineData, error: disError } = await supabase
-            .from('Disipline')
+            .from('disciplines')
             .select('*, students(name, rombel)')
             .gte('created_at', startOfDay)
             .lte('created_at', endOfDay);
@@ -235,7 +235,7 @@ export async function saveViolationEntry(event) {
   const detailAction = `[${actionStatus}] ${actionTaken} | Catatan: ${notes}`;
 
   // Sesuaikan dengan nama kolom yang ada di database Supabase mas bro
-  const { error } = await supabase.from('Disipline').insert([{
+  const { error } = await supabase.from('disciplines').insert([{
     student_id: studentId,
     violation_desc: violationType,  // Memakai violation_desc
     action_taken: detailAction,     // Memakai action_taken (berisi gabungan teks)
