@@ -414,15 +414,45 @@
                         </select>
                     </div>
                     <div>
-                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Jenis Pelanggaran</label>
-                        <select id="violationType" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
-                            <option value="">-- Pilih Jenis Pelanggaran --</option>
-                            <option value="Terlambat">Terlambat Masuk Sekolah</option>
-                            <option value="Atribut Tidak Lengkap">Atribut Seragam Tidak Lengkap</option>
-                            <option value="Aturan Rambut/Estetika">Pelanggaran Estetika / Rambut</option>
-                            <option value="Lainnya">Lainnya</option>
-                        </select>
-                    </div>
+    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Jenis Pelanggaran & Poin Default</label>
+    <div class="grid grid-cols-1 gap-2" id="violationTypeContainer">
+        <!-- Opsi 1 -->
+        <label class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl cursor-pointer hover:bg-red-50 hover:border-red-300 transition-all focus-within:ring-2 focus-within:ring-red-400">
+            <div class="flex items-center gap-3">
+                <input type="radio" name="violationType" value="Terlambat" class="w-4 h-4 text-red-600 focus:ring-red-500 border-gray-300" required>
+                <span class="text-xs font-bold text-ncipsNavy">Terlambat Masuk</span>
+            </div>
+            <span class="text-[10px] font-black text-red-600 bg-red-100 px-2 py-1 rounded-lg shadow-sm">+10 Poin</span>
+        </label>
+        
+        <!-- Opsi 2 -->
+        <label class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl cursor-pointer hover:bg-red-50 hover:border-red-300 transition-all focus-within:ring-2 focus-within:ring-red-400">
+            <div class="flex items-center gap-3">
+                <input type="radio" name="violationType" value="Atribut Tidak Lengkap" class="w-4 h-4 text-red-600 focus:ring-red-500 border-gray-300">
+                <span class="text-xs font-bold text-ncipsNavy">Atribut Tidak Lengkap</span>
+            </div>
+            <span class="text-[10px] font-black text-red-600 bg-red-100 px-2 py-1 rounded-lg shadow-sm">+15 Poin</span>
+        </label>
+
+        <!-- Opsi 3 -->
+        <label class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl cursor-pointer hover:bg-red-50 hover:border-red-300 transition-all focus-within:ring-2 focus-within:ring-red-400">
+            <div class="flex items-center gap-3">
+                <input type="radio" name="violationType" value="Aturan Rambut/Estetika" class="w-4 h-4 text-red-600 focus:ring-red-500 border-gray-300">
+                <span class="text-xs font-bold text-ncipsNavy">Pelanggaran Estetika/Rambut</span>
+            </div>
+            <span class="text-[10px] font-black text-red-600 bg-red-100 px-2 py-1 rounded-lg shadow-sm">+20 Poin</span>
+        </label>
+
+        <!-- Opsi 4 -->
+        <label class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100 hover:border-gray-300 transition-all focus-within:ring-2 focus-within:ring-gray-400">
+            <div class="flex items-center gap-3">
+                <input type="radio" name="violationType" value="Lainnya" class="w-4 h-4 text-gray-600 focus:ring-gray-500 border-gray-300">
+                <span class="text-xs font-bold text-ncipsNavy">Lainnya</span>
+            </div>
+            <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-lg">Kustom</span>
+        </label>
+    </div>
+</div>
                     <div>
                         <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Catatan / Tindak Lanjut</label>
                         <textarea id="violationNotes" rows="3" placeholder="Masukkan keterangan tambahan..." class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs"></textarea>
