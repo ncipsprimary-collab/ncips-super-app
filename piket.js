@@ -235,19 +235,24 @@ export async function loadStudentsForViolation() {
   });
 }
 
-// Fungsi Simpan Pelanggaran Manual (Modul Piket) - DIREVISI MENJADI saveViolationEntry
+// Fungsi Simpan Pelanggaran Manual ke tabel Disipline
 export async function saveViolationEntry(event) {
   event.preventDefault();
 
   const studentId = document.getElementById('violationStudent').value;
   const violationType = document.getElementById('violationType').value;
   const actionTaken = document.getElementById('violationAction').value;
+  const actionStatus = document.getElementById('violationStatus').value; // Input baru
+  const notes = document.getElementById('violationNotes').value || '-'; // Input baru
   const officerName = localStorage.getItem('user_name') || 'Guru Piket'; 
 
-  const { error } = await supabase.from('student_violations').insert([{
+  // Simpan ke tabel 'Disipline' sesuai yang mas bro buat di Supabase
+  const { error } = await supabase.from('Disipline').insert([{
     student_id: studentId,
     violation_type: violationType,
     action_taken: actionTaken,
+    action_status: actionStatus,
+    notes: notes,
     recorded_by: officerName,
     date: new Date().toISOString().split('T')[0]
   }]);
@@ -255,8 +260,9 @@ export async function saveViolationEntry(event) {
   if (error) {
     alert('Gagal menyimpan pelanggaran: ' + error.message);
   } else {
-    alert('✅ Pelanggaran dan tindak lanjut berhasil dicatat!');
+    alert('✅ Pelanggaran dan tindak lanjut berhasil dicatat ke tabel Disipline!');
     document.getElementById('violationForm').reset();
+    loadPiketToday(); // Refresh daftar di bawahnya otomatis
   }
 }
 
