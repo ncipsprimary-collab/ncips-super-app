@@ -515,6 +515,31 @@ window.fillViolationForm = async function(studentId, violationType, studentName)
     }, 100);
 };
 
+export async function loadPiketTeachersDropdown() {
+    const select = document.getElementById('piket-teacher-select');
+    if (!select) return;
+
+    try {
+        const { data, error } = await supabase
+            .from('teachers')
+            .select('id, name')
+            .eq('status', 'AKTIF')
+            .order('name', { ascending: true });
+
+        if (error) throw error;
+
+        select.innerHTML = '<option value="">-- Pilih Guru Piket --</option>';
+        data.forEach(tch => {
+            const opt = document.createElement('option');
+            opt.value = tch.name;
+            opt.textContent = tch.name;
+            select.appendChild(opt);
+        });
+    } catch (err) {
+        console.error('Gagal memuat daftar guru piket:', err.message);
+    }
+}
+
 // --- MODUL ANALITIK DISIPLIN (GURU & SISWA: MINGGUAN, BULANAN, SEMESTERAN) ---
 export async function loadAnalitikDisiplin(role = 'SISWA', period = 'mingguan') {
     const container = document.getElementById('analitik-content-container');
