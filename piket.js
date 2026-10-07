@@ -73,7 +73,7 @@ export async function loadPiketStudentsDropdown() {
     }
 }
 
-// Menyimpan piket manual
+// Menyimpan piket manual (Disesuaikan dengan header tabel attendance)
 export async function savePiketEntry(e) {
     e.preventDefault();
     const select = document.getElementById('piket-student-select');
@@ -84,9 +84,9 @@ export async function savePiketEntry(e) {
         return;
     }
 
-    const studentId = select.value;
     const studentName = selectedOpt.dataset.name;
-    const rombel = selectedOpt.dataset.rombel;
+    // Mengambil NISN untuk dimasukkan ke qr_code, jika tidak ada pakai ID
+    const qrCode = selectedOpt.dataset.nisn || select.value; 
     const status = document.getElementById('piket-status-select').value;
     const time = document.getElementById('piket-time').value;
     const notes = document.getElementById('piket-notes').value || '-';
@@ -97,14 +97,12 @@ export async function savePiketEntry(e) {
         const { error } = await supabase
             .from('attendance')
             .insert([{
-                student_id: studentId,
-                name: studentName,
-                rombel: rombel,
-                type: 'SISWA',
+                qr_code: qrCode,
+                user_name: studentName,
+                user_type: 'SISWA',
                 status: status,
                 date: today,
-                scan_time: `${time}:00`,
-                notes: `Piket: ${notes}`
+                scan_time: `${time}:00`
             }]);
 
         if (error) throw error;
@@ -119,7 +117,7 @@ export async function savePiketEntry(e) {
     }
 }
 
-// Memuat daftar rekap piket & disiplin hari ini
+// Memuat daftar rekap piket (Disesuaikan dengan qr_code dan user_name)
 export async function loadPiketToday() {
     const container = document.getElementById('piket-list-container');
     if (!container) return;
@@ -164,13 +162,17 @@ export async function loadPiketToday() {
 
         if (attendanceData) {
             attendanceData.forEach(item => {
-                const key = item.student_id ? String(item.student_id) : (item.nisn ? String(item.nisn) : '');
+                // PERBAIKAN: Gunakan qr_code sebagai kunci pencarian ke tabel master
+                const key = item.qr_code ? String(item.qr_code) : '';
                 const stuFallback = studentMap[key];
                 
-                const stuName = item.name || (stuFallback ? stuFallback.name : 'Siswa Tidak Diketahui');
-                const stuRombel = item.rombel || (stuFallback ? stuFallback.rombel : '-');
-                const validStudentId = stuFallback ? stuFallback.id : item.student_id;
-                const timeDisplay = extractTime(item.scan_time, item.created_at);
+                // PERBAIKAN: Gunakan user_name dari tabel attendance
+                const stuName = item.user_name || (stuFallback ? stuFallback.name : 'Siswa Tidak Diketahui');
+                const stuRombel = stuFallback ? stuFallback.rombel : '-';
+                
+                // Ambil ID asli (primary key tabel students) agar form dropdown berfungsi
+                const validStudentId = stuFallback ? stuFallback.id : item.qr_code;
+                const timeDisplay = extractTime(item.scan_time, null);
 
                 combinedData.push({
                     type: 'ABSEN',
@@ -179,7 +181,7 @@ export async function loadPiketToday() {
                     rombel: stuRombel,
                     status: item.status,
                     time: timeDisplay,
-                    desc: item.notes || 'Tanpa catatan'
+                    desc: 'Kehadiran manual/scanner' // Tabel attendance tidak punya kolom notes, kita hardcode
                 });
             });
         }
