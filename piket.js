@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
 
-// Helper Toast Alert Premium (Menggantikan alert biasa)
+// Helper Toast Alert Premium 
 function showToast(message, type = 'success') {
     let toastContainer = document.getElementById('toast-container');
     if (!toastContainer) {
@@ -30,11 +30,10 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-function getLocalDateString() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
+function getLocalDateString(dateObj = new Date()) {
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
 
@@ -134,14 +133,22 @@ export async function savePiketEntry(e) {
     }
 }
 
+// LOGIKA BARU: Tarik hari ini + 7 hari ke belakang untuk yang tertunda
 export async function loadPiketToday() {
     const container = document.getElementById('piket-list-container');
     if (!container) return;
 
-    container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs font-bold animate-pulse">Memuat data rekap...</div>`;
+    container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs font-bold animate-pulse">Memuat data rekap & tunggakan...</div>`;
     
-    const today = getLocalDateString();
-    const startOfDay = `${today}T00:00:00.000Z`;
+    const now = new Date();
+    const today = getLocalDateString(now);
+    
+    // Setel mundur 7 hari untuk mengecek yang tertunda
+    const pastDate = new Date();
+    pastDate.setDate(now.getDate() - 7);
+    const pastDateString = getLocalDateString(pastDate);
+
+    const startOfPast = `${pastDateString}T00:00:00.000Z`;
     const endOfDay = `${today}T23:59:59.999Z`;
 
     try {
@@ -154,16 +161,19 @@ export async function loadPiketToday() {
             });
         }
 
+        // Ambil attendance 7 hari terakhir
         const { data: attendanceData } = await supabase
             .from('attendance')
             .select('*') 
-            .eq('date', today)
+            .gte('date', pastDateString)
+            .lte('date', today)
             .in('status', ['SAKIT', 'IZIN', 'ALPHA', 'TERLAMBAT']);
 
+        // Ambil disciplines 7 hari terakhir
         const { data: disiplineData } = await supabase
             .from('disciplines')
             .select('*, students(id, name, rombel)')
-            .gte('created_at', startOfDay)
+            .gte('created_at', startOfPast)
             .lte('created_at', endOfDay);
 
         let combinedData = [];
@@ -172,55 +182,78 @@ export async function loadPiketToday() {
             attendanceData.forEach(item => {
                 const key = item.qr_code ? String(item.qr_code) : '';
                 const stuFallback = studentMap[key];
-                const stuName = item.user_name || (stuFallback ? stuFallback.name : 'Siswa Tidak Diketahui');
-                const stuRombel = stuFallback ? stuFallback.rombel : '-';
                 const validStudentId = stuFallback ? stuFallback.id : item.qr_code;
                 
-                // Cek apakah siswa ini sudah memiliki catatan tindak lanjut di tabel disciplines
-                const hasFollowUp = disiplineData?.some(d => String(d.student_id) === String(validStudentId));
-
-                combinedData.push({
-                    type: 'ABSEN',
-                    student_id: validStudentId,
-                    name: stuName,
-                    rombel: stuRombel,
-                    status: item.status,
-                    time: extractTime(item.scan_time, null),
-                    desc: 'Kehadiran Piket',
-                    isProcessed: hasFollowUp
+                // Cek apakah diabsen ini SUDAH ditindak di hari yang sama
+                const hasFollowUp = disiplineData?.some(d => {
+                    const dDate = new Date(d.created_at).toISOString().split('T')[0];
+                    return String(d.student_id) === String(validStudentId) && dDate === item.date;
                 });
+
+                // TAMPILKAN JIKA: Absen Hari ini, ATAU Absen masa lalu TAPI belum ditindak
+                if (item.date === today || !hasFollowUp) {
+                    const stuName = item.user_name || (stuFallback ? stuFallback.name : 'Siswa Tidak Diketahui');
+                    const stuRombel = stuFallback ? stuFallback.rombel : '-';
+                    const isPast = item.date !== today;
+                    
+                    combinedData.push({
+                        type: 'ABSEN',
+                        student_id: validStudentId,
+                        name: stuName,
+                        rombel: stuRombel,
+                        status: item.status,
+                        dateStr: item.date,
+                        time: extractTime(item.scan_time, null),
+                        desc: isPast ? `Peringatan: Belum ditindaklanjuti sejak ${item.date}` : 'Kehadiran Piket',
+                        isPast: isPast,
+                        isProcessed: hasFollowUp
+                    });
+                }
             });
         }
 
         if (disiplineData) {
             disiplineData.forEach(item => {
-                const stuRelation = item.students;
-                const key = item.student_id ? String(item.student_id) : '';
-                const stuFallback = studentMap[key];
+                const dDate = new Date(item.created_at).toISOString().split('T')[0];
                 
-                const stuName = (stuRelation && stuRelation.name) ? stuRelation.name : (stuFallback ? stuFallback.name : 'Siswa Tidak Diketahui');
-                const stuRombel = (stuRelation && stuRelation.rombel) ? stuRelation.rombel : (stuFallback ? stuFallback.rombel : '-');
-                const validStudentId = (stuRelation && stuRelation.id) ? stuRelation.id : (stuFallback ? stuFallback.id : item.student_id);
+                // TAMPILKAN SEBAGAI KARTU TINDAK LANJUT HANYA JIKA ITU HARI INI
+                if (dDate === today) {
+                    const stuRelation = item.students;
+                    const key = item.student_id ? String(item.student_id) : '';
+                    const stuFallback = studentMap[key];
+                    
+                    const stuName = (stuRelation && stuRelation.name) ? stuRelation.name : (stuFallback ? stuFallback.name : 'Siswa Tidak Diketahui');
+                    const stuRombel = (stuRelation && stuRelation.rombel) ? stuRelation.rombel : (stuFallback ? stuFallback.rombel : '-');
+                    const validStudentId = (stuRelation && stuRelation.id) ? stuRelation.id : (stuFallback ? stuFallback.id : item.student_id);
 
-                combinedData.push({
-                    type: 'DISIPLIN',
-                    student_id: validStudentId,
-                    name: stuName,
-                    rombel: stuRombel,
-                    status: item.violation_desc,
-                    time: extractTime(null, item.created_at),
-                    desc: item.action_taken,
-                    isProcessed: true
-                });
+                    combinedData.push({
+                        type: 'DISIPLIN',
+                        student_id: validStudentId,
+                        name: stuName,
+                        rombel: stuRombel,
+                        status: item.violation_desc,
+                        dateStr: dDate,
+                        time: extractTime(null, item.created_at),
+                        desc: item.action_taken, // Sudah mengandung nama penindak
+                        isPast: false,
+                        isProcessed: true
+                    });
+                }
             });
         }
 
         if (combinedData.length === 0) {
-            container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Belum ada catatan hari ini.</div>`;
+            container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Belum ada catatan hari ini dan tidak ada tunggakan.</div>`;
             return;
         }
         
-        combinedData.sort((a, b) => (b.time > a.time ? 1 : -1));
+        // Sorting: Dahulukan yang tertunda (isPast), lalu dari jam terbaru
+        combinedData.sort((a, b) => {
+            if (a.isPast && !b.isPast) return -1;
+            if (!a.isPast && b.isPast) return 1;
+            return b.time > a.time ? 1 : -1;
+        });
+
         container.innerHTML = '';
 
         combinedData.forEach(item => {
@@ -229,159 +262,6 @@ export async function loadPiketToday() {
             const card = document.createElement('div');
             const isDone = item.isProcessed;
 
-            card.className = `bg-white p-4 rounded-2xl shadow-sm border transition-all ${
-                isDone ? 'border-emerald-200 bg-emerald-50/20 opacity-80 cursor-not-allowed' : 'border-gray-100 cursor-pointer hover:border-ncipsNavy hover:bg-slate-50 active:scale-[0.98]'
-            }`;
-            
-            card.onclick = () => {
-                if (isDone) {
-                    showToast('Siswa ini sudah diberikan tindak lanjut!', 'error');
-                    return;
-                }
-                if(window.fillViolationForm) {
-                    const defaultViolationType = item.status === 'TERLAMBAT' ? 'Terlambat' : 'Lainnya';
-                    window.fillViolationForm(item.student_id, defaultViolationType, item.name);
-                }
-            };
-
-            const statusTindakLanjut = isDone 
-                ? `<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[8px] font-black px-2 py-0.5 rounded-full">✓ SUDAH DITINDAK</span>`
-                : `<span class="bg-amber-100 text-amber-800 border border-amber-300 text-[8px] font-black px-2 py-0.5 rounded-full">⏳ BELUM DITINDAK</span>`;
-
-            card.innerHTML = `
-                <div class="flex justify-between items-center pointer-events-none">
-                    <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black border uppercase ${badgeColor}">${item.status}</span>
-                        <h4 class="text-xs font-black text-ncipsNavy">${item.name}</h4>
-                    </div>
-                    <span class="text-[10px] font-mono font-bold bg-gray-50 px-2.5 py-1 rounded-xl text-slate-700 border border-gray-100">${item.time}</span>
-                </div>
-                <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100 mt-2 pointer-events-none flex justify-between items-center">
-                    <div>
-                        <p class="text-[10px] text-gray-500 font-bold">Rombel: <span class="text-gray-700">${item.rombel}</span></p>
-                        <p class="text-[10px] text-gray-700 font-medium">${item.desc}</p>
-                    </div>
-                    ${statusTindakLanjut}
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    } catch (err) {
-        container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-red-400 text-xs">Gagal memuat data.</div>`;
-    }
-}
-
-export async function loadStudentsForViolation() {
-    const violationSelect = document.getElementById('violationStudent');
-    if (!violationSelect) return;
-
-    try {
-        const { data, error } = await supabase
-            .from('students')
-            .select('id, name, rombel, nisn')
-            .eq('status', 'AKTIF')
-            .order('name', { ascending: true });
-
-        if (error) throw error;
-
-        violationSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>';
-        data.forEach(student => {
-            const option = document.createElement('option');
-            option.value = student.id;
-            option.textContent = `${student.name} (${student.rombel || 'Tanpa Rombel'})`;
-            violationSelect.appendChild(option);
-        });
-    } catch (err) {
-        console.error(err);
-    }
-}
-
-export async function saveViolationEntry(event) {
-    event.preventDefault();
-
-    const studentId = document.getElementById('violationStudent')?.value;
-    const violationType = document.getElementById('violationType')?.value;
-    const actionTakenInput = document.getElementById('violationAction');
-    const actionStatusInput = document.getElementById('violationStatus');
-    const notesInput = document.getElementById('violationNotes');
-
-    if (!studentId) {
-        showToast('Silakan pilih siswa terlebih dahulu!', 'error');
-        return;
-    }
-
-    const today = getLocalDateString();
-    const startOfDay = `${today}T00:00:00.000Z`;
-    const endOfDay = `${today}T23:59:59.999Z`;
-
-    // Proteksi ganda: Cek ke database apakah siswa sudah pernah ditindak hari ini
-    const { data: existing } = await supabase
-        .from('disciplines')
-        .select('id')
-        .eq('student_id', studentId)
-        .gte('created_at', startOfDay)
-        .lte('created_at', endOfDay);
-
-    if (existing && existing.length > 0) {
-        showToast('Siswa ini sudah tercatat memiliki tindak lanjut hari ini!', 'error');
-        return;
-    }
-
-    const actionTaken = actionTakenInput ? actionTakenInput.value : (notesInput ? notesInput.value : '-');
-    const actionStatus = actionStatusInput ? actionStatusInput.value : 'SELESAI';
-    const notes = notesInput ? notesInput.value : '-';
-    const detailAction = actionStatusInput ? `[${actionStatus}] ${actionTaken} | Catatan: ${notes}` : notes;
-
-    const { error } = await supabase.from('disciplines').insert([{
-        student_id: studentId,
-        violation_desc: violationType || 'Lainnya',
-        action_taken: detailAction,
-        points: 0
-    }]);
-
-    if (error) {
-        showToast('Gagal menyimpan: ' + error.message, 'error');
-    } else {
-        showToast('Tindak lanjut berhasil dicatat!', 'success');
-        const formEl = document.getElementById('violationForm');
-        if (formEl) formEl.reset();
-        
-        const modalEl = document.getElementById('modal-violation');
-        if (modalEl) {
-            modalEl.classList.add('hidden');
-            modalEl.classList.remove('flex');
-        }
-        loadPiketToday();
-    }
-}
-
-window.fillViolationForm = async function(studentId, violationType, studentName) {
-    const studentSelect = document.getElementById('violationStudent');
-    const typeSelect = document.getElementById('violationType');
-    const formElement = document.getElementById('violationForm');
-    const modalElement = document.getElementById('modal-violation');
-
-    if (!formElement) return;
-
-    if (modalElement) {
-        modalElement.classList.remove('hidden');
-        modalElement.classList.add('flex');
-    }
-    
-    if (studentSelect && studentSelect.options.length <= 1) {
-        await loadStudentsForViolation();
-    }
-    
-    if (studentSelect && studentId) studentSelect.value = studentId;
-    if (typeSelect && violationType) typeSelect.value = violationType;
-
-    const hiddenClasses = ['hidden', 'invisible', 'opacity-0'];
-    hiddenClasses.forEach(cls => formElement.classList.remove(cls));
-    formElement.style.display = 'block';
-
-    setTimeout(() => {
-        formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        const actionInput = document.getElementById('violationAction') || document.getElementById('violationNotes');
-        if (actionInput) actionInput.focus();
-    }, 100);
-};
+            // Jika item ini dari hari yang lalu, beri gaya border merah berkedip ringan
+            let extraStyles = item.isPast ? 'border-red-300 bg-red-50' : 'border-gray-100 hover:border-ncipsNavy hover:bg-slate-50';
+            if (isDone) extraStyles = 'border-emerald-200 bg-emerald-50/20 opacity-80 cursor-not-allowed';
