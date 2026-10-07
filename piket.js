@@ -89,103 +89,89 @@ export async function savePiketEntry(e) {
     }
 }
 
-// Memuat daftar catatan piket & pelanggaran hari ini (GABUNGAN)
+// Memuat daftar catatan absen (piket) & pelanggaran (Disipline) hari ini
 export async function loadPiketToday() {
     const container = document.getElementById('piket-list-container');
     if (!container) return;
 
-    container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat rekap piket & pelanggaran...</div>`;
-
+    container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat rekap piket & disiplin...</div>`;
+    
     const today = new Date().toISOString().split('T')[0];
+    
+    // Siapkan parameter rentang waktu untuk filter created_at
+    const startOfDay = `${today}T00:00:00.000Z`;
+    const endOfDay = `${today}T23:59:59.999Z`;
 
     try {
-        // 1. Ambil data absen hari ini (Sakit, Izin, Alpha, Terlambat)
-        const { data: attendanceData, error: attendanceError } = await supabase
+        // 1. Ambil data absen hari ini dari tabel attendance
+        const { data: attendanceData, error: attError } = await supabase
             .from('attendance')
             .select('*')
             .eq('date', today)
             .in('status', ['SAKIT', 'IZIN', 'ALPHA', 'TERLAMBAT']);
 
-        if (attendanceError) throw attendanceError;
+        if (attError) throw attError;
 
-        // 2. Ambil data pelanggaran hari ini 
-        // Menggunakan join 'students(name, rombel)' untuk menarik nama otomatis dari relasi tabel
-        const { data: violationData, error: violationError } = await supabase
-            .from('student_violations')
+        // 2. Ambil data dari tabel Disipline menggunakan filter rentang created_at
+        const { data: disiplineData, error: disError } = await supabase
+            .from('Disipline')
             .select('*, students(name, rombel)')
-            .eq('date', today);
+            .gte('created_at', startOfDay)
+            .lte('created_at', endOfDay);
 
-        if (violationError) throw violationError;
+        if (disError) throw disError;
 
-        // 3. Gabungkan kedua data ke dalam satu Array
         let combinedData = [];
 
+        // Mapping tabel attendance
         if (attendanceData) {
             attendanceData.forEach(item => {
                 combinedData.push({
-                    id: item.id,
+                    type: 'ABSEN',
                     name: item.name,
                     rombel: item.rombel || '-',
                     status: item.status,
                     time: item.scan_time || '-',
-                    notes: item.notes || 'Tanpa catatan',
-                    // Jika dia terlambat, kita beri status tindak lanjut default
-                    action_taken: item.status === 'TERLAMBAT' ? 'Menunggu Pembinaan / Belum ada tindakan' : null
+                    desc: item.notes || 'Tanpa catatan'
                 });
             });
         }
 
-        if (violationData) {
-            violationData.forEach(item => {
-                // Tarik nama dari tabel students (hasil join)
-                const studentName = item.students ? item.students.name : 'Siswa Tidak Diketahui';
-                const studentRombel = item.students ? item.students.rombel : '-';
-                
-                // Format jam (karena tabel violations mungkin memakai created_at bawaan Supabase)
-                const jamPelanggaran = item.created_at ? new Date(item.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) : '-';
+        // Mapping tabel Disipline
+        if (disiplineData) {
+            disiplineData.forEach(item => {
+                const stuName = item.students ? item.students.name : 'Siswa Tidak Diketahui';
+                const stuRombel = item.students ? item.students.rombel : '-';
+                const jamInput = item.created_at ? new Date(item.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) : '-';
 
                 combinedData.push({
-                    id: item.id,
-                    name: studentName,
-                    rombel: studentRombel,
-                    status: 'PELANGGARAN',
-                    time: jamPelanggaran,
-                    notes: item.violation_type,
-                    action_taken: item.action_taken || 'Belum ada tindak lanjut'
+                    type: 'DISIPLIN',
+                    name: stuName,
+                    rombel: stuRombel,
+                    status: item.violation_desc, // Menggunakan violation_desc
+                    time: jamInput,
+                    desc: item.action_taken // Sudah berisi gabungan teks Status & Catatan
                 });
             });
         }
 
-        // 4. Tampilkan pesan jika kosong
         if (combinedData.length === 0) {
             container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Belum ada catatan kehadiran tidak wajar atau pelanggaran hari ini.</div>`;
             return;
         }
-
-        // 5. Urutkan berdasarkan waktu (yang terbaru ada di paling atas)
+        
+        // Urutkan data (terbaru di atas)
         combinedData.sort((a, b) => (b.time > a.time ? 1 : -1));
 
-        // 6. Cetak ke HTML
         container.innerHTML = '';
         combinedData.forEach(item => {
-            // Setting warna badge
-            let badgeColor = 'bg-gray-100 text-gray-700 border-gray-200';
+            let badgeColor = item.type === 'DISIPLIN' ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-orange-100 text-orange-700 border-orange-200';
             if (item.status === 'SAKIT') badgeColor = 'bg-blue-100 text-blue-700 border-blue-200';
             if (item.status === 'IZIN') badgeColor = 'bg-purple-100 text-purple-700 border-purple-200';
             if (item.status === 'ALPHA') badgeColor = 'bg-red-100 text-red-700 border-red-200';
-            if (item.status === 'TERLAMBAT') badgeColor = 'bg-orange-100 text-orange-700 border-orange-200';
-            if (item.status === 'PELANGGARAN') badgeColor = 'bg-rose-100 text-rose-700 border-rose-200';
 
             const card = document.createElement('div');
             card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-2";
-            
-            // Logika UI: Hanya tampilkan kolom Tindak Lanjut jika statusnya TERLAMBAT atau PELANGGARAN
-            const actionTakenHtml = (item.status === 'TERLAMBAT' || item.status === 'PELANGGARAN') 
-                ? `<p class="text-[10px] text-gray-500 font-bold border-t border-gray-200 pt-1 mt-1">
-                     Tindak Lanjut: <span class="text-ncipsNavy font-black">${item.action_taken}</span>
-                   </p>` 
-                : '';
-
             card.innerHTML = `
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-2">
@@ -194,17 +180,16 @@ export async function loadPiketToday() {
                     </div>
                     <span class="text-[10px] font-mono font-bold bg-gray-50 px-2.5 py-1 rounded-xl text-slate-700 border border-gray-100">${item.time}</span>
                 </div>
-                <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100 space-y-1">
-                    <p class="text-[10px] text-gray-500 font-bold">Rombel: <span class="text-gray-700">${item.rombel}</span></p>
-                    <p class="text-[10px] text-gray-500 font-bold">Keterangan: <span class="text-gray-700 italic">${item.notes}</span></p>
-                    ${actionTakenHtml}
+                <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100 mt-1">
+                    <p class="text-[10px] text-gray-500 font-bold mb-1">Rombel: <span class="text-gray-700">${item.rombel}</span></p>
+                    <p class="text-[10px] text-gray-700 font-medium leading-relaxed">${item.desc}</p>
                 </div>
             `;
             container.appendChild(card);
         });
     } catch (err) {
-        console.error('Gagal memuat rekap piket hari ini:', err.message);
-        container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-red-400 text-xs">Gagal memuat data rekap. Info Error: ${err.message}</div>`;
+        console.error('Gagal memuat rekap gabungan:', err.message);
+        container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-red-400 text-xs">Gagal memuat data. ${err.message}</div>`;
     }
 }
 }
@@ -242,32 +227,28 @@ export async function saveViolationEntry(event) {
   const studentId = document.getElementById('violationStudent').value;
   const violationType = document.getElementById('violationType').value;
   const actionTaken = document.getElementById('violationAction').value;
-  const actionStatus = document.getElementById('violationStatus').value; // Input baru
-  const notes = document.getElementById('violationNotes').value || '-'; // Input baru
+  const actionStatus = document.getElementById('violationStatus').value;
+  const notes = document.getElementById('violationNotes').value || '-';
   const officerName = localStorage.getItem('user_name') || 'Guru Piket'; 
 
-  // Simpan ke tabel 'Disipline' sesuai yang mas bro buat di Supabase
+  // Trik: Gabungkan detail tindak lanjut ke dalam satu teks panjang untuk dimasukkan ke 'action_taken'
+  const detailAction = `[${actionStatus}] ${actionTaken} | Catatan: ${notes}`;
+
+  // Sesuaikan dengan nama kolom yang ada di database Supabase mas bro
   const { error } = await supabase.from('Disipline').insert([{
     student_id: studentId,
-    violation_type: violationType,
-    action_taken: actionTaken,
-    action_status: actionStatus,
-    notes: notes,
-    recorded_by: officerName,
-    date: new Date().toISOString().split('T')[0]
+    violation_desc: violationType,  // Memakai violation_desc
+    action_taken: detailAction,     // Memakai action_taken (berisi gabungan teks)
+    reported_by: officerName,       // Memakai reported_by
+    points: 0                       // Default poin 0 sementara
+    // Kolom 'id' dan 'created_at' otomatis diisi oleh sistem Supabase
   }]);
 
   if (error) {
     alert('Gagal menyimpan pelanggaran: ' + error.message);
   } else {
-    alert('✅ Pelanggaran dan tindak lanjut berhasil dicatat ke tabel Disipline!');
+    alert('✅ Pelanggaran dan tindak lanjut berhasil dicatat!');
     document.getElementById('violationForm').reset();
-    loadPiketToday(); // Refresh daftar di bawahnya otomatis
+    loadPiketToday(); // Refresh daftar otomatis
   }
-}
-
-// Pasang Event Listener ke Form Pelanggaran
-const violationForm = document.getElementById('violationForm');
-if (violationForm) {
-  violationForm.addEventListener('submit', saveViolationEntry);
 }
