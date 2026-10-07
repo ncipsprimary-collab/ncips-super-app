@@ -273,7 +273,7 @@ export async function loadStudentsForViolation() {
     }
 }
 
-// Menyimpan catatan pelanggaran (Dibuat aman jika elemen opsional tidak ada di HTML)
+// Menyimpan catatan pelanggaran (Diperbarui agar aman dari error UUID)
 export async function saveViolationEntry(event) {
     event.preventDefault();
 
@@ -291,15 +291,14 @@ export async function saveViolationEntry(event) {
     const actionTaken = actionTakenInput ? actionTakenInput.value : (notesInput ? notesInput.value : '-');
     const actionStatus = actionStatusInput ? actionStatusInput.value : 'SELESAI';
     const notes = notesInput ? notesInput.value : '-';
-    const officerName = localStorage.getItem('user_name') || 'Guru Piket'; 
 
     const detailAction = actionStatusInput ? `[${actionStatus}] ${actionTaken} | Catatan: ${notes}` : notes;
 
+    // Properti reported_by dihapus sementara untuk menghindari error tipe data UUID di database
     const { error } = await supabase.from('disciplines').insert([{
         student_id: studentId,
         violation_desc: violationType || 'Lainnya',
         action_taken: detailAction,
-        reported_by: officerName,
         points: 0
     }]);
 
