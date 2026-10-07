@@ -271,37 +271,50 @@
             </div>
 
             <!-- FORM INPUT PIKET MANUAL -->
-            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 space-y-4">
-                <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider">Form Input Guru Piket</h3>
-                <form id="form-piket" class="space-y-3">
-                    <div>
-                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Cari / Pilih Siswa</label>
-                        <select id="piket-student-select" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
-                            <option value="">-- Memuat Data Siswa --</option>
-                        </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Status Kehadiran</label>
-                            <select id="piket-status-select" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
-                                <option value="SAKIT">Sakit (S)</option>
-                                <option value="IZIN">Izin (I)</option>
-                                <option value="ALPHA">Alpha (A)</option>
-                                <option value="TERLAMBAT">Terlambat (T)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Waktu / Jam</label>
-                            <input type="time" id="piket-time" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Catatan / Keterangan</label>
-                        <input type="text" id="piket-notes" placeholder="Contoh: Ban bocor / Surat dokter terlampir" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs">
-                    </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy font-black py-3.5 rounded-xl shadow-md text-xs hover:scale-[1.01] transition-transform">Simpan Data Piket</button>
-                </form>
+<div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 space-y-4">
+    <h3 class="text-xs font-black text-ncipsNavy uppercase tracking-wider">Form Input Guru Piket</h3>
+    <form id="form-piket" class="space-y-3">
+        
+        <!-- Dropdown Pilih Guru Piket -->
+        <div>
+            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Guru Piket (Petugas)</label>
+            <select id="piket-teacher-select" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
+                <option value="">-- Memuat Data Guru --</option>
+            </select>
+        </div>
+
+        <!-- Cari / Pilih Siswa -->
+        <div>
+            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Cari / Pilih Siswa</label>
+            <select id="piket-student-select" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
+                <option value="">-- Memuat Data Siswa --</option>
+            </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Status Kehadiran</label>
+                <select id="piket-status-select" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
+                    <option value="SAKIT">Sakit (S)</option>
+                    <option value="IZIN">Izin (I)</option>
+                    <option value="ALPHA">Alpha (A)</option>
+                    <option value="TERLAMBAT">Terlambat (T)</option>
+                </select>
             </div>
+            <div>
+                <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Waktu / Jam</label>
+                <input type="time" id="piket-time" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-ncipsNavy" required>
+            </div>
+        </div>
+
+        <div>
+            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Catatan / Keterangan</label>
+            <input type="text" id="piket-notes" placeholder="Contoh: Ban bocor / Surat dokter terlampir" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs">
+        </div>
+
+        <button type="submit" class="w-full bg-gradient-to-r from-ncipsYellow to-ncipsGold text-ncipsNavy font-black py-3.5 rounded-xl shadow-md text-xs hover:scale-[1.01] transition-transform">Simpan Data Piket</button>
+    </form>
+</div>
 
             <!-- TOMBOL BUKA MODAL PELANGGARAN -->
             <div class="mt-4">
