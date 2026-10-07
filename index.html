@@ -351,6 +351,33 @@
                 </div>
             </div>
 
+            <!-- WADAH TAB & CONTAINER ANALITIK -->
+<div class="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-100 mt-2">
+    <!-- Tab Navigasi -->
+    <div class="flex p-1 bg-slate-50 border border-slate-100 rounded-xl mb-4">
+        <button type="button" class="flex-1 py-2 text-[10px] font-black rounded-lg bg-white shadow-sm text-ncipsNavy border border-gray-100 transition-all">Hari Ini</button>
+        <button type="button" class="flex-1 py-2 text-[10px] font-bold text-gray-400 hover:text-ncipsNavy hover:bg-white/50 transition-all rounded-lg">Minggu Ini</button>
+        <button type="button" class="flex-1 py-2 text-[10px] font-bold text-gray-400 hover:text-ncipsNavy hover:bg-white/50 transition-all rounded-lg">Bulan Ini</button>
+    </div>
+    
+    <!-- Grid Kartu Analitik -->
+    <div class="grid grid-cols-2 gap-3">
+        <!-- Card 1: Persentase Kehadiran -->
+        <div class="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100 p-4 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 w-12 h-12 bg-emerald-200/40 rounded-full blur-xl"></div>
+            <span class="text-2xl font-black text-emerald-600 tracking-tight" id="analytic-rate">98%</span>
+            <span class="text-[8px] font-extrabold text-emerald-800 uppercase tracking-widest mt-1 text-center">Tingkat Hadir</span>
+        </div>
+        
+        <!-- Card 2: Total Pelanggaran -->
+        <div class="bg-gradient-to-br from-rose-50 to-red-50 border border-rose-100 p-4 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden">
+            <div class="absolute -left-4 -bottom-4 w-12 h-12 bg-rose-200/40 rounded-full blur-xl"></div>
+            <span class="text-2xl font-black text-rose-600 tracking-tight" id="analytic-violations">12</span>
+            <span class="text-[8px] font-extrabold text-rose-800 uppercase tracking-widest mt-1 text-center">Pelanggaran</span>
+        </div>
+    </div>
+</div>
+
             <!-- DAFTAR KEHADIRAN -->
             <div id="attendance-list-container" class="space-y-3">
                 <div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat data presensi...</div>
