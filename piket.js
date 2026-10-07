@@ -323,10 +323,12 @@ window.fillViolationForm = async function(studentId, violationType, studentName)
     const studentSelect = document.getElementById('violationStudent');
     const typeSelect = document.getElementById('violationType');
     
+    // Pastikan dropdown siswa terisi
     if (studentSelect && studentSelect.options.length <= 1) {
         await loadStudentsForViolation();
     }
     
+    // Setel nilai dropdown siswa
     if (studentSelect) {
         let matched = false;
         if (studentId) {
@@ -349,6 +351,7 @@ window.fillViolationForm = async function(studentId, violationType, studentName)
         }
     }
     
+    // Setel jenis pelanggaran
     if (typeSelect && violationType) {
         const exists = Array.from(typeSelect.options).some(opt => opt.value === violationType);
         if (exists) typeSelect.value = violationType;
@@ -356,13 +359,28 @@ window.fillViolationForm = async function(studentId, violationType, studentName)
     
     const formElement = document.getElementById('violationForm');
     if (formElement) {
-        // Buka form jika berada dalam wadah tersembunyi
-        const parentHidden = formElement.closest('.hidden');
-        if (parentHidden) parentHidden.classList.remove('hidden');
+        // CARA BERINGAS: Hapus class 'hidden' dari form dan semua elemen pembungkusnya
+        formElement.classList.remove('hidden');
+        
+        let currentElement = formElement.parentElement;
+        // Cari terus ke atas sampai body, buka semua gemboknya
+        while (currentElement && currentElement !== document.body) {
+            if (currentElement.classList.contains('hidden')) {
+                currentElement.classList.remove('hidden');
+            }
+            if (currentElement.style.display === 'none') {
+                currentElement.style.display = 'block'; // Atau biarkan kosong: currentElement.style.display = '';
+            }
+            currentElement = currentElement.parentElement;
+        }
 
+        // Gulir layar ke arah form
         formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Beri efek highlight kuning sekejap agar mata guru langsung tertuju ke form
         formElement.classList.add('ring-2', 'ring-ncipsYellow', 'transition-all');
         
+        // Arahkan kursor langsung ke kolom ketikan
         const actionInput = document.getElementById('violationAction') || document.getElementById('violationNotes');
         if (actionInput) actionInput.focus();
 
