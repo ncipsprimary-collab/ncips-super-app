@@ -89,7 +89,7 @@ export async function savePiketEntry(e) {
     }
 }
 
-// Memuat daftar catatan absen (piket) & pelanggaran (Disipline) hari ini
+// Memuat daftar catatan absen (piket) & pelanggaran (disciplines) hari ini
 export async function loadPiketToday() {
     const container = document.getElementById('piket-list-container');
     if (!container) return;
@@ -110,16 +110,16 @@ export async function loadPiketToday() {
             .eq('date', today)
             .in('status', ['SAKIT', 'IZIN', 'ALPHA', 'TERLAMBAT']);
 
-        if (attError) throw attError;
+        if (attError) console.error('Error attendance:', attError);
 
-        // 2. Ambil data dari tabel Disipline menggunakan filter rentang created_at
+        // 2. Ambil data dari tabel disciplines
         const { data: disiplineData, error: disError } = await supabase
-            .from('disciplines')
+            .from('disciplines') // <-- Nama tabel sudah diganti ke disciplines
             .select('*, students(name, rombel)')
             .gte('created_at', startOfDay)
             .lte('created_at', endOfDay);
 
-        if (disError) throw disError;
+        if (disError) console.error('Error disciplines:', disError);
 
         let combinedData = [];
 
@@ -137,7 +137,7 @@ export async function loadPiketToday() {
             });
         }
 
-        // Mapping tabel Disipline
+        // Mapping tabel disciplines
         if (disiplineData) {
             disiplineData.forEach(item => {
                 const stuName = item.students ? item.students.name : 'Siswa Tidak Diketahui';
@@ -148,9 +148,9 @@ export async function loadPiketToday() {
                     type: 'DISIPLIN',
                     name: stuName,
                     rombel: stuRombel,
-                    status: item.violation_desc, // Menggunakan violation_desc
+                    status: item.violation_desc,
                     time: jamInput,
-                    desc: item.action_taken // Sudah berisi gabungan teks Status & Catatan
+                    desc: item.action_taken
                 });
             });
         }
@@ -192,6 +192,7 @@ export async function loadPiketToday() {
         container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-red-400 text-xs">Gagal memuat data. ${err.message}</div>`;
     }
 }
+}
 
 
 // Fungsi untuk memuat siswa ke dalam dropdown Kedisiplinan
@@ -220,7 +221,7 @@ export async function loadStudentsForViolation() {
   });
 }
 
-// Fungsi Simpan Pelanggaran Manual ke tabel Disipline
+// Fungsi Simpan Pelanggaran Manual ke tabel disciplines
 export async function saveViolationEntry(event) {
   event.preventDefault();
 
@@ -231,17 +232,14 @@ export async function saveViolationEntry(event) {
   const notes = document.getElementById('violationNotes').value || '-';
   const officerName = localStorage.getItem('user_name') || 'Guru Piket'; 
 
-  // Trik: Gabungkan detail tindak lanjut ke dalam satu teks panjang untuk dimasukkan ke 'action_taken'
   const detailAction = `[${actionStatus}] ${actionTaken} | Catatan: ${notes}`;
 
-  // Sesuaikan dengan nama kolom yang ada di database Supabase mas bro
-  const { error } = await supabase.from('disciplines').insert([{
+  const { error } = await supabase.from('disciplines').insert([{ // <-- Nama tabel diganti ke disciplines
     student_id: studentId,
-    violation_desc: violationType,  // Memakai violation_desc
-    action_taken: detailAction,     // Memakai action_taken (berisi gabungan teks)
-    reported_by: officerName,       // Memakai reported_by
-    points: 0                       // Default poin 0 sementara
-    // Kolom 'id' dan 'created_at' otomatis diisi oleh sistem Supabase
+    violation_desc: violationType,
+    action_taken: detailAction,
+    reported_by: officerName,
+    points: 0
   }]);
 
   if (error) {
@@ -249,6 +247,6 @@ export async function saveViolationEntry(event) {
   } else {
     alert('✅ Pelanggaran dan tindak lanjut berhasil dicatat!');
     document.getElementById('violationForm').reset();
-    loadPiketToday(); // Refresh daftar otomatis
+    loadPiketToday();
   }
 }
