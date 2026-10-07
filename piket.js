@@ -89,58 +89,124 @@ export async function savePiketEntry(e) {
     }
 }
 
-// Memuat daftar catatan piket hari ini
+// Memuat daftar catatan piket & pelanggaran hari ini (GABUNGAN)
 export async function loadPiketToday() {
     const container = document.getElementById('piket-list-container');
     if (!container) return;
 
-    container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat rekap piket...</div>`;
+    container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat rekap piket & pelanggaran...</div>`;
 
     const today = new Date().toISOString().split('T')[0];
 
     try {
-        const { data, error } = await supabase
+        // 1. Ambil data absen hari ini (Sakit, Izin, Alpha, Terlambat)
+        const { data: attendanceData, error: attendanceError } = await supabase
             .from('attendance')
             .select('*')
             .eq('date', today)
-            .in('status', ['SAKIT', 'IZIN', 'ALPHA', 'TERLAMBAT'])
-            .order('scan_time', { ascending: false });
+            .in('status', ['SAKIT', 'IZIN', 'ALPHA', 'TERLAMBAT']);
 
-        if (error) throw error;
+        if (attendanceError) throw attendanceError;
 
-        if (!data || data.length === 0) {
-            container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Belum ada catatan piket/izin hari ini.</div>`;
+        // 2. Ambil data pelanggaran hari ini 
+        // Menggunakan join 'students(name, rombel)' untuk menarik nama otomatis dari relasi tabel
+        const { data: violationData, error: violationError } = await supabase
+            .from('student_violations')
+            .select('*, students(name, rombel)')
+            .eq('date', today);
+
+        if (violationError) throw violationError;
+
+        // 3. Gabungkan kedua data ke dalam satu Array
+        let combinedData = [];
+
+        if (attendanceData) {
+            attendanceData.forEach(item => {
+                combinedData.push({
+                    id: item.id,
+                    name: item.name,
+                    rombel: item.rombel || '-',
+                    status: item.status,
+                    time: item.scan_time || '-',
+                    notes: item.notes || 'Tanpa catatan',
+                    // Jika dia terlambat, kita beri status tindak lanjut default
+                    action_taken: item.status === 'TERLAMBAT' ? 'Menunggu Pembinaan / Belum ada tindakan' : null
+                });
+            });
+        }
+
+        if (violationData) {
+            violationData.forEach(item => {
+                // Tarik nama dari tabel students (hasil join)
+                const studentName = item.students ? item.students.name : 'Siswa Tidak Diketahui';
+                const studentRombel = item.students ? item.students.rombel : '-';
+                
+                // Format jam (karena tabel violations mungkin memakai created_at bawaan Supabase)
+                const jamPelanggaran = item.created_at ? new Date(item.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) : '-';
+
+                combinedData.push({
+                    id: item.id,
+                    name: studentName,
+                    rombel: studentRombel,
+                    status: 'PELANGGARAN',
+                    time: jamPelanggaran,
+                    notes: item.violation_type,
+                    action_taken: item.action_taken || 'Belum ada tindak lanjut'
+                });
+            });
+        }
+
+        // 4. Tampilkan pesan jika kosong
+        if (combinedData.length === 0) {
+            container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Belum ada catatan kehadiran tidak wajar atau pelanggaran hari ini.</div>`;
             return;
         }
 
+        // 5. Urutkan berdasarkan waktu (yang terbaru ada di paling atas)
+        combinedData.sort((a, b) => (b.time > a.time ? 1 : -1));
+
+        // 6. Cetak ke HTML
         container.innerHTML = '';
-        data.forEach(item => {
-            let badgeColor = 'bg-amber-100 text-amber-700 border-amber-200';
+        combinedData.forEach(item => {
+            // Setting warna badge
+            let badgeColor = 'bg-gray-100 text-gray-700 border-gray-200';
             if (item.status === 'SAKIT') badgeColor = 'bg-blue-100 text-blue-700 border-blue-200';
             if (item.status === 'IZIN') badgeColor = 'bg-purple-100 text-purple-700 border-purple-200';
             if (item.status === 'ALPHA') badgeColor = 'bg-red-100 text-red-700 border-red-200';
             if (item.status === 'TERLAMBAT') badgeColor = 'bg-orange-100 text-orange-700 border-orange-200';
+            if (item.status === 'PELANGGARAN') badgeColor = 'bg-rose-100 text-rose-700 border-rose-200';
 
             const card = document.createElement('div');
-            card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center";
+            card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-2";
+            
+            // Logika UI: Hanya tampilkan kolom Tindak Lanjut jika statusnya TERLAMBAT atau PELANGGARAN
+            const actionTakenHtml = (item.status === 'TERLAMBAT' || item.status === 'PELANGGARAN') 
+                ? `<p class="text-[10px] text-gray-500 font-bold border-t border-gray-200 pt-1 mt-1">
+                     Tindak Lanjut: <span class="text-ncipsNavy font-black">${item.action_taken}</span>
+                   </p>` 
+                : '';
+
             card.innerHTML = `
-                <div class="space-y-1">
+                <div class="flex justify-between items-center">
                     <div class="flex items-center gap-2">
                         <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black border uppercase ${badgeColor}">${item.status}</span>
                         <h4 class="text-xs font-black text-ncipsNavy">${item.name}</h4>
                     </div>
-                    <p class="text-[10px] text-gray-500 font-bold">Rombel: ${item.rombel || '-'} • <span class="text-gray-400 italic">${item.notes || 'Tanpa catatan'}</span></p>
+                    <span class="text-[10px] font-mono font-bold bg-gray-50 px-2.5 py-1 rounded-xl text-slate-700 border border-gray-100">${item.time}</span>
                 </div>
-                <div class="text-right">
-                    <span class="text-[10px] font-mono font-bold bg-gray-50 px-2.5 py-1 rounded-xl text-slate-700 border border-gray-100">${item.scan_time || '-'}</span>
+                <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100 space-y-1">
+                    <p class="text-[10px] text-gray-500 font-bold">Rombel: <span class="text-gray-700">${item.rombel}</span></p>
+                    <p class="text-[10px] text-gray-500 font-bold">Keterangan: <span class="text-gray-700 italic">${item.notes}</span></p>
+                    ${actionTakenHtml}
                 </div>
             `;
             container.appendChild(card);
         });
     } catch (err) {
         console.error('Gagal memuat rekap piket hari ini:', err.message);
-        container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-red-400 text-xs">Gagal memuat data piket.</div>`;
+        container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-red-400 text-xs">Gagal memuat data rekap. Info Error: ${err.message}</div>`;
     }
+}
 }
 
 // Fungsi untuk memuat siswa ke dalam dropdown Kedisiplinan
