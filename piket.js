@@ -320,8 +320,18 @@ export async function saveViolationEntry(event) {
 
 // Auto-fill form pelanggaran saat rekap diklik
 window.fillViolationForm = async function(studentId, violationType, studentName) {
+    console.log("Klik kartu terdeteksi! Memproses siswa:", studentName, studentId);
+
     const studentSelect = document.getElementById('violationStudent');
     const typeSelect = document.getElementById('violationType');
+    const formElement = document.getElementById('violationForm');
+
+    // CEK 1: Pastikan elemen form benar-benar ada di HTML
+    if (!formElement) {
+        console.error("GAGAL: ID 'violationForm' tidak ditemukan di struktur HTML.");
+        alert("Ups, form tindak lanjut tidak terdeteksi. Pastikan ID form di HTML kamu adalah id='violationForm'");
+        return;
+    }
     
     // Pastikan dropdown siswa terisi
     if (studentSelect && studentSelect.options.length <= 1) {
@@ -357,35 +367,36 @@ window.fillViolationForm = async function(studentId, violationType, studentName)
         if (exists) typeSelect.value = violationType;
     }
     
-    const formElement = document.getElementById('violationForm');
-    if (formElement) {
-        // CARA BERINGAS: Hapus class 'hidden' dari form dan semua elemen pembungkusnya
-        formElement.classList.remove('hidden');
-        
-        let currentElement = formElement.parentElement;
-        // Cari terus ke atas sampai body, buka semua gemboknya
-        while (currentElement && currentElement !== document.body) {
-            if (currentElement.classList.contains('hidden')) {
-                currentElement.classList.remove('hidden');
-            }
-            if (currentElement.style.display === 'none') {
-                currentElement.style.display = 'block'; // Atau biarkan kosong: currentElement.style.display = '';
-            }
-            currentElement = currentElement.parentElement;
+    // CARA SUPER BERINGAS: Hapus semua jenis class yang sering dipakai untuk menyembunyikan elemen
+    const hiddenClasses = ['hidden', 'invisible', 'opacity-0', 'max-h-0', 'h-0', 'scale-0'];
+    
+    hiddenClasses.forEach(cls => formElement.classList.remove(cls));
+    formElement.style.display = 'block';
+    
+    let currentElement = formElement.parentElement;
+    while (currentElement && currentElement !== document.body) {
+        hiddenClasses.forEach(cls => currentElement.classList.remove(cls));
+        if (currentElement.style.display === 'none') {
+            currentElement.style.display = ''; // Reset ke bawaan asal
         }
+        currentElement = currentElement.parentElement;
+    }
 
+    // Jeda 100ms agar browser selesai menggambar (render) form yang baru dibuka
+    setTimeout(() => {
         // Gulir layar ke arah form
         formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         
-        // Beri efek highlight kuning sekejap agar mata guru langsung tertuju ke form
-        formElement.classList.add('ring-2', 'ring-ncipsYellow', 'transition-all');
+        // Beri efek highlight kuning sekejap (durasi lebih lama)
+        formElement.classList.add('ring-4', 'ring-yellow-400', 'transition-all', 'duration-500');
         
-        // Arahkan kursor langsung ke kolom ketikan
+        // Arahkan kursor
         const actionInput = document.getElementById('violationAction') || document.getElementById('violationNotes');
         if (actionInput) actionInput.focus();
 
+        // Hilangkan highlight setelah 2 detik
         setTimeout(() => {
-            formElement.classList.remove('ring-2', 'ring-ncipsYellow');
-        }, 1500);
-    }
+            formElement.classList.remove('ring-4', 'ring-yellow-400', 'duration-500');
+        }, 2000);
+    }, 100);
 };
