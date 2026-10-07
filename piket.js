@@ -84,7 +84,6 @@ function getOfficerName() {
            'Guru Piket';
 }
 
-// --- INISIALISASI UTAMA & TAB SWITCHER ---
 export function initPiketForm() {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
@@ -93,6 +92,7 @@ export function initPiketForm() {
     if (timeInput) timeInput.value = `${hours}:${minutes}`;
     
     setupPiketTabs();
+    loadPiketTeachersDropdown(); // <-- Ditambahkan di sini
     loadPiketStudentsDropdown();
     loadPiketToday();
     loadStudentsForViolation();
