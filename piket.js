@@ -192,7 +192,7 @@ export async function loadPiketToday() {
         container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-red-400 text-xs">Gagal memuat data. ${err.message}</div>`;
     }
 }
-}
+
 
 // Fungsi untuk memuat siswa ke dalam dropdown Kedisiplinan
 export async function loadStudentsForViolation() {
