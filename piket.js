@@ -1,6 +1,15 @@
 import { supabase } from './supabase.js';
 
-// Set default waktu saat ini pada form piket
+// Helper Tanggal Lokal (Format YYYY-MM-DD agar akurat dengan jam lokal)
+function getLocalDateString() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Set default waktu saat ini pada form piket & inisialisasi dropdown
 export function initPiketForm() {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
@@ -10,10 +19,10 @@ export function initPiketForm() {
     
     loadPiketStudentsDropdown();
     loadPiketToday();
-    loadStudentsForViolation(); // Fungsi ini ditambahkan di sini agar otomatis jalan
+    loadStudentsForViolation();
 }
 
-// Memuat daftar siswa ke dropdown select
+// Memuat daftar siswa ke dropdown form piket manual
 export async function loadPiketStudentsDropdown() {
     const select = document.getElementById('piket-student-select');
     if (!select) return;
@@ -31,7 +40,7 @@ export async function loadPiketStudentsDropdown() {
         data.forEach(stu => {
             const opt = document.createElement('option');
             opt.value = stu.id;
-            opt.textContent = `${stu.name} (${stu.rombel || 'Tanpa Rombel'}) - NISN: ${stu.nisn || '-'}`;
+            opt.textContent = `${stu.name} (${stu.rombel \vert{}\vert{} 'Tanpa Rombel'}) - NISN:${stu.nisn || '-'}`;
             opt.dataset.name = stu.name;
             opt.dataset.rombel = stu.rombel || '-';
             select.appendChild(opt);
@@ -42,7 +51,7 @@ export async function loadPiketStudentsDropdown() {
     }
 }
 
-// Menyimpan entri piket manual ke tabel kehadiran (attendance)
+// Menyimpan entri piket manual ke tabel attendance
 export async function savePiketEntry(e) {
     e.preventDefault();
     const select = document.getElementById('piket-student-select');
@@ -60,10 +69,9 @@ export async function savePiketEntry(e) {
     const time = document.getElementById('piket-time').value;
     const notes = document.getElementById('piket-notes').value || '-';
     
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
 
     try {
-        // Simpan ke tabel attendance dengan tipe SISWA dan status khusus piket
         const { error } = await supabase
             .from('attendance')
             .insert([{
@@ -71,7 +79,7 @@ export async function savePiketEntry(e) {
                 name: studentName,
                 rombel: rombel,
                 type: 'SISWA',
-                status: status, // SAKIT, IZIN, ALPHA, TERLAMBAT
+                status: status,
                 date: today,
                 scan_time: time + ':00',
                 notes: `Piket: ${notes}`
@@ -79,29 +87,39 @@ export async function savePiketEntry(e) {
 
         if (error) throw error;
 
-        alert(`Berhasil mencatat ${status} untuk ${studentName}!`);
+        alert(`Berhasil mencatat ${status} untuk${studentName}!`);
         document.getElementById('form-piket').reset();
-        initPiketForm(); // Reset waktu & dropdown
-        loadPiketToday(); // Refresh daftar hari ini
+        initPiketForm();
+        loadPiketToday();
     } catch (err) {
         console.error('Gagal menyimpan data piket:', err.message);
         alert('Terjadi kesalahan saat menyimpan data piket.');
     }
 }
 
-// Memuat daftar catatan absen & pelanggaran hari ini (Plus Auto-Fill Form)
+// Memuat daftar rekap piket & disiplin hari ini (dengan fallback pencarian nama)
 export async function loadPiketToday() {
     const container = document.getElementById('piket-list-container');
     if (!container) return;
 
     container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat rekap piket & disiplin...</div>`;
     
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
     const startOfDay = `${today}T00:00:00.000Z`;
     const endOfDay = `${today}T23:59:59.999Z`;
 
     try {
-        // 1. Ambil data absen (KEMBALI MENGGUNAKAN SELECT '*' KARENA NAMA SUDAH ADA DI TABEL)
+        // Ambil data master siswa sebagai fallback nama
+        const { data: masterStudents } = await supabase
+            .from('students')
+            .select('id, name, rombel');
+        
+        const studentMap = {};
+        if (masterStudents) {
+            masterStudents.forEach(s => { studentMap[s.id] = s; });
+        }
+
+        // 1. Ambil data absen tidak wajar
         const { data: attendanceData, error: attError } = await supabase
             .from('attendance')
             .select('*') 
@@ -110,7 +128,7 @@ export async function loadPiketToday() {
 
         if (attError) console.error('Error attendance:', attError);
 
-        // 2. Ambil data dari tabel disciplines (Ini tetap butuh JOIN karena namanya numpang di tabel students)
+        // 2. Ambil data pelanggaran dari tabel disciplines
         const { data: disiplineData, error: disError } = await supabase
             .from('disciplines')
             .select('*, students(name, rombel)')
@@ -121,23 +139,23 @@ export async function loadPiketToday() {
 
         let combinedData = [];
 
-        // Mapping tabel attendance
+        // Mapping data attendance
         if (attendanceData) {
             attendanceData.forEach(item => {
-                // Ambil nama dan rombel langsung dari item (bawaan tabel attendance)
-                const stuName = item.name || 'Siswa Tidak Diketahui';
-                const stuRombel = item.rombel || '-';
+                const stuFallback = studentMap[item.student_id];
+                const stuName = item.name || (stuFallback ? stuFallback.name : 'Siswa Tidak Diketahui');
+                const stuRombel = item.rombel || (stuFallback ? stuFallback.rombel : '-');
                 
                 let timeDisplay = '-';
-                if (item.scan_time && item.scan_time.length > 5) {
-                    timeDisplay = item.scan_time.substring(0, 5); // Ambil HH:MM
+                if (item.scan_time && item.scan_time.length >= 5) {
+                    timeDisplay = item.scan_time.substring(0, 5);
                 } else if (item.created_at) {
                     timeDisplay = new Date(item.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
                 }
 
                 combinedData.push({
                     type: 'ABSEN',
-                    student_id: item.student_id, // Penting untuk auto-fill
+                    student_id: item.student_id,
                     name: stuName,
                     rombel: stuRombel,
                     status: item.status,
@@ -147,17 +165,19 @@ export async function loadPiketToday() {
             });
         }
 
-        // Mapping tabel disciplines
+        // Mapping data disciplines
         if (disiplineData) {
             disiplineData.forEach(item => {
-                // Ambil nama dari relasi tabel students
-                const stuName = (item.students && item.students.name) ? item.students.name : 'Siswa Tidak Diketahui';
-                const stuRombel = (item.students && item.students.rombel) ? item.students.rombel : '-';
+                const stuRelation = item.students;
+                const stuFallback = studentMap[item.student_id];
+                
+                const stuName = (stuRelation && stuRelation.name) ? stuRelation.name : (stuFallback ? stuFallback.name : 'Siswa Tidak Diketahui');
+                const stuRombel = (stuRelation && stuRelation.rombel) ? stuRelation.rombel : (stuFallback ? stuFallback.rombel : '-');
                 const jamInput = item.created_at ? new Date(item.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) : '-';
 
                 combinedData.push({
                     type: 'DISIPLIN',
-                    student_id: item.student_id, // Penting untuk auto-fill
+                    student_id: item.student_id,
                     name: stuName,
                     rombel: stuRombel,
                     status: item.violation_desc,
@@ -184,7 +204,6 @@ export async function loadPiketToday() {
             const card = document.createElement('div');
             card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-2 cursor-pointer hover:border-ncipsNavy hover:bg-slate-50 transition-all active:scale-[0.98]";
             
-            // Logika Klik (Auto-Fill Form)
             card.onclick = () => {
                 if(window.fillViolationForm) {
                     const defaultViolationType = item.status === 'TERLAMBAT' ? 'Terlambat' : 'Lainnya';
@@ -204,98 +223,3 @@ export async function loadPiketToday() {
                     <p class="text-[10px] text-gray-500 font-bold mb-1">Rombel: <span class="text-gray-700">${item.rombel}</span></p>
                     <p class="text-[10px] text-gray-700 font-medium leading-relaxed">${item.desc}</p>
                 </div>
-                <p class="text-[8px] text-gray-400 font-bold text-center mt-1 pointer-events-none">👉 Klik untuk beri tindak lanjut</p>
-            `;
-            container.appendChild(card);
-        });
-    } catch (err) {
-        console.error('Gagal memuat rekap gabungan:', err.message);
-        container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-red-400 text-xs">Gagal memuat data. ${err.message}</div>`;
-    }
-}
-
-// Fungsi untuk memuat siswa ke dalam dropdown Kedisiplinan
-export async function loadStudentsForViolation() {
-  const violationSelect = document.getElementById('violationStudent');
-  if (!violationSelect) return;
-
-  const { data, error } = await supabase
-    .from('students')
-    .select('id, name, rombel')
-    .eq('status', 'AKTIF')
-    .order('name', { ascending: true });
-
-  if (error) {
-    console.error('Gagal memuat daftar siswa:', error);
-    return;
-  }
-
-  // Kosongkan opsi sebelumnya lalu isi dengan data baru
-  violationSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>';
-  data.forEach(student => {
-    const option = document.createElement('option');
-    option.value = student.id;
-    option.textContent = `${student.name} (${student.rombel})`;
-    violationSelect.appendChild(option);
-  });
-}
-
-// Fungsi Simpan Pelanggaran Manual ke tabel disciplines
-export async function saveViolationEntry(event) {
-  event.preventDefault();
-
-  const studentId = document.getElementById('violationStudent').value;
-  const violationType = document.getElementById('violationType').value;
-  const actionTaken = document.getElementById('violationAction').value;
-  const actionStatus = document.getElementById('violationStatus').value;
-  const notes = document.getElementById('violationNotes').value || '-';
-  const officerName = localStorage.getItem('user_name') || 'Guru Piket'; 
-
-  const detailAction = `[${actionStatus}] ${actionTaken} | Catatan: ${notes}`;
-
-  const { error } = await supabase.from('disciplines').insert([{ // <-- Nama tabel diganti ke disciplines
-    student_id: studentId,
-    violation_desc: violationType,
-    action_taken: detailAction,
-    reported_by: officerName,
-    points: 0
-  }]);
-
-  if (error) {
-    alert('Gagal menyimpan pelanggaran: ' + error.message);
-  } else {
-    alert('✅ Pelanggaran dan tindak lanjut berhasil dicatat!');
-    document.getElementById('violationForm').reset();
-    loadPiketToday();
-  }
-}
-
-
-// Fungsi global untuk memilih siswa otomatis dan scroll ke form pelanggaran
-window.fillViolationForm = function(studentId, violationType) {
-    const studentSelect = document.getElementById('violationStudent');
-    const typeSelect = document.getElementById('violationType');
-    
-    // Setel nama siswa
-    if (studentSelect && studentId) {
-        studentSelect.value = studentId;
-    }
-    
-    // Setel jenis pelanggaran (misal: otomatis pilih "Terlambat")
-    if (typeSelect && violationType) {
-        const exists = Array.from(typeSelect.options).some(opt => opt.value === violationType);
-        if (exists) typeSelect.value = violationType;
-    }
-    
-    // Gulirkan layar ke form pelanggaran dengan mulus
-    const formElement = document.getElementById('violationForm');
-    if (formElement) {
-        formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Beri efek highlight kuning sebentar agar guru sadar layarnya berpindah
-        formElement.classList.add('ring-2', 'ring-ncipsYellow', 'transition-all');
-        setTimeout(() => {
-            formElement.classList.remove('ring-2', 'ring-ncipsYellow');
-        }, 1500);
-    }
-};
