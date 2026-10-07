@@ -77,20 +77,16 @@ export async function loadPiketStudentsDropdown() {
 export async function savePiketEntry(e) {
     e.preventDefault();
     const select = document.getElementById('piket-student-select');
-    const selectedOpt = select.options[select.selectedIndex];
-    
-    if (!select.value) {
+    if (!select || !select.value) {
         alert('Silakan pilih siswa terlebih dahulu!');
         return;
     }
 
+    const selectedOpt = select.options[select.selectedIndex];
     const studentName = selectedOpt.dataset.name;
-    // Mengambil NISN untuk dimasukkan ke qr_code, jika tidak ada pakai ID
     const qrCode = selectedOpt.dataset.nisn || select.value; 
     const status = document.getElementById('piket-status-select').value;
     const time = document.getElementById('piket-time').value;
-    const notes = document.getElementById('piket-notes').value || '-';
-    
     const today = getLocalDateString();
 
     try {
@@ -133,7 +129,6 @@ export async function loadPiketToday() {
             .from('students')
             .select('id, name, nisn, rombel');
         
-        // Pemetaan ganda berdasarkan ID dan NISN
         const studentMap = {};
         if (masterStudents) {
             masterStudents.forEach(s => {
@@ -162,15 +157,10 @@ export async function loadPiketToday() {
 
         if (attendanceData) {
             attendanceData.forEach(item => {
-                // PERBAIKAN: Gunakan qr_code sebagai kunci pencarian ke tabel master
                 const key = item.qr_code ? String(item.qr_code) : '';
                 const stuFallback = studentMap[key];
-                
-                // PERBAIKAN: Gunakan user_name dari tabel attendance
                 const stuName = item.user_name || (stuFallback ? stuFallback.name : 'Siswa Tidak Diketahui');
                 const stuRombel = stuFallback ? stuFallback.rombel : '-';
-                
-                // Ambil ID asli (primary key tabel students) agar form dropdown berfungsi
                 const validStudentId = stuFallback ? stuFallback.id : item.qr_code;
                 const timeDisplay = extractTime(item.scan_time, null);
 
@@ -181,7 +171,7 @@ export async function loadPiketToday() {
                     rombel: stuRombel,
                     status: item.status,
                     time: timeDisplay,
-                    desc: 'Kehadiran manual/scanner' // Tabel attendance tidak punya kolom notes, kita hardcode
+                    desc: 'Kehadiran manual/scanner'
                 });
             });
         }
@@ -283,27 +273,31 @@ export async function loadStudentsForViolation() {
     }
 }
 
-// Menyimpan catatan pelanggaran
+// Menyimpan catatan pelanggaran (Dibuat aman jika elemen opsional tidak ada di HTML)
 export async function saveViolationEntry(event) {
     event.preventDefault();
 
-    const studentId = document.getElementById('violationStudent').value;
-    const violationType = document.getElementById('violationType').value;
-    const actionTaken = document.getElementById('violationAction').value;
-    const actionStatus = document.getElementById('violationStatus').value;
-    const notes = document.getElementById('violationNotes').value || '-';
-    const officerName = localStorage.getItem('user_name') || 'Guru Piket'; 
+    const studentId = document.getElementById('violationStudent')?.value;
+    const violationType = document.getElementById('violationType')?.value;
+    const actionTakenInput = document.getElementById('violationAction');
+    const actionStatusInput = document.getElementById('violationStatus');
+    const notesInput = document.getElementById('violationNotes');
 
     if (!studentId) {
         alert('Silakan pilih siswa terlebih dahulu!');
         return;
     }
 
-    const detailAction = `[${actionStatus}] ${actionTaken} | Catatan: ${notes}`;
+    const actionTaken = actionTakenInput ? actionTakenInput.value : (notesInput ? notesInput.value : '-');
+    const actionStatus = actionStatusInput ? actionStatusInput.value : 'SELESAI';
+    const notes = notesInput ? notesInput.value : '-';
+    const officerName = localStorage.getItem('user_name') || 'Guru Piket'; 
+
+    const detailAction = actionStatusInput ? `[${actionStatus}] ${actionTaken} | Catatan: ${notes}` : notes;
 
     const { error } = await supabase.from('disciplines').insert([{
         student_id: studentId,
-        violation_desc: violationType,
+        violation_desc: violationType || 'Lainnya',
         action_taken: detailAction,
         reported_by: officerName,
         points: 0
@@ -313,7 +307,14 @@ export async function saveViolationEntry(event) {
         alert('Gagal menyimpan pelanggaran: ' + error.message);
     } else {
         alert('✅ Pelanggaran dan tindak lanjut berhasil dicatat!');
-        document.getElementById('violationForm').reset();
+        const formEl = document.getElementById('violationForm');
+        if (formEl) formEl.reset();
+        
+        const modalEl = document.getElementById('modal-violation');
+        if (modalEl) {
+            modalEl.classList.add('hidden');
+            modalEl.classList.remove('flex');
+        }
         loadPiketToday();
     }
 }
@@ -325,20 +326,24 @@ window.fillViolationForm = async function(studentId, violationType, studentName)
     const studentSelect = document.getElementById('violationStudent');
     const typeSelect = document.getElementById('violationType');
     const formElement = document.getElementById('violationForm');
+    const modalElement = document.getElementById('modal-violation');
 
-    // CEK 1: Pastikan elemen form benar-benar ada di HTML
     if (!formElement) {
         console.error("GAGAL: ID 'violationForm' tidak ditemukan di struktur HTML.");
         alert("Ups, form tindak lanjut tidak terdeteksi. Pastikan ID form di HTML kamu adalah id='violationForm'");
         return;
     }
     
-    // Pastikan dropdown siswa terisi
+    // Pastikan modal terbuka jika dibungkus modal
+    if (modalElement) {
+        modalElement.classList.remove('hidden');
+        modalElement.classList.add('flex');
+    }
+    
     if (studentSelect && studentSelect.options.length <= 1) {
         await loadStudentsForViolation();
     }
     
-    // Setel nilai dropdown siswa
     if (studentSelect) {
         let matched = false;
         if (studentId) {
@@ -361,15 +366,12 @@ window.fillViolationForm = async function(studentId, violationType, studentName)
         }
     }
     
-    // Setel jenis pelanggaran
     if (typeSelect && violationType) {
         const exists = Array.from(typeSelect.options).some(opt => opt.value === violationType);
         if (exists) typeSelect.value = violationType;
     }
     
-    // CARA SUPER BERINGAS: Hapus semua jenis class yang sering dipakai untuk menyembunyikan elemen
     const hiddenClasses = ['hidden', 'invisible', 'opacity-0', 'max-h-0', 'h-0', 'scale-0'];
-    
     hiddenClasses.forEach(cls => formElement.classList.remove(cls));
     formElement.style.display = 'block';
     
@@ -377,24 +379,18 @@ window.fillViolationForm = async function(studentId, violationType, studentName)
     while (currentElement && currentElement !== document.body) {
         hiddenClasses.forEach(cls => currentElement.classList.remove(cls));
         if (currentElement.style.display === 'none') {
-            currentElement.style.display = ''; // Reset ke bawaan asal
+            currentElement.style.display = ''; 
         }
         currentElement = currentElement.parentElement;
     }
 
-    // Jeda 100ms agar browser selesai menggambar (render) form yang baru dibuka
     setTimeout(() => {
-        // Gulir layar ke arah form
         formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Beri efek highlight kuning sekejap (durasi lebih lama)
         formElement.classList.add('ring-4', 'ring-yellow-400', 'transition-all', 'duration-500');
         
-        // Arahkan kursor
         const actionInput = document.getElementById('violationAction') || document.getElementById('violationNotes');
         if (actionInput) actionInput.focus();
 
-        // Hilangkan highlight setelah 2 detik
         setTimeout(() => {
             formElement.classList.remove('ring-4', 'ring-yellow-400', 'duration-500');
         }, 2000);
