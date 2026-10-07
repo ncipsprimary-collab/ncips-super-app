@@ -101,16 +101,16 @@ export async function loadPiketToday() {
     const endOfDay = `${today}T23:59:59.999Z`;
 
     try {
-        // 1. Ambil data absen (JOIN dengan tabel students untuk tarik nama otomatis)
+        // 1. Ambil data absen (KEMBALI MENGGUNAKAN SELECT '*' KARENA NAMA SUDAH ADA DI TABEL)
         const { data: attendanceData, error: attError } = await supabase
             .from('attendance')
-            .select('*, students(name, rombel)')
+            .select('*') 
             .eq('date', today)
             .in('status', ['SAKIT', 'IZIN', 'ALPHA', 'TERLAMBAT']);
 
         if (attError) console.error('Error attendance:', attError);
 
-        // 2. Ambil data dari tabel disciplines
+        // 2. Ambil data dari tabel disciplines (Ini tetap butuh JOIN karena namanya numpang di tabel students)
         const { data: disiplineData, error: disError } = await supabase
             .from('disciplines')
             .select('*, students(name, rombel)')
@@ -124,11 +124,10 @@ export async function loadPiketToday() {
         // Mapping tabel attendance
         if (attendanceData) {
             attendanceData.forEach(item => {
-                // Tarik nama dari join students, kalau gagal ambil dari item.name, kalau gagal lagi beri default
-                const stuName = (item.students && item.students.name) ? item.students.name : (item.name || 'Siswa Tidak Diketahui');
-                const stuRombel = (item.students && item.students.rombel) ? item.students.rombel : (item.rombel || '-');
+                // Ambil nama dan rombel langsung dari item (bawaan tabel attendance)
+                const stuName = item.name || 'Siswa Tidak Diketahui';
+                const stuRombel = item.rombel || '-';
                 
-                // Format jam jadi rapi
                 let timeDisplay = '-';
                 if (item.scan_time && item.scan_time.length > 5) {
                     timeDisplay = item.scan_time.substring(0, 5); // Ambil HH:MM
@@ -151,6 +150,7 @@ export async function loadPiketToday() {
         // Mapping tabel disciplines
         if (disiplineData) {
             disiplineData.forEach(item => {
+                // Ambil nama dari relasi tabel students
                 const stuName = (item.students && item.students.name) ? item.students.name : 'Siswa Tidak Diketahui';
                 const stuRombel = (item.students && item.students.rombel) ? item.students.rombel : '-';
                 const jamInput = item.created_at ? new Date(item.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) : '-';
@@ -182,7 +182,6 @@ export async function loadPiketToday() {
             if (item.status === 'ALPHA') badgeColor = 'bg-red-100 text-red-700 border-red-200';
 
             const card = document.createElement('div');
-            // Menambahkan style agar cursor menjadi pointer saat di-hover dan ada efek klik
             card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-2 cursor-pointer hover:border-ncipsNavy hover:bg-slate-50 transition-all active:scale-[0.98]";
             
             // Logika Klik (Auto-Fill Form)
