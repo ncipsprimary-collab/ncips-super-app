@@ -89,7 +89,7 @@ export async function savePiketEntry(e) {
     }
 }
 
-// Memuat daftar catatan absen (piket) & pelanggaran (disciplines) hari ini
+// Memuat daftar catatan absen & pelanggaran hari ini (Plus Auto-Fill Form)
 export async function loadPiketToday() {
     const container = document.getElementById('piket-list-container');
     if (!container) return;
@@ -97,16 +97,14 @@ export async function loadPiketToday() {
     container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat rekap piket & disiplin...</div>`;
     
     const today = new Date().toISOString().split('T')[0];
-    
-    // Siapkan parameter rentang waktu untuk filter created_at
     const startOfDay = `${today}T00:00:00.000Z`;
     const endOfDay = `${today}T23:59:59.999Z`;
 
     try {
-        // 1. Ambil data absen hari ini dari tabel attendance
+        // 1. Ambil data absen (JOIN dengan tabel students untuk tarik nama otomatis)
         const { data: attendanceData, error: attError } = await supabase
             .from('attendance')
-            .select('*')
+            .select('*, students(name, rombel)')
             .eq('date', today)
             .in('status', ['SAKIT', 'IZIN', 'ALPHA', 'TERLAMBAT']);
 
@@ -114,7 +112,7 @@ export async function loadPiketToday() {
 
         // 2. Ambil data dari tabel disciplines
         const { data: disiplineData, error: disError } = await supabase
-            .from('disciplines') // <-- Nama tabel sudah diganti ke disciplines
+            .from('disciplines')
             .select('*, students(name, rombel)')
             .gte('created_at', startOfDay)
             .lte('created_at', endOfDay);
@@ -126,12 +124,25 @@ export async function loadPiketToday() {
         // Mapping tabel attendance
         if (attendanceData) {
             attendanceData.forEach(item => {
+                // Tarik nama dari join students, kalau gagal ambil dari item.name, kalau gagal lagi beri default
+                const stuName = (item.students && item.students.name) ? item.students.name : (item.name || 'Siswa Tidak Diketahui');
+                const stuRombel = (item.students && item.students.rombel) ? item.students.rombel : (item.rombel || '-');
+                
+                // Format jam jadi rapi
+                let timeDisplay = '-';
+                if (item.scan_time && item.scan_time.length > 5) {
+                    timeDisplay = item.scan_time.substring(0, 5); // Ambil HH:MM
+                } else if (item.created_at) {
+                    timeDisplay = new Date(item.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+                }
+
                 combinedData.push({
                     type: 'ABSEN',
-                    name: item.name,
-                    rombel: item.rombel || '-',
+                    student_id: item.student_id, // Penting untuk auto-fill
+                    name: stuName,
+                    rombel: stuRombel,
                     status: item.status,
-                    time: item.scan_time || '-',
+                    time: timeDisplay,
                     desc: item.notes || 'Tanpa catatan'
                 });
             });
@@ -140,12 +151,13 @@ export async function loadPiketToday() {
         // Mapping tabel disciplines
         if (disiplineData) {
             disiplineData.forEach(item => {
-                const stuName = item.students ? item.students.name : 'Siswa Tidak Diketahui';
-                const stuRombel = item.students ? item.students.rombel : '-';
+                const stuName = (item.students && item.students.name) ? item.students.name : 'Siswa Tidak Diketahui';
+                const stuRombel = (item.students && item.students.rombel) ? item.students.rombel : '-';
                 const jamInput = item.created_at ? new Date(item.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) : '-';
 
                 combinedData.push({
                     type: 'DISIPLIN',
+                    student_id: item.student_id, // Penting untuk auto-fill
                     name: stuName,
                     rombel: stuRombel,
                     status: item.violation_desc,
@@ -160,10 +172,9 @@ export async function loadPiketToday() {
             return;
         }
         
-        // Urutkan data (terbaru di atas)
         combinedData.sort((a, b) => (b.time > a.time ? 1 : -1));
-
         container.innerHTML = '';
+
         combinedData.forEach(item => {
             let badgeColor = item.type === 'DISIPLIN' ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-orange-100 text-orange-700 border-orange-200';
             if (item.status === 'SAKIT') badgeColor = 'bg-blue-100 text-blue-700 border-blue-200';
@@ -171,19 +182,30 @@ export async function loadPiketToday() {
             if (item.status === 'ALPHA') badgeColor = 'bg-red-100 text-red-700 border-red-200';
 
             const card = document.createElement('div');
-            card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-2";
+            // Menambahkan style agar cursor menjadi pointer saat di-hover dan ada efek klik
+            card.className = "bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-2 cursor-pointer hover:border-ncipsNavy hover:bg-slate-50 transition-all active:scale-[0.98]";
+            
+            // Logika Klik (Auto-Fill Form)
+            card.onclick = () => {
+                if(window.fillViolationForm) {
+                    const defaultViolationType = item.status === 'TERLAMBAT' ? 'Terlambat' : 'Lainnya';
+                    window.fillViolationForm(item.student_id, defaultViolationType);
+                }
+            };
+
             card.innerHTML = `
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center pointer-events-none">
                     <div class="flex items-center gap-2">
                         <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black border uppercase ${badgeColor}">${item.status}</span>
                         <h4 class="text-xs font-black text-ncipsNavy">${item.name}</h4>
                     </div>
                     <span class="text-[10px] font-mono font-bold bg-gray-50 px-2.5 py-1 rounded-xl text-slate-700 border border-gray-100">${item.time}</span>
                 </div>
-                <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100 mt-1">
+                <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100 mt-1 pointer-events-none">
                     <p class="text-[10px] text-gray-500 font-bold mb-1">Rombel: <span class="text-gray-700">${item.rombel}</span></p>
                     <p class="text-[10px] text-gray-700 font-medium leading-relaxed">${item.desc}</p>
                 </div>
+                <p class="text-[8px] text-gray-400 font-bold text-center mt-1 pointer-events-none">👉 Klik untuk beri tindak lanjut</p>
             `;
             container.appendChild(card);
         });
@@ -248,3 +270,33 @@ export async function saveViolationEntry(event) {
     loadPiketToday();
   }
 }
+
+
+// Fungsi global untuk memilih siswa otomatis dan scroll ke form pelanggaran
+window.fillViolationForm = function(studentId, violationType) {
+    const studentSelect = document.getElementById('violationStudent');
+    const typeSelect = document.getElementById('violationType');
+    
+    // Setel nama siswa
+    if (studentSelect && studentId) {
+        studentSelect.value = studentId;
+    }
+    
+    // Setel jenis pelanggaran (misal: otomatis pilih "Terlambat")
+    if (typeSelect && violationType) {
+        const exists = Array.from(typeSelect.options).some(opt => opt.value === violationType);
+        if (exists) typeSelect.value = violationType;
+    }
+    
+    // Gulirkan layar ke form pelanggaran dengan mulus
+    const formElement = document.getElementById('violationForm');
+    if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Beri efek highlight kuning sebentar agar guru sadar layarnya berpindah
+        formElement.classList.add('ring-2', 'ring-ncipsYellow', 'transition-all');
+        setTimeout(() => {
+            formElement.classList.remove('ring-2', 'ring-ncipsYellow');
+        }, 1500);
+    }
+};
