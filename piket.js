@@ -1,21 +1,43 @@
 import { supabase } from './supabase.js';
 
-// Helper Tanggal Lokal (Format YYYY-MM-DD)
+// Helper Tanggal Lokal (YYYY-MM-DD)
 function getLocalDateString() {
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
-    return year + '-' + month + '-' + day;
+    return `${year}-${month}-${day}`;
 }
 
-// Set default waktu saat ini pada form piket & inisialisasi dropdown
+// Helper Ekstraksi Jam (HH:mm) agar tidak muncul "2026-"
+function extractTime(timeVal, createdAtVal) {
+    if (timeVal) {
+        let cleanTime = timeVal;
+        if (cleanTime.includes('T')) cleanTime = cleanTime.split('T')[1];
+        if (cleanTime.includes(' ')) cleanTime = cleanTime.split(' ')[1];
+        const parts = cleanTime.split(':');
+        if (parts.length >= 2) {
+            return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+        }
+    }
+    if (createdAtVal) {
+        const d = new Date(createdAtVal);
+        if (!isNaN(d.getTime())) {
+            const h = String(d.getHours()).padStart(2, '0');
+            const m = String(d.getMinutes()).padStart(2, '0');
+            return `${h}:${m}`;
+        }
+    }
+    return '-';
+}
+
+// Inisialisasi Form Piket
 export function initPiketForm() {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const timeInput = document.getElementById('piket-time');
-    if (timeInput) timeInput.value = hours + ':' + minutes;
+    if (timeInput) timeInput.value = `${hours}:${minutes}`;
     
     loadPiketStudentsDropdown();
     loadPiketToday();
@@ -40,7 +62,7 @@ export async function loadPiketStudentsDropdown() {
         data.forEach(stu => {
             const opt = document.createElement('option');
             opt.value = stu.id;
-            opt.textContent = stu.name + ' (' + (stu.rombel || 'Tanpa Rombel') + ') - NISN: ' + (stu.nisn || '-');
+            opt.textContent = `${stu.name} (${stu.rombel || 'Tanpa Rombel'}) - NISN: ${stu.nisn || '-'}`;
             opt.dataset.name = stu.name;
             opt.dataset.rombel = stu.rombel || '-';
             select.appendChild(opt);
@@ -51,7 +73,7 @@ export async function loadPiketStudentsDropdown() {
     }
 }
 
-// Menyimpan entri piket manual ke tabel attendance
+// Menyimpan piket manual
 export async function savePiketEntry(e) {
     e.preventDefault();
     const select = document.getElementById('piket-student-select');
@@ -81,13 +103,13 @@ export async function savePiketEntry(e) {
                 type: 'SISWA',
                 status: status,
                 date: today,
-                scan_time: time + ':00',
-                notes: 'Piket: ' + notes
+                scan_time: `${time}:00`,
+                notes: `Piket: ${notes}`
             }]);
 
         if (error) throw error;
 
-        alert('Berhasil mencatat ' + status + ' untuk ' + studentName + '!');
+        alert(`Berhasil mencatat ${status} untuk ${studentName}!`);
         document.getElementById('form-piket').reset();
         initPiketForm();
         loadPiketToday();
@@ -102,20 +124,24 @@ export async function loadPiketToday() {
     const container = document.getElementById('piket-list-container');
     if (!container) return;
 
-    container.innerHTML = '<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat rekap piket & disiplin...</div>';
+    container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Memuat rekap piket & disiplin...</div>`;
     
     const today = getLocalDateString();
-    const startOfDay = today + 'T00:00:00.000Z';
-    const endOfDay = today + 'T23:59:59.999Z';
+    const startOfDay = `${today}T00:00:00.000Z`;
+    const endOfDay = `${today}T23:59:59.999Z`;
 
     try {
         const { data: masterStudents } = await supabase
             .from('students')
-            .select('id, name, rombel');
+            .select('id, name, nisn, rombel');
         
+        // Pemetaan ganda berdasarkan ID dan NISN
         const studentMap = {};
         if (masterStudents) {
-            masterStudents.forEach(s => { studentMap[s.id] = s; });
+            masterStudents.forEach(s => {
+                if (s.id) studentMap[String(s.id)] = s;
+                if (s.nisn) studentMap[String(s.nisn)] = s;
+            });
         }
 
         const { data: attendanceData, error: attError } = await supabase
@@ -128,7 +154,7 @@ export async function loadPiketToday() {
 
         const { data: disiplineData, error: disError } = await supabase
             .from('disciplines')
-            .select('*, students(name, rombel)')
+            .select('*, students(id, name, rombel)')
             .gte('created_at', startOfDay)
             .lte('created_at', endOfDay);
 
@@ -138,20 +164,17 @@ export async function loadPiketToday() {
 
         if (attendanceData) {
             attendanceData.forEach(item => {
-                const stuFallback = studentMap[item.student_id];
+                const key = item.student_id ? String(item.student_id) : (item.nisn ? String(item.nisn) : '');
+                const stuFallback = studentMap[key];
+                
                 const stuName = item.name || (stuFallback ? stuFallback.name : 'Siswa Tidak Diketahui');
                 const stuRombel = item.rombel || (stuFallback ? stuFallback.rombel : '-');
-                
-                let timeDisplay = '-';
-                if (item.scan_time && item.scan_time.length >= 5) {
-                    timeDisplay = item.scan_time.substring(0, 5);
-                } else if (item.created_at) {
-                    timeDisplay = new Date(item.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
-                }
+                const validStudentId = stuFallback ? stuFallback.id : item.student_id;
+                const timeDisplay = extractTime(item.scan_time, item.created_at);
 
                 combinedData.push({
                     type: 'ABSEN',
-                    student_id: item.student_id,
+                    student_id: validStudentId,
                     name: stuName,
                     rombel: stuRombel,
                     status: item.status,
@@ -164,26 +187,28 @@ export async function loadPiketToday() {
         if (disiplineData) {
             disiplineData.forEach(item => {
                 const stuRelation = item.students;
-                const stuFallback = studentMap[item.student_id];
+                const key = item.student_id ? String(item.student_id) : '';
+                const stuFallback = studentMap[key];
                 
                 const stuName = (stuRelation && stuRelation.name) ? stuRelation.name : (stuFallback ? stuFallback.name : 'Siswa Tidak Diketahui');
                 const stuRombel = (stuRelation && stuRelation.rombel) ? stuRelation.rombel : (stuFallback ? stuFallback.rombel : '-');
-                const jamInput = item.created_at ? new Date(item.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) : '-';
+                const validStudentId = (stuRelation && stuRelation.id) ? stuRelation.id : (stuFallback ? stuFallback.id : item.student_id);
+                const timeDisplay = extractTime(null, item.created_at);
 
                 combinedData.push({
                     type: 'DISIPLIN',
-                    student_id: item.student_id,
+                    student_id: validStudentId,
                     name: stuName,
                     rombel: stuRombel,
                     status: item.violation_desc,
-                    time: jamInput,
+                    time: timeDisplay,
                     desc: item.action_taken
                 });
             });
         }
 
         if (combinedData.length === 0) {
-            container.innerHTML = '<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Belum ada catatan kehadiran tidak wajar atau pelanggaran hari ini.</div>';
+            container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-gray-400 text-xs">Belum ada catatan kehadiran tidak wajar atau pelanggaran hari ini.</div>`;
             return;
         }
         
@@ -202,29 +227,29 @@ export async function loadPiketToday() {
             card.onclick = () => {
                 if(window.fillViolationForm) {
                     const defaultViolationType = item.status === 'TERLAMBAT' ? 'Terlambat' : 'Lainnya';
-                    window.fillViolationForm(item.student_id, defaultViolationType);
+                    window.fillViolationForm(item.student_id, defaultViolationType, item.name);
                 }
             };
 
-            card.innerHTML = 
-                '<div class="flex justify-between items-center pointer-events-none">' +
-                    '<div class="flex items-center gap-2">' +
-                        '<span class="px-2.5 py-0.5 rounded-full text-[9px] font-black border uppercase ' + badgeColor + '">' + item.status + '</span>' +
-                        '<h4 class="text-xs font-black text-ncipsNavy">' + item.name + '</h4>' +
-                    '</div>' +
-                    '<span class="text-[10px] font-mono font-bold bg-gray-50 px-2.5 py-1 rounded-xl text-slate-700 border border-gray-100">' + item.time + '</span>' +
-                '</div>' +
-                '<div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100 mt-1 pointer-events-none">' +
-                    '<p class="text-[10px] text-gray-500 font-bold mb-1">Rombel: <span class="text-gray-700">' + item.rombel + '</span></p>' +
-                    '<p class="text-[10px] text-gray-700 font-medium leading-relaxed">' + item.desc + '</p>' +
-                '</div>' +
-                '<p class="text-[8px] text-gray-400 font-bold text-center mt-1 pointer-events-none">👉 Klik untuk beri tindak lanjut</p>';
-            
+            card.innerHTML = `
+                <div class="flex justify-between items-center pointer-events-none">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black border uppercase ${badgeColor}">${item.status}</span>
+                        <h4 class="text-xs font-black text-ncipsNavy">${item.name}</h4>
+                    </div>
+                    <span class="text-[10px] font-mono font-bold bg-gray-50 px-2.5 py-1 rounded-xl text-slate-700 border border-gray-100">${item.time}</span>
+                </div>
+                <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100 mt-1 pointer-events-none">
+                    <p class="text-[10px] text-gray-500 font-bold mb-1">Rombel: <span class="text-gray-700">${item.rombel}</span></p>
+                    <p class="text-[10px] text-gray-700 font-medium leading-relaxed">${item.desc}</p>
+                </div>
+                <p class="text-[8px] text-gray-400 font-bold text-center mt-1 pointer-events-none">👉 Klik untuk beri tindak lanjut</p>
+            `;
             container.appendChild(card);
         });
     } catch (err) {
         console.error('Gagal memuat rekap gabungan:', err.message);
-        container.innerHTML = '<div class="bg-white p-6 rounded-[2rem] text-center text-red-400 text-xs">Gagal memuat data. ' + err.message + '</div>';
+        container.innerHTML = `<div class="bg-white p-6 rounded-[2rem] text-center text-red-400 text-xs">Gagal memuat data. ${err.message}</div>`;
     }
 }
 
@@ -236,7 +261,7 @@ export async function loadStudentsForViolation() {
     try {
         const { data, error } = await supabase
             .from('students')
-            .select('id, name, rombel')
+            .select('id, name, rombel, nisn')
             .eq('status', 'AKTIF')
             .order('name', { ascending: true });
 
@@ -246,7 +271,9 @@ export async function loadStudentsForViolation() {
         data.forEach(student => {
             const option = document.createElement('option');
             option.value = student.id;
-            option.textContent = student.name + ' (' + (student.rombel || 'Tanpa Rombel') + ')';
+            option.textContent = `${student.name} (${student.rombel || 'Tanpa Rombel'})`;
+            option.dataset.name = student.name;
+            option.dataset.nisn = student.nisn || '';
             violationSelect.appendChild(option);
         });
     } catch (err) {
@@ -254,7 +281,7 @@ export async function loadStudentsForViolation() {
     }
 }
 
-// Menyimpan catatan pelanggaran manual ke tabel disciplines
+// Menyimpan catatan pelanggaran
 export async function saveViolationEntry(event) {
     event.preventDefault();
 
@@ -270,7 +297,7 @@ export async function saveViolationEntry(event) {
         return;
     }
 
-    const detailAction = '[' + actionStatus + '] ' + actionTaken + ' | Catatan: ' + notes;
+    const detailAction = `[${actionStatus}] ${actionTaken} | Catatan: ${notes}`;
 
     const { error } = await supabase.from('disciplines').insert([{
         student_id: studentId,
@@ -290,7 +317,7 @@ export async function saveViolationEntry(event) {
 }
 
 // Auto-fill form pelanggaran saat rekap diklik
-window.fillViolationForm = async function(studentId, violationType) {
+window.fillViolationForm = async function(studentId, violationType, studentName) {
     const studentSelect = document.getElementById('violationStudent');
     const typeSelect = document.getElementById('violationType');
     
@@ -298,8 +325,26 @@ window.fillViolationForm = async function(studentId, violationType) {
         await loadStudentsForViolation();
     }
     
-    if (studentSelect && studentId) {
-        studentSelect.value = studentId;
+    if (studentSelect) {
+        let matched = false;
+        if (studentId) {
+            for (let opt of studentSelect.options) {
+                if (String(opt.value) === String(studentId)) {
+                    studentSelect.value = opt.value;
+                    matched = true;
+                    break;
+                }
+            }
+        }
+        if (!matched && studentName) {
+            for (let opt of studentSelect.options) {
+                if (opt.textContent.toLowerCase().includes(studentName.toLowerCase()) || 
+                   (opt.dataset.name && opt.dataset.name.toLowerCase() === studentName.toLowerCase())) {
+                    studentSelect.value = opt.value;
+                    break;
+                }
+            }
+        }
     }
     
     if (typeSelect && violationType) {
@@ -309,8 +354,16 @@ window.fillViolationForm = async function(studentId, violationType) {
     
     const formElement = document.getElementById('violationForm');
     if (formElement) {
+        // Buka form jika berada dalam wadah tersembunyi
+        const parentHidden = formElement.closest('.hidden');
+        if (parentHidden) parentHidden.classList.remove('hidden');
+
         formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         formElement.classList.add('ring-2', 'ring-ncipsYellow', 'transition-all');
+        
+        const actionInput = document.getElementById('violationAction') || document.getElementById('violationNotes');
+        if (actionInput) actionInput.focus();
+
         setTimeout(() => {
             formElement.classList.remove('ring-2', 'ring-ncipsYellow');
         }, 1500);
